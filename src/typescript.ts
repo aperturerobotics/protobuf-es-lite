@@ -20,7 +20,12 @@ import type {
   DescMessage,
   DescOneof,
 } from "@bufbuild/protobuf";
-import { FieldDescriptorProto_Label, FieldDescriptorProto_Type, LongType, ScalarType } from "@bufbuild/protobuf";
+import {
+  FieldDescriptorProto_Label,
+  FieldDescriptorProto_Type,
+  LongType,
+  ScalarType,
+} from "@bufbuild/protobuf";
 import type {
   GeneratedFile,
   Printable,
@@ -28,7 +33,11 @@ import type {
 } from "@bufbuild/protoplugin/ecmascript";
 import { localName, reifyWkt } from "@bufbuild/protoplugin/ecmascript";
 import { getNonEditionRuntime } from "./editions.js";
-import { getFieldDefaultValueExpression, getFieldTypeInfo, getFieldZeroValueExpression } from "./util.js";
+import {
+  getFieldDefaultValueExpression,
+  getFieldTypeInfo,
+  getFieldZeroValueExpression,
+} from "./util.js";
 
 export function generateTs(schema: Schema) {
   for (const file of schema.files) {

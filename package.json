@@ -6,6 +6,17 @@
   "repository": {
     "url": "git+ssh://git@github.com/aperturerobotics/protobuf-es-lite.git"
   },
+  "files": [
+    ".ignore",
+    "LICENSE",
+    "README.md",
+    "bin/protoc-gen-es-lite",
+    "example/example.proto",
+    "example/example.pb.ts",
+    "tsconfig.base.json",
+    "tsconfig.json",
+    "dist"
+  ],
   "bin": {
     "protoc-gen-es-lite": "bin/protoc-gen-es-lite"
   },
@@ -13,8 +24,11 @@
     "node": ">=14"
   },
   "scripts": {
-    "clean": "rimraf ./dist/cjs/*",
-    "build": "tsc --project tsconfig.json --outDir ./dist/cjs"
+    "clean": "rimraf ./dist",
+    "build": "npm run clean && tsc --project tsconfig.json --outDir ./dist",
+    "typecheck": "tsc --noEmit --project tsconfig.json --outDir ./dist",
+    "example": "npm run build && protoc --plugin=./bin/protoc-gen-es-lite --es-lite_out=. --es-lite_opt target=ts --es-lite_opt ts_nocheck=false ./example/example.proto",
+    "format": "prettier --write './src/**/(*.ts|*.tsx|*.html|*.css|*.scss)'"
   },
   "preferUnplugged": true,
   "dependencies": {
@@ -30,6 +44,7 @@
     }
   },
   "devDependencies": {
+    "prettier": "^3.2.5",
     "rimraf": "^5.0.5",
     "typescript": "^5.4.5"
   }

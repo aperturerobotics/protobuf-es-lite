@@ -1,6 +1,8 @@
 syntax = "proto3";
 package example;
 
+import "google/protobuf/timestamp.proto";
+
 // Echoer service returns the given message.
 service Echoer {
   // Echo returns the given message.
@@ -13,7 +15,16 @@ service Echoer {
   rpc EchoBidiStream(stream EchoMsg) returns (stream EchoMsg);
 }
 
+// ExampleEnum is an example enumeration.
+enum ExampleEnum {
+  UNKNOWN = 0;
+  FIRST = 1;
+  SECOND = 2;
+}
+
 // EchoMsg is the message body for Echo.
 message EchoMsg {
   string body = 1;
+  google.protobuf.Timestamp ts = 2;
+  ExampleEnum example_enum = 3;
 }
