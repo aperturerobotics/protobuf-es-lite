@@ -107,7 +107,6 @@ function generateMessage(schema: Schema, f: GeneratedFile, message: DescMessage)
   f.print("    ],");
   f.print("    packedByDefault: ", message.file.proto.syntax === "proto3", ",");
   f.print("  },");
-  f.print("  true,");
   f.print(");");
   f.print();
   for (const nestedEnum of message.nestedEnums) {
