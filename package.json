@@ -21,6 +21,7 @@
     "protoc-gen-es-lite": "bin/protoc-gen-es-lite"
   },
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
