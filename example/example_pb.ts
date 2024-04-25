@@ -69,6 +69,5 @@ export const EchoMsg: MessageType<EchoMsg> = createMessageType(
     ],
     packedByDefault: true,
   },
-  true,
 );
 
