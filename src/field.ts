@@ -154,10 +154,10 @@ export type FieldListSource =
 // newFieldList constructs a new field list.
 export function newFieldList(
   fields: FieldListSource,
-  isProto3: boolean,
+  packedByDefault: boolean,
 ): FieldList {
   return new FieldList(fields, (source) =>
-    normalizeFieldInfos(source, isProto3),
+    normalizeFieldInfos(source, packedByDefault),
   );
 }
 

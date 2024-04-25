@@ -15,10 +15,10 @@
 
 import { createEcmaScriptPlugin } from "@bufbuild/protoplugin";
 import { generateTs } from "./typescript.js";
-import { version } from "../package.json";
+// import { version } from "../package.json";
 
 export const protocGenEsLite = createEcmaScriptPlugin({
   name: "protoc-gen-es-lite",
-  version: `v${String(version)}`,
+  version: `unknown`,
   generateTs,
 });

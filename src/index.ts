@@ -4,6 +4,7 @@ export {
   PartialMessage,
   MessageType,
   compareMessages,
+  createMessageType,
 } from "./message.js";
 export {
   newFieldList,

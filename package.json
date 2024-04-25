@@ -20,6 +20,13 @@
   "bin": {
     "protoc-gen-es-lite": "bin/protoc-gen-es-lite"
   },
+  "main": "./dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
   "engines": {
     "node": ">=14"
   },

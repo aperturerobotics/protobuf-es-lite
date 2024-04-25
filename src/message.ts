@@ -22,7 +22,13 @@ import {
   JsonWriteStringOptions,
   ScalarType,
 } from "@bufbuild/protobuf";
-import { FieldInfo, FieldList, OneofInfo } from "./field.js";
+import {
+  FieldInfo,
+  FieldList,
+  FieldListSource,
+  OneofInfo,
+  newFieldList,
+} from "./field.js";
 import { applyPartialMessage } from "./partial.js";
 import { scalarEquals } from "./scalar.js";
 import {
@@ -158,10 +164,22 @@ export interface MessageType<T extends Message<T> = AnyMessage>
 }
 
 // MessageTypeParams are parameters passed to the message type constructor.
-export type MessageTypeParams<T extends Message<T>> = Pick<
-  MessageType<T>,
-  "typeName" | "fields" | "fieldWrapper"
-> & {
+export interface MessageTypeParams<T extends Message<T>>
+  extends Pick<MessageType<T>, "typeName" | "fieldWrapper"> {
+  /**
+   * Fields contains the list of message fields.
+   */
+  fields: FieldListSource;
+  /**
+   * `packedByDefault` specifies whether fields that do not specify `packed`
+   * should be packed (proto3) or unpacked (proto2).
+   */
+  packedByDefault: boolean;
+  /**
+   * `delimitedMessageEncoding` specifies whether fields are encoded without
+   * delimited fields (proto3) or with (proto2 legacy).
+   */
+  delimitedMessageEncoding?: boolean;
   /**
    * Serialize the message to a JSON value, a JavaScript value that can be
    * passed to JSON.stringify().
@@ -169,7 +187,7 @@ export type MessageTypeParams<T extends Message<T>> = Pick<
    * When passed as MessageTypeParams this will override the default serializer behavior.
    */
   toJson?: MessageType<T>["toJson"];
-};
+}
 
 // compareMessages compares two messages for equality.
 export function compareMessages<T extends Message<T>>(
@@ -310,14 +328,27 @@ export function cloneMessage<T extends Message<T>>(
 
 /**
  * createMessageType creates a new message type.
+ *
+ * The argument `packedByDefault` specifies whether fields that do not specify
+ * `packed` should be packed (proto3) or unpacked (proto2).
  */
 export function createMessageType<T extends Message<T>>(
   params: MessageTypeParams<T>,
-  delimitedMessageEncoding: boolean,
 ): MessageType<T> {
-  const { fields, typeName } = params;
+  const {
+    fields: fieldsSource,
+    typeName,
+    packedByDefault,
+    delimitedMessageEncoding,
+    fieldWrapper,
+  } = params;
+  const fields = newFieldList(fieldsSource, packedByDefault);
 
-  return {
+  const mt = {
+    typeName,
+    fields,
+    fieldWrapper,
+
     create(partial?: PartialMessage<T>): T {
       const message = createMessage<T>(fields);
       applyPartialMessage(partial, message, fields);
@@ -362,7 +393,7 @@ export function createMessageType<T extends Message<T>>(
         json = JSON.parse(jsonString) as JsonValue;
       } catch (e) {
         throw new Error(
-          `cannot decode ${this.typeName} from JSON: ${
+          `cannot decode ${typeName} from JSON: ${
             e instanceof Error ? e.message : String(e)
           }`,
         );
@@ -379,16 +410,20 @@ export function createMessageType<T extends Message<T>>(
 
     toJson(a: T, options?: Partial<JsonWriteOptions>): JsonValue {
       const opt = makeJsonWriteOptions(options);
-      return writeJsonMessage(a, this.fields, opt);
+      return writeJsonMessage(a, fields, opt);
     },
 
     toJsonString(a: T, options?: Partial<JsonWriteStringOptions>): string {
       const value = this.toJson(a, options);
       return JSON.stringify(value, null, options?.prettySpaces ?? 0);
     },
-
-    ...params,
   };
+
+  if (params.toJson) {
+    mt.toJson = params.toJson;
+  }
+
+  return mt;
 }
 
 /**
