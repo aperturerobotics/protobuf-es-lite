@@ -1,0 +1,10 @@
+{
+  "files": ["src/protoc-gen-es-lite-plugin.ts"],
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "verbatimModuleSyntax": false,
+    "module": "CommonJS",
+    "moduleResolution": "Node10"
+  }
+}

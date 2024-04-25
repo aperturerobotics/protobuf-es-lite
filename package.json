@@ -1,0 +1,36 @@
+{
+  "name": "@aptre/protobuf-es-lite",
+  "description": "Lightweight Protobuf codegen for TypeScript or JavaScript.",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "url": "git+ssh://git@github.com/aperturerobotics/protobuf-es-lite.git"
+  },
+  "bin": {
+    "protoc-gen-es-lite": "bin/protoc-gen-es-lite"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "clean": "rimraf ./dist/cjs/*",
+    "build": "tsc --project tsconfig.json --outDir ./dist/cjs"
+  },
+  "preferUnplugged": true,
+  "dependencies": {
+    "@bufbuild/protobuf": "^1.9.0",
+    "@bufbuild/protoplugin": "1.9.0"
+  },
+  "peerDependencies": {
+    "@bufbuild/protobuf": "1.9.0"
+  },
+  "peerDependenciesMeta": {
+    "@bufbuild/protobuf": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.5",
+    "typescript": "^5.4.5"
+  }
+}

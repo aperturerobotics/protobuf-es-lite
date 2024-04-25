@@ -1,0 +1,4 @@
+NOTE: This code is forked from protoc-gen-es:
+https://github.com/bufbuild/protobuf-es/blob/17327db/packages/protoc-gen-es/src/typescript.ts
+
+... and is be subject to its Apache-2.0 license.
