@@ -37,7 +37,9 @@ function isCompleteField<F>(value: PartialField<F>, field: FieldInfo): boolean {
   if (field.oneof) {
     // For oneof fields, only one field should be set
     const oneofFields = field.oneof.fields;
-    const setField = oneofFields.find((f) => (value as any)[f.localName] !== undefined);
+    const setField = oneofFields.find(
+      (f) => (value as any)[f.localName] !== undefined,
+    );
     return setField === field;
   }
 
