@@ -64,6 +64,11 @@ export function generateTs(schema: Schema) {
       if (message.file !== file) {
         return;
       }
+
+      for (const nestedEnum of message.nestedEnums) {
+        generateEnum(f, nestedEnum);
+      }
+
       messageTypes.push(message);
       const deps = new Set<DescMessage>();
       for (const field of message.fields) {
@@ -198,12 +203,6 @@ function generateMessage(
   f.print("  },");
   f.print(");");
   f.print();
-  for (const nestedEnum of message.nestedEnums) {
-    generateEnum(f, nestedEnum);
-  }
-  for (const nestedMessage of message.nestedMessages) {
-    generateMessage(schema, f, nestedMessage);
-  }
 }
 
 function generateField(f: GeneratedFile, field: DescField) {
