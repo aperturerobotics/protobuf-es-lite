@@ -26,5 +26,8 @@ enum ExampleEnum {
 message EchoMsg {
   string body = 1;
   google.protobuf.Timestamp ts = 2;
-  ExampleEnum example_enum = 3;
+  oneof demo {
+    ExampleEnum example_enum = 3;
+    string example_string = 4;
+  }
 }

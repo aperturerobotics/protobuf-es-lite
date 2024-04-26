@@ -46,16 +46,30 @@ export interface EchoMsg extends Message<EchoMsg> {
    * @generated from field: string body = 1;
    */
   body: string;
-
   /**
    * @generated from field: google.protobuf.Timestamp ts = 2;
    */
   ts: Timestamp;
 
   /**
-   * @generated from field: example.ExampleEnum example_enum = 3;
+   * @generated from oneof example.EchoMsg.demo
    */
-  exampleEnum: ExampleEnum;
+  demo: {
+    value?: undefined,
+    case: undefined
+  } | {
+    /**
+     * @generated from field: example.ExampleEnum example_enum = 3;
+     */
+    value: ExampleEnum;
+    case: "exampleEnum";
+  } | {
+    /**
+     * @generated from field: string example_string = 4;
+     */
+    value: string;
+    case: "exampleString";
+  };
 
 }
 
@@ -65,7 +79,8 @@ export const EchoMsg: MessageType<EchoMsg> = createMessageType(
     fields: [
         { no: 1, name: "body", kind: "scalar", T: 9 /* ScalarType.STRING */ },
         { no: 2, name: "ts", kind: "message", T: Timestamp },
-        { no: 3, name: "example_enum", kind: "enum", T: ExampleEnum },
+        { no: 3, name: "example_enum", kind: "enum", T: ExampleEnum, oneof: "demo" },
+        { no: 4, name: "example_string", kind: "scalar", T: 9 /* ScalarType.STRING */, oneof: "demo" },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
   },

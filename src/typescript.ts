@@ -18,6 +18,7 @@ import type {
   DescExtension,
   DescField,
   DescMessage,
+  DescOneof,
 } from "@bufbuild/protobuf";
 import {
   FieldDescriptorProto_Label,
@@ -139,14 +140,17 @@ function generateMessage(schema: Schema, f: GeneratedFile, message: DescMessage)
 
   f.print(f.jsDoc(message));
   f.print(f.exportDecl("interface", message), " extends ", MessageImport, "<", message, "> {");
-  for (const member of message.members) {
-    switch (member.kind) {
-      case "field":
-        generateField(f, member);
-        break;
+  for (const field of message.fields) {
+    if (!field.oneof) {
+      generateField(f, field);
     }
-    f.print();
   }
+  
+  for (const oneof of message.oneofs) {
+    generateOneof(f, oneof);
+  }
+  
+  f.print();
   f.print("}");
   f.print();
   f.print(f.exportDecl("const", message), ": ", MessageTypeImport, "<", message, "> = ", CreateMessageTypeImport, "(");
@@ -174,6 +178,18 @@ function generateField(f: GeneratedFile, field: DescField) {
   f.print(f.jsDoc(field, "  "));
   const { typing } = getFieldTypeInfo(field);
   f.print("  ", localName(field), ": ", typing, ";");
+}
+
+// prettier-ignore
+function generateOneof(f: GeneratedFile, oneof: DescOneof) {
+  f.print();
+  f.print(f.jsDoc(oneof, "  "));
+  var oneOfCases: Printable[] = oneof.fields.map((field) => {
+    const { typing } = getFieldTypeInfo(field);
+    const doc = f.jsDoc(field, "    ")
+    return [` | {\n`, doc, `\n    value: `, typing, `;\n    case: "`, localName(field), `";\n  }`]
+  }).flat()
+  f.print("  ", oneof.name, ": {\n    value?: undefined,\n    case: undefined\n  }", oneOfCases, ";")
 }
 
 // prettier-ignore
