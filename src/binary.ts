@@ -330,9 +330,9 @@ export function writeMessage<T>(
   }
 }
 
-function writeField(
+function writeField<T>(
   field: FieldInfo,
-  value: unknown,
+  value: T,
   writer: IBinaryWriter,
   options: BinaryWriteOptions,
 ) {
@@ -362,7 +362,7 @@ function writeField(
           writeMessageField(writer, options, field, item);
         }
       } else {
-        writeMessageField(writer, options, field, value);
+        writeMessageField<T>(writer, options, field, value);
       }
       break;
     case "map":
@@ -385,23 +385,23 @@ function writeUnknownFields<T>(message: T, writer: IBinaryWriter): void {
 }
 
 // Value must not be undefined
-function writeMessageField(
+function writeMessageField<T>(
   writer: IBinaryWriter,
   options: BinaryWriteOptions,
   field: FieldInfo & { kind: "message" },
-  value: any,
+  value: T,
 ): void {
   const message = wrapField(field.T.fieldWrapper, value);
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (field.delimited)
     writer
       .tag(field.no, WireType.StartGroup)
-      .raw(message.toBinary(options))
+      .raw(field.T.toBinary(message, options))
       .tag(field.no, WireType.EndGroup);
   else
     writer
       .tag(field.no, WireType.LengthDelimited)
-      .bytes(message.toBinary(options));
+      .bytes(field.T.toBinary(message, options));
 }
 
 function writeScalar(
@@ -415,11 +415,11 @@ function writeScalar(
   (writer.tag(fieldNo, wireType)[method] as any)(value);
 }
 
-function writePacked(
+function writePacked<T>(
   writer: IBinaryWriter,
   type: ScalarType,
   fieldNo: number,
-  value: unknown[],
+  value: T[],
 ): void {
   if (!value.length) {
     return;
@@ -515,7 +515,7 @@ export function writeMapEntry(
       break;
     case "message":
       assert(value !== undefined);
-      writer.tag(2, WireType.LengthDelimited).bytes(value.toBinary(options));
+      writer.tag(2, WireType.LengthDelimited).bytes(field.V.T.toBinary(value, options));
       break;
   }
 
