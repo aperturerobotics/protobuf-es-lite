@@ -26,7 +26,11 @@ export function readField(
 ): void {
   let { repeated, localName } = field;
   if (field.oneof) {
-    target = target[field.oneof.localName];
+    var oneofMsg = target[field.oneof.localName];
+    if (!oneofMsg) {
+      oneofMsg = target[field.oneof.localName] = {}
+    }
+    target = oneofMsg
     if (target.case != localName) {
       delete target.value;
     }
@@ -43,7 +47,10 @@ export function readField(
         read = readScalarLTString;
       }
       if (repeated) {
-        let arr = target[localName] as unknown[]; // safe to assume presence of array, oneof cannot contain repeated values
+        var tgtArr = target[localName]
+        if (!Array.isArray(tgtArr)) {
+          tgtArr = target[localName] = []
+        }
         const isPacked =
           wireType == WireType.LengthDelimited &&
           scalarType != ScalarType.STRING &&
@@ -51,10 +58,10 @@ export function readField(
         if (isPacked) {
           let e = reader.uint32() + reader.pos;
           while (reader.pos < e) {
-            arr.push(read(reader, scalarType));
+            tgtArr.push(read(reader, scalarType));
           }
         } else {
-          arr.push(read(reader, scalarType));
+          tgtArr.push(read(reader, scalarType));
         }
       } else {
         target[localName] = read(reader, scalarType);
@@ -63,8 +70,11 @@ export function readField(
     case "message":
       const messageType = field.T;
       if (repeated) {
-        // safe to assume presence of array, oneof cannot contain repeated values
-        (target[localName] as unknown[]).push(
+        var tgtArr = target[localName]
+        if (!Array.isArray(tgtArr)) {
+          tgtArr = target[localName] = []
+        }
+        tgtArr.push(
           readMessageField(
             reader,
             messageType.create(),
@@ -100,6 +110,9 @@ export function readField(
       break;
     case "map":
       let [mapKey, mapVal] = readMapEntry(field, reader, options);
+      if (typeof target[localName] !== "object") {
+        target[localName] = {}
+      }
       // safe to assume presence of map object, oneof cannot contain repeated values
       target[localName][mapKey] = mapVal;
       break;

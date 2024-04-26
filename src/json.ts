@@ -207,7 +207,10 @@ function readField(
         } from JSON: ${debugJsonValue(jsonValue)}`,
       );
     }
-    const targetArray = target[localName] as unknown[];
+    var targetArray = target[localName] as unknown[];
+        if (!Array.isArray(targetArray)) {
+          targetArray = target[localName] = []
+        }
     for (const jsonItem of jsonValue) {
       if (jsonItem === null) {
         throw new Error(
@@ -257,7 +260,10 @@ function readField(
         } from JSON: ${debugJsonValue(jsonValue)}`,
       );
     }
-    const targetMap = target[localName] as Record<string, unknown>;
+    var targetMap = target[localName] as Record<string, unknown>;
+    if (typeof targetMap !== "object") {
+      targetMap = target[localName] = {}
+    }
     for (const [jsonMapKey, jsonMapValue] of Object.entries(jsonValue)) {
       if (jsonMapValue === null) {
         throw new Error(
