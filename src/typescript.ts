@@ -58,18 +58,25 @@ export function generateTs(schema: Schema) {
     const messageTypes: DescMessage[] = [];
     const dependencies = new Map<DescMessage, Set<DescMessage>>();
     function collectMessages(message: DescMessage) {
-      if (message.file === file) {
-        messageTypes.push(message);
-        const deps = new Set<DescMessage>();
-        for (const field of message.fields) {
-          if (field.fieldKind === "message" && field.message.file === file) {
-            deps.add(field.message);
-          }
+      if (message.file !== file) {
+        return;
+      }
+      messageTypes.push(message);
+      const deps = new Set<DescMessage>();
+      for (const field of message.fields) {
+        if (field.fieldKind === "message" && field.message.file === file) {
+          deps.add(field.message);
+        } else if (
+          field.fieldKind === "map" &&
+          field.mapValue.kind === "message" &&
+          field.mapValue.message.file === file
+        ) {
+          deps.add(field.mapValue.message);
         }
-        dependencies.set(message, deps);
-        for (const nestedMessage of message.nestedMessages) {
-          collectMessages(nestedMessage);
-        }
+      }
+      dependencies.set(message, deps);
+      for (const nestedMessage of message.nestedMessages) {
+        collectMessages(nestedMessage);
       }
     }
 
@@ -77,7 +84,7 @@ export function generateTs(schema: Schema) {
       collectMessages(message);
     }
 
-    // Topological sort toensure consts are declared in the right order.
+    // Topological sort to ensure consts are declared in the right order.
     const sortedMessageTypes = topologicalSort(messageTypes, dependencies);
     for (const message of sortedMessageTypes) {
       generateMessage(schema, f, message);
