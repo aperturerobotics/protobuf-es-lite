@@ -37,7 +37,7 @@
     "release:version": "npm version patch -m \"release: v%s\" --no-git-tag-version",
     "release:commit": "git reset && git add package.json && git commit -s -m \"release: v$npm_package_version\" && git tag v$npm_package_version",
     "release:publish": "git push --follow-tags && npm publish",
-    "release": "npm run release:version && npm run release:commit && npm run release:publish",
+    "release": "npm run release:version && npm run release:commit",
     "typecheck": "tsc --noEmit --project tsconfig.json --outDir ./dist",
     "example": "npm run build && protoc --plugin=./bin/protoc-gen-es-lite --es-lite_out=. --es-lite_opt target=ts --es-lite_opt ts_nocheck=false ./example/example.proto",
     "format": "prettier --write './src/**/(*.ts|*.tsx|*.html|*.css|*.scss)'"
