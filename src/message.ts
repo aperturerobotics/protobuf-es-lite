@@ -47,7 +47,20 @@ import {
 /**
  * Message is the base type of every message.
  */
-export interface Message<T extends Message<T>> {}
+export interface Message<T extends Message<T>> {
+  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+}
+
+// prettier-ignore
+export type Field<F> =
+  F extends (Date | Uint8Array | bigint | boolean | string | number) ? F
+  : F extends Array<infer U> ? Array<Field<U>>
+  : F extends ReadonlyArray<infer U> ? ReadonlyArray<Field<U>>
+  : F extends Message<infer U> ? Message<U>
+  : F extends OneofSelectedMessage<infer C, infer V> ? { case: C; value: Message<V> }
+  : F extends { case: string | undefined; value?: unknown; } ? F
+  : F extends { [key: string | number]: Message<infer U> } ? { [key: string | number]: Message<U> }
+  : F;
 
 /**
  * AnyMessage is an interface implemented by all messages. If you need to
@@ -55,7 +68,7 @@ export interface Message<T extends Message<T>> {}
  * index signature to access fields with message["fieldname"].
  */
 export interface AnyMessage extends Message<AnyMessage> {
-  [k: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
 }
 
 /**
