@@ -49,14 +49,59 @@ export function generateTs(schema: Schema) {
     f.preamble(file);
     f.print(`export const protobufPackage = "${file.proto.package}";`);
     f.print();
+
+    const messageTypes: DescMessage[] = [];
+    const dependencies = new Map<DescMessage, Set<DescMessage>>();
+
+    function collectMessages(message: DescMessage) {
+      messageTypes.push(message);
+      const deps = new Set<DescMessage>();
+      for (const field of message.fields) {
+        if (field.fieldKind === "message") {
+          deps.add(field.message);
+        }
+      }
+      dependencies.set(message, deps);
+      for (const nestedMessage of message.nestedMessages) {
+        collectMessages(nestedMessage);
+      }
+    }
+
     for (const enumeration of file.enums) {
       generateEnum(f, enumeration);
     }
+
     for (const message of file.messages) {
+      collectMessages(message);
+    }
+
+    const sortedMessageTypes = topologicalSort(messageTypes, dependencies);
+
+    for (const message of sortedMessageTypes) {
       generateMessage(schema, f, message);
     }
     // We do not generate anything for services or extensions
   }
+}
+
+function topologicalSort(messages: DescMessage[], dependencies: Map<DescMessage, Set<DescMessage>>): DescMessage[] {
+  const result: DescMessage[] = [];
+  const visited = new Set<DescMessage>();
+
+  const visit = (message: DescMessage) => {
+    if (visited.has(message)) return;
+    visited.add(message);
+    for (const dep of dependencies.get(message) ?? []) {
+      visit(dep);
+    }
+    result.push(message);
+  };
+
+  for (const message of messages) {
+    visit(message);
+  }
+
+  return result;
 }
 
 // prettier-ignore
