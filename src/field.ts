@@ -506,7 +506,7 @@ interface fiMessage extends fiShared {
   /**
    * Message handler for the field.
    */
-  readonly T: MessageType;
+  readonly T: MessageType | (() => MessageType);
   /**
    * Is the field repeated?
    */
@@ -596,7 +596,7 @@ interface fiMap extends fiShared {
       }
     | {
         readonly kind: "message";
-        readonly T: MessageType;
+        readonly T: MessageType | (() => MessageType);
       };
   /**
    * Is the field repeated? Never true for maps.

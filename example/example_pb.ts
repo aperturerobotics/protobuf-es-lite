@@ -78,7 +78,7 @@ export const EchoMsg: MessageType<EchoMsg> = createMessageType(
     typeName: "example.EchoMsg",
     fields: [
         { no: 1, name: "body", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "ts", kind: "message", T: Timestamp },
+        { no: 2, name: "ts", kind: "message", T: () => Timestamp },
         { no: 3, name: "example_enum", kind: "enum", T: ExampleEnum_Enum, oneof: "demo" },
         { no: 4, name: "example_string", kind: "scalar", T: 9 /* ScalarType.STRING */, oneof: "demo" },
     ] as readonly PartialFieldInfo[],

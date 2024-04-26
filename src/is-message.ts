@@ -56,9 +56,10 @@ export function isCompleteField<F>(
     case "scalar":
       return true;
     case "message":
+      const messageType = typeof field.T === "function" ? field.T() : field.T;
       return isCompleteMessage(
         value as Message<AnyMessage>,
-        field.T.fields.list(),
+        messageType.fields.list(),
       );
     case "enum":
       return typeof value === "number";
@@ -72,9 +73,11 @@ export function isCompleteField<F>(
             case "enum":
               return typeof val === "number";
             case "message":
+              const messageType =
+                typeof field.V.T === "function" ? field.V.T() : field.V.T;
               return isCompleteMessage(
                 val as Message<AnyMessage>,
-                field.V.T.fields.list(),
+                messageType.fields.list(),
               );
             default:
               return valueKind satisfies never;

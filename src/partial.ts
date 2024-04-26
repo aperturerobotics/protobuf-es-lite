@@ -28,12 +28,14 @@ export function applyPartialMessage<T extends Message<T>>(
         }
         const sourceField = member.findField(sk);
         let val = s[localName].value;
-        if (
-          sourceField &&
-          sourceField.kind == "message" &&
-          !isCompleteMessage(val, sourceField.T.fields.list())
-        ) {
-          val = sourceField.T.create(val);
+        if (sourceField?.kind == "message") {
+          const messageType =
+            typeof sourceField.T === "function"
+              ? sourceField.T()
+              : sourceField.T;
+          if (!isCompleteMessage(val, messageType.fields.list())) {
+            val = messageType.create(val);
+          }
         } else if (
           sourceField &&
           sourceField.kind === "scalar" &&
@@ -66,7 +68,8 @@ export function applyPartialMessage<T extends Message<T>>(
             }
             break;
           case "message":
-            const messageType = member.V.T;
+            const messageType =
+              typeof member.V.T === "function" ? member.V.T() : member.V.T;
             for (const k of Object.keys(s[localName])) {
               let val = s[localName][k];
               if (!messageType.fieldWrapper) {
@@ -80,7 +83,7 @@ export function applyPartialMessage<T extends Message<T>>(
         }
         break;
       case "message":
-        const mt = member.T;
+        const mt = typeof member.T === "function" ? member.T() : member.T;
         if (member.repeated) {
           t[localName] = (s[localName] as any[]).map((val) =>
             isCompleteMessage(val, mt.fields.list()) ? val : mt.create(val),
@@ -97,9 +100,10 @@ export function applyPartialMessage<T extends Message<T>>(
               t[localName] = val;
             }
           } else {
-            t[localName] = isCompleteMessage(val, mt.fields.list())
+            const messageType = mt;
+            t[localName] = isCompleteMessage(val, messageType.fields.list())
               ? val
-              : mt.create(val);
+              : messageType.create(val);
           }
         }
         break;

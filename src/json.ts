@@ -221,7 +221,9 @@ function readField(
       }
       switch (field.kind) {
         case "message":
-          targetArray.push(field.T.fromJson(jsonItem, options));
+          const messageType =
+            typeof field.T === "function" ? field.T() : field.T;
+          targetArray.push(messageType.fromJson(jsonItem, options));
           break;
         case "enum":
           const enumValue = readEnum(
@@ -284,7 +286,9 @@ function readField(
       }
       switch (field.V.kind) {
         case "message":
-          targetMap[key] = field.V.T.fromJson(jsonMapValue, options);
+          const messageType =
+            typeof field.V.T === "function" ? field.V.T() : field.V.T;
+          targetMap[key] = messageType.fromJson(jsonMapValue, options);
           break;
         case "enum":
           const enumValue = readEnum(
@@ -324,7 +328,7 @@ function readField(
     }
     switch (field.kind) {
       case "message":
-        const messageType = field.T;
+        const messageType = typeof field.T === "function" ? field.T() : field.T;
         if (
           jsonValue === null &&
           messageType.typeName != "google.protobuf.Value"
@@ -638,7 +642,12 @@ function writeField(
       case "message":
         for (const [entryKey, entryValue] of entries) {
           // JSON standard allows only (double quoted) string as property key
-          jsonObj[entryKey.toString()] = field.V.T.toJson(entryValue, options);
+          const messageType =
+            typeof field.V.T === "function" ? field.V.T() : field.V.T;
+          jsonObj[entryKey.toString()] = messageType.toJson(
+            entryValue,
+            options,
+          );
         }
         break;
       case "enum":
@@ -689,7 +698,10 @@ function writeField(
     case "enum":
       return writeEnum(field.T, value, options.enumAsInteger);
     case "message":
-      return wrapField(field.T.fieldWrapper, value).toJson(options);
+      return wrapField(
+        (typeof field.T === "function" ? field.T() : field.T).fieldWrapper,
+        value,
+      ).toJson(options);
   }
 }
 

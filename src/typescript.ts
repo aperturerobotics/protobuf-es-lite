@@ -83,6 +83,7 @@ export function generateTs(schema: Schema) {
         }
       }
       dependencies.set(message, deps);
+
       for (const nestedMessage of message.nestedMessages) {
         collectMessages(nestedMessage);
       }
@@ -312,7 +313,7 @@ export function getFieldInfoLiteral(
           );
           break;
         case "message":
-          e.push(`V: {kind: "message", T: `, field.mapValue.message, `}, `);
+          e.push(`V: {kind: "message", T: () => `, field.mapValue.message, `}, `);
           break;
         case "enum":
           e.push(`V: {kind: "enum", T: `, field.mapValue.enum, `}, `);
@@ -320,7 +321,7 @@ export function getFieldInfoLiteral(
       }
       break;
     case "message":
-      e.push(`kind: "message", T: `, field.message, `, `);
+      e.push(`kind: "message", T: () => `, field.message, `, `);
       if (field.proto.type === FieldDescriptorProto_Type.GROUP) {
         e.push(`delimited: true, `);
       }

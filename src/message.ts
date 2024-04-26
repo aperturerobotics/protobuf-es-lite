@@ -251,7 +251,8 @@ export function compareMessages<T extends Message<T>>(
       // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- repeated fields are never "map"
       switch (m.kind) {
         case "message":
-          return (va as any[]).every((a, i) => m.T.equals(a, vb[i]));
+          const messageType = typeof m.T === "function" ? m.T() : m.T;
+          return (va as any[]).every((a, i) => messageType.equals(a, vb[i]));
         case "scalar":
           return (va as any[]).every((a: any, i: number) =>
             scalarEquals(m.T, a, vb[i]),
@@ -265,7 +266,7 @@ export function compareMessages<T extends Message<T>>(
     }
     switch (m.kind) {
       case "message":
-        return m.T.equals(va, vb);
+        return (typeof m.T === "function" ? m.T() : m.T).equals(va, vb);
       case "enum":
         return scalarEquals(ScalarType.INT32, va, vb);
       case "scalar":
@@ -281,7 +282,8 @@ export function compareMessages<T extends Message<T>>(
         // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- oneof fields are never "map"
         switch (s.kind) {
           case "message":
-            return s.T.equals(va.value, vb.value);
+            const messageType = typeof s.T === "function" ? s.T() : s.T;
+            return messageType.equals(va.value, vb.value);
           case "enum":
             return scalarEquals(ScalarType.INT32, va.value, vb.value);
           case "scalar":
@@ -292,7 +294,7 @@ export function compareMessages<T extends Message<T>>(
         const keys = Object.keys(va).concat(Object.keys(vb));
         switch (m.V.kind) {
           case "message":
-            const messageType = m.V.T;
+            const messageType = typeof m.V.T === "function" ? m.V.T() : m.V.T;
             return keys.every((k) => messageType.equals(va[k], vb[k]));
           case "enum":
             return keys.every((k) =>
@@ -312,7 +314,9 @@ function cloneSingularField(value: any, fieldInfo: FieldInfo | OneofInfo): any {
     return value;
   }
   if (fieldInfo.kind === "message") {
-    return cloneMessage(value, fieldInfo.T.fields);
+    const messageType =
+      typeof fieldInfo.T === "function" ? fieldInfo.T() : fieldInfo.T;
+    return cloneMessage(value, messageType.fields);
   }
   if (fieldInfo.kind === "oneof") {
     if (value.case === undefined) {
@@ -488,8 +492,9 @@ function createMessage<T extends Message<T>>(fields: FieldList): T {
           message[field.localName as keyof T] = undefined as T[keyof T];
           continue;
         }
+        const messageType = typeof field.T === "function" ? field.T() : field.T;
         message[field.localName as keyof T] = createMessage(
-          field.T.fields,
+          messageType.fields,
         ) as T[keyof T];
         break;
       case "map":

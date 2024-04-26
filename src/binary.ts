@@ -68,7 +68,7 @@ export function readField(
       }
       break;
     case "message":
-      const messageType = field.T;
+      const messageType = typeof field.T === "function" ? field.T() : field.T;
       if (repeated) {
         var tgtArr = target[localName];
         if (!Array.isArray(tgtArr)) {
@@ -152,10 +152,12 @@ export function readMapEntry(
             val = reader.int32();
             break;
           case "message":
+            const messageType =
+              typeof field.V.T === "function" ? field.V.T() : field.V.T;
             val = readMessageField(
               reader,
-              field.V.T.create(),
-              field.V.T.fields,
+              messageType.create(),
+              messageType.fields,
               options,
               undefined,
             );
@@ -179,7 +181,9 @@ export function readMapEntry(
         val = field.V.T.values[0].no;
         break;
       case "message":
-        val = field.V.T.create();
+        const messageType =
+          typeof field.V.T === "function" ? field.V.T() : field.V.T;
+        val = messageType.create();
         break;
     }
   }
@@ -404,17 +408,18 @@ function writeMessageField<T>(
   field: FieldInfo & { kind: "message" },
   value: T,
 ): void {
-  const message = wrapField(field.T.fieldWrapper, value);
+  const messageType = typeof field.T === "function" ? field.T() : field.T;
+  const message = wrapField(messageType.fieldWrapper, value);
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (field.delimited)
     writer
       .tag(field.no, WireType.StartGroup)
-      .raw(field.T.toBinary(message, options))
+      .raw(messageType.toBinary(message, options))
       .tag(field.no, WireType.EndGroup);
   else
     writer
       .tag(field.no, WireType.LengthDelimited)
-      .bytes(field.T.toBinary(message, options));
+      .bytes(messageType.toBinary(message, options));
 }
 
 function writeScalar(
@@ -528,9 +533,11 @@ export function writeMapEntry(
       break;
     case "message":
       assert(value !== undefined);
+      const messageType =
+        typeof field.V.T === "function" ? field.V.T() : field.V.T;
       writer
         .tag(2, WireType.LengthDelimited)
-        .bytes(field.V.T.toBinary(value, options));
+        .bytes(messageType.toBinary(value, options));
       break;
   }
 
