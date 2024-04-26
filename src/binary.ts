@@ -515,7 +515,9 @@ export function writeMapEntry(
       break;
     case "message":
       assert(value !== undefined);
-      writer.tag(2, WireType.LengthDelimited).bytes(field.V.T.toBinary(value, options));
+      writer
+        .tag(2, WireType.LengthDelimited)
+        .bytes(field.V.T.toBinary(value, options));
       break;
   }
 
