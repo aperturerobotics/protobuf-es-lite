@@ -28,9 +28,9 @@ export function readField(
   if (field.oneof) {
     var oneofMsg = target[field.oneof.localName];
     if (!oneofMsg) {
-      oneofMsg = target[field.oneof.localName] = {}
+      oneofMsg = target[field.oneof.localName] = {};
     }
-    target = oneofMsg
+    target = oneofMsg;
     if (target.case != localName) {
       delete target.value;
     }
@@ -47,9 +47,9 @@ export function readField(
         read = readScalarLTString;
       }
       if (repeated) {
-        var tgtArr = target[localName]
+        var tgtArr = target[localName];
         if (!Array.isArray(tgtArr)) {
-          tgtArr = target[localName] = []
+          tgtArr = target[localName] = [];
         }
         const isPacked =
           wireType == WireType.LengthDelimited &&
@@ -70,9 +70,9 @@ export function readField(
     case "message":
       const messageType = field.T;
       if (repeated) {
-        var tgtArr = target[localName]
+        var tgtArr = target[localName];
         if (!Array.isArray(tgtArr)) {
-          tgtArr = target[localName] = []
+          tgtArr = target[localName] = [];
         }
         tgtArr.push(
           readMessageField(
@@ -111,7 +111,7 @@ export function readField(
     case "map":
       let [mapKey, mapVal] = readMapEntry(field, reader, options);
       if (typeof target[localName] !== "object") {
-        target[localName] = {}
+        target[localName] = {};
       }
       // safe to assume presence of map object, oneof cannot contain repeated values
       target[localName][mapKey] = mapVal;
