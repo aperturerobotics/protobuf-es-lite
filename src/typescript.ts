@@ -17,6 +17,7 @@ import type {
   DescEnum,
   DescExtension,
   DescField,
+  DescFile,
   DescMessage,
   DescOneof,
 } from "@bufbuild/protobuf";
@@ -28,6 +29,7 @@ import {
 } from "@bufbuild/protobuf";
 import type {
   GeneratedFile,
+  ImportSymbol,
   Printable,
   Schema,
 } from "@bufbuild/protoplugin/ecmascript";
@@ -240,12 +242,27 @@ function generateOneof(f: GeneratedFile, oneof: DescOneof) {
   );
 }
 
+export function makeImportPath(file: DescFile): string {
+  return "./" + file.name + "_pb.js";
+}
+
 export function generateFieldInfo(
   f: GeneratedFile,
   field: DescField | DescExtension,
 ) {
   f.print("        ", getFieldInfoLiteral(field), ",");
 }
+
+export const createTypeImport = (
+  desc: DescMessage | DescEnum | DescExtension,
+): ImportSymbol => {
+  var name = localName(desc);
+  if (desc.kind === "enum") {
+    name += "_Enum";
+  }
+  const from = makeImportPath(desc.file);
+  return createImportSymbol(name, from);
+};
 
 export function getFieldInfoLiteral(
   field: DescField | DescExtension,
@@ -310,7 +327,7 @@ export function getFieldInfoLiteral(
       }
       break;
     case "enum":
-      e.push(`kind: "enum", T: `, field.enum, `_Enum, `);
+      e.push(`kind: "enum", T: `, createTypeImport(field.enum), `, `);
       break;
   }
   if (field.repeated) {
