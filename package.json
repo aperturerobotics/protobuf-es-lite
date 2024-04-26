@@ -1,7 +1,7 @@
 {
   "name": "@aptre/protobuf-es-lite",
   "description": "Lightweight Protobuf codegen for TypeScript and JavaScript.",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "Apache-2.0",
   "repository": {
     "url": "git+ssh://git@github.com/aperturerobotics/protobuf-es-lite.git"
@@ -44,7 +44,9 @@
     "precommit": "npm run format"
   },
   "preferUnplugged": true,
-  "pre-commit": ["precommit"],
+  "pre-commit": [
+    "precommit"
+  ],
   "dependencies": {
     "@bufbuild/protobuf": "^1.9.0",
     "@bufbuild/protoplugin": "1.9.0"
