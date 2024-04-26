@@ -10,7 +10,12 @@ import {
   ScalarValue,
   WireType,
 } from "@bufbuild/protobuf";
-import { FieldInfo, FieldList, isFieldSet } from "./field.js";
+import {
+  FieldInfo,
+  FieldList,
+  isFieldSet,
+  resolveMessageType,
+} from "./field.js";
 import { isCompleteMessage } from "./is-message.js";
 import { handleUnknownField, unknownFieldsSymbol } from "./unknown.js";
 import { wrapField } from "./field-wrapper.js";
@@ -68,7 +73,8 @@ export function readField(
       }
       break;
     case "message":
-      const messageType = typeof field.T === "function" ? field.T() : field.T;
+      const fieldT = field.T;
+      const messageType = fieldT instanceof Function ? fieldT() : fieldT;
       if (repeated) {
         var tgtArr = target[localName];
         if (!Array.isArray(tgtArr)) {
@@ -152,8 +158,7 @@ export function readMapEntry(
             val = reader.int32();
             break;
           case "message":
-            const messageType =
-              typeof field.V.T === "function" ? field.V.T() : field.V.T;
+            const messageType = resolveMessageType(field.V.T);
             val = readMessageField(
               reader,
               messageType.create(),
@@ -181,9 +186,7 @@ export function readMapEntry(
         val = field.V.T.values[0].no;
         break;
       case "message":
-        const messageType =
-          typeof field.V.T === "function" ? field.V.T() : field.V.T;
-        val = messageType.create();
+        val = resolveMessageType(field.V.T).create();
         break;
     }
   }
@@ -408,7 +411,7 @@ function writeMessageField<T>(
   field: FieldInfo & { kind: "message" },
   value: T,
 ): void {
-  const messageType = typeof field.T === "function" ? field.T() : field.T;
+  const messageType = resolveMessageType(field.T);
   const message = wrapField(messageType.fieldWrapper, value);
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   if (field.delimited)
@@ -533,8 +536,7 @@ export function writeMapEntry(
       break;
     case "message":
       assert(value !== undefined);
-      const messageType =
-        typeof field.V.T === "function" ? field.V.T() : field.V.T;
+      const messageType = resolveMessageType(field.V.T);
       writer
         .tag(2, WireType.LengthDelimited)
         .bytes(messageType.toBinary(value, options));

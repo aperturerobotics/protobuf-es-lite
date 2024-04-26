@@ -11,7 +11,13 @@ import {
   protoBase64,
   protoInt64,
 } from "@bufbuild/protobuf";
-import { FieldInfo, FieldList, OneofInfo, isFieldSet } from "./field.js";
+import {
+  FieldInfo,
+  FieldList,
+  OneofInfo,
+  isFieldSet,
+  resolveMessageType,
+} from "./field.js";
 import { assert, assertFloat32, assertInt32, assertUInt32 } from "./assert.js";
 import { scalarZeroValue } from "./scalar.js";
 import { wrapField } from "./field-wrapper.js";
@@ -221,8 +227,7 @@ function readField(
       }
       switch (field.kind) {
         case "message":
-          const messageType =
-            typeof field.T === "function" ? field.T() : field.T;
+          const messageType = resolveMessageType(field.T);
           targetArray.push(messageType.fromJson(jsonItem, options));
           break;
         case "enum":
@@ -286,8 +291,7 @@ function readField(
       }
       switch (field.V.kind) {
         case "message":
-          const messageType =
-            typeof field.V.T === "function" ? field.V.T() : field.V.T;
+          const messageType = resolveMessageType(field.V.T);
           targetMap[key] = messageType.fromJson(jsonMapValue, options);
           break;
         case "enum":
@@ -328,7 +332,7 @@ function readField(
     }
     switch (field.kind) {
       case "message":
-        const messageType = typeof field.T === "function" ? field.T() : field.T;
+        const messageType = resolveMessageType(field.T);
         if (
           jsonValue === null &&
           messageType.typeName != "google.protobuf.Value"
@@ -642,8 +646,7 @@ function writeField(
       case "message":
         for (const [entryKey, entryValue] of entries) {
           // JSON standard allows only (double quoted) string as property key
-          const messageType =
-            typeof field.V.T === "function" ? field.V.T() : field.V.T;
+          const messageType = resolveMessageType(field.V.T);
           jsonObj[entryKey.toString()] = messageType.toJson(
             entryValue,
             options,
@@ -698,10 +701,9 @@ function writeField(
     case "enum":
       return writeEnum(field.T, value, options.enumAsInteger);
     case "message":
-      return wrapField(
-        (typeof field.T === "function" ? field.T() : field.T).fieldWrapper,
-        value,
-      ).toJson(options);
+      return wrapField(resolveMessageType(field.T).fieldWrapper, value).toJson(
+        options,
+      );
   }
 }
 

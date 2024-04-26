@@ -1,4 +1,4 @@
-import { FieldInfo } from "./field.js";
+import { FieldInfo, resolveMessageType } from "./field.js";
 import {
   AnyMessage,
   CompleteMessage,
@@ -56,7 +56,7 @@ export function isCompleteField<F>(
     case "scalar":
       return true;
     case "message":
-      const messageType = typeof field.T === "function" ? field.T() : field.T;
+      const messageType = resolveMessageType(field.T);
       return isCompleteMessage(
         value as Message<AnyMessage>,
         messageType.fields.list(),
@@ -73,8 +73,7 @@ export function isCompleteField<F>(
             case "enum":
               return typeof val === "number";
             case "message":
-              const messageType =
-                typeof field.V.T === "function" ? field.V.T() : field.V.T;
+              const messageType = resolveMessageType(field.V.T);
               return isCompleteMessage(
                 val as Message<AnyMessage>,
                 messageType.fields.list(),

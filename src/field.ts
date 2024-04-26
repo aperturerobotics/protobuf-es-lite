@@ -249,6 +249,16 @@ export function localFieldName(protoName: string, inOneof: boolean) {
   return safeObjectProperty(safeMessageProperty(name));
 }
 
+// isMessageType checks if the given message type variable is a message type.
+export function isMessageType(t: fiMessage["T"]): t is MessageType {
+  return typeof t === "object" && t !== null && "typeName" in t;
+}
+
+// resolveMessageType returns the message type calling the function if necessary.
+export function resolveMessageType(t: fiMessage["T"]): MessageType {
+  return isMessageType(t) ? t : t();
+}
+
 /**
  * Names that cannot be used for object properties because they are reserved
  * by built-in JavaScript properties.

@@ -313,7 +313,11 @@ export function getFieldInfoLiteral(
           );
           break;
         case "message":
-          e.push(`V: {kind: "message", T: () => `, field.mapValue.message, `}, `);
+          e.push(
+            `V: {kind: "message", T: () => `,
+            field.mapValue.message,
+            `}, `,
+          );
           break;
         case "enum":
           e.push(`V: {kind: "enum", T: `, field.mapValue.enum, `}, `);

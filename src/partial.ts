@@ -1,5 +1,5 @@
 import { ScalarType } from "@bufbuild/protobuf";
-import { FieldList } from "./field.js";
+import { FieldList, resolveMessageType } from "./field.js";
 import { AnyMessage, Message } from "./message.js";
 import { isCompleteMessage } from "./is-message.js";
 
@@ -29,10 +29,7 @@ export function applyPartialMessage<T extends Message<T>>(
         const sourceField = member.findField(sk);
         let val = s[localName].value;
         if (sourceField?.kind == "message") {
-          const messageType =
-            typeof sourceField.T === "function"
-              ? sourceField.T()
-              : sourceField.T;
+          const messageType = resolveMessageType(sourceField.T);
           if (!isCompleteMessage(val, messageType.fields.list())) {
             val = messageType.create(val);
           }
@@ -68,8 +65,7 @@ export function applyPartialMessage<T extends Message<T>>(
             }
             break;
           case "message":
-            const messageType =
-              typeof member.V.T === "function" ? member.V.T() : member.V.T;
+            const messageType = resolveMessageType(member.V.T);
             for (const k of Object.keys(s[localName])) {
               let val = s[localName][k];
               if (!messageType.fieldWrapper) {
@@ -83,7 +79,7 @@ export function applyPartialMessage<T extends Message<T>>(
         }
         break;
       case "message":
-        const mt = typeof member.T === "function" ? member.T() : member.T;
+        const mt = resolveMessageType(member.T);
         if (member.repeated) {
           t[localName] = (s[localName] as any[]).map((val) =>
             isCompleteMessage(val, mt.fields.list()) ? val : mt.create(val),
