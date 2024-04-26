@@ -52,8 +52,11 @@ This fork generates the ts-proto style with the protoc-gen-es tools:
 
 ```typescript
 const myMessage: MyMessage = {body: "Hello world"}
-const myMessageBin = MyMessage.toBinary(myMessage)
+const myCompleteMessage: CompleteMessage<MyMessage> = MyMessage.create(myMessage)
+const myMessageBin = MyMessage.toBinary(myCompleteMessage)
 ```
+
+**Note that the default Message is equivalent to PartialMessage<T> from protobuf-es.**
 
 ## Installation
 

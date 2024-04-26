@@ -1,18 +1,19 @@
 import { FieldInfo } from "./field.js";
 import {
   AnyMessage,
+  CompleteMessage,
   Message,
-  PartialMessage,
-  PartialField,
+  Field,
+  CompleteField,
 } from "./message.js";
 
 /**
  * Check whether the given partial has all fields present recursively.
  */
 export function isCompleteMessage<T extends Message<T> = AnyMessage>(
-  arg: PartialMessage<T>,
+  arg: Message<T>,
   fields: readonly FieldInfo[],
-): arg is T {
+): arg is CompleteMessage<T> {
   if (arg == null || typeof arg !== "object") {
     return false;
   }
@@ -33,7 +34,10 @@ export function isCompleteMessage<T extends Message<T> = AnyMessage>(
 /**
  * Check whether the given partial field has a full value present recursively.
  */
-function isCompleteField<F>(value: PartialField<F>, field: FieldInfo): boolean {
+export function isCompleteField<F>(
+  value: Field<F>,
+  field: FieldInfo,
+): value is CompleteField<F> {
   if (field.oneof) {
     // For oneof fields, only one field should be set
     const oneofFields = field.oneof.fields;
@@ -53,30 +57,30 @@ function isCompleteField<F>(value: PartialField<F>, field: FieldInfo): boolean {
       return true;
     case "message":
       return isCompleteMessage(
-        value as PartialMessage<AnyMessage>,
+        value as Message<AnyMessage>,
         field.T.fields.list(),
       );
     case "enum":
       return typeof value === "number";
     case "map":
-      return Object.values(
-        value as Record<string, PartialField<unknown>>,
-      ).every((val) => {
-        const valueKind = field.V.kind;
-        switch (valueKind) {
-          case "scalar":
-            return true;
-          case "enum":
-            return typeof val === "number";
-          case "message":
-            return isCompleteMessage(
-              val as PartialMessage<AnyMessage>,
-              field.V.T.fields.list(),
-            );
-          default:
-            return valueKind satisfies never;
-        }
-      });
+      return Object.values(value as Record<string, Field<unknown>>).every(
+        (val) => {
+          const valueKind = field.V.kind;
+          switch (valueKind) {
+            case "scalar":
+              return true;
+            case "enum":
+              return typeof val === "number";
+            case "message":
+              return isCompleteMessage(
+                val as Message<AnyMessage>,
+                field.V.T.fields.list(),
+              );
+            default:
+              return valueKind satisfies never;
+          }
+        },
+      );
 
     default:
       return fieldKind satisfies never;

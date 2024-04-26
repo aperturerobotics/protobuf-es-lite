@@ -111,7 +111,6 @@ function topologicalSort(
   return result;
 }
 
-// prettier-ignore
 function generateEnum(f: GeneratedFile, enumeration: DescEnum) {
   f.print(f.jsDoc(enumeration));
   f.print(f.exportDecl("enum", enumeration), " {");
@@ -125,35 +124,60 @@ function generateEnum(f: GeneratedFile, enumeration: DescEnum) {
   f.print("}");
   f.print();
   f.print("// ", enumeration, "_Name maps the enum names to the values.");
-  f.print(f.exportDecl("const", enumeration.name+"_Name"), " = {");
+  f.print(f.exportDecl("const", enumeration.name + "_Name"), " = {");
   for (const value of enumeration.values) {
-    f.print("  ", localName(value), ": ", enumeration, ".", localName(value), ",");
+    f.print(
+      "  ",
+      localName(value),
+      ": ",
+      enumeration,
+      ".",
+      localName(value),
+      ",",
+    );
   }
   f.print("};");
   f.print();
 }
 
-// prettier-ignore
-function generateMessage(schema: Schema, f: GeneratedFile, message: DescMessage) {
+function generateMessage(
+  schema: Schema,
+  f: GeneratedFile,
+  message: DescMessage,
+) {
   // check if we support this runtime
   getNonEditionRuntime(schema, message.file);
 
   f.print(f.jsDoc(message));
-  f.print(f.exportDecl("interface", message), " extends ", MessageImport, "<", message, "> {");
+  f.print(
+    f.exportDecl("interface", message),
+    " extends ",
+    MessageImport,
+    "<",
+    message,
+    "> {",
+  );
   for (const field of message.fields) {
-    if (!field.oneof) {
-      generateField(f, field);
-    }
+    generateField(f, field);
   }
-  
+
   for (const oneof of message.oneofs) {
     generateOneof(f, oneof);
   }
-  
+
   f.print();
   f.print("}");
   f.print();
-  f.print(f.exportDecl("const", message), ": ", MessageTypeImport, "<", message, "> = ", CreateMessageTypeImport, "(");
+  f.print(
+    f.exportDecl("const", message),
+    ": ",
+    MessageTypeImport,
+    "<",
+    message,
+    "> = ",
+    CreateMessageTypeImport,
+    "(",
+  );
   f.print("  {");
   f.print("    typeName: ", f.string(message.typeName), ",");
   f.print("    fields: [");
@@ -173,32 +197,52 @@ function generateMessage(schema: Schema, f: GeneratedFile, message: DescMessage)
   }
 }
 
-// prettier-ignore
 function generateField(f: GeneratedFile, field: DescField) {
+  if (field.oneof) {
+    return;
+  }
   f.print(f.jsDoc(field, "  "));
   const { typing } = getFieldTypeInfo(field);
-  f.print("  ", localName(field), ": ", typing, ";");
+  f.print("  ", localName(field), "?: ", typing, ";");
 }
 
-// prettier-ignore
 function generateOneof(f: GeneratedFile, oneof: DescOneof) {
   f.print();
   f.print(f.jsDoc(oneof, "  "));
-  var oneOfCases: Printable[] = oneof.fields.map((field) => {
-    const { typing } = getFieldTypeInfo(field);
-    const doc = f.jsDoc(field, "    ")
-    return [` | {\n`, doc, `\n    value: `, typing, `;\n    case: "`, localName(field), `";\n  }`]
-  }).flat()
-  f.print("  ", oneof.name, ": {\n    value?: undefined,\n    case: undefined\n  }", oneOfCases, ";")
+  var oneOfCases: Printable[] = oneof.fields
+    .map((field) => {
+      const { typing } = getFieldTypeInfo(field);
+      const doc = f.jsDoc(field, "    ");
+      return [
+        ` | {\n`,
+        doc,
+        `\n    value: `,
+        typing,
+        `;\n    case: "`,
+        localName(field),
+        `";\n  }`,
+      ];
+    })
+    .flat();
+  f.print(
+    "  ",
+    oneof.name,
+    "?: {\n    value?: undefined,\n    case: undefined\n  }",
+    oneOfCases,
+    ";",
+  );
 }
 
-// prettier-ignore
-export function generateFieldInfo(f: GeneratedFile, field: DescField | DescExtension) {
-  f.print("        ", getFieldInfoLiteral( field), ",");
+export function generateFieldInfo(
+  f: GeneratedFile,
+  field: DescField | DescExtension,
+) {
+  f.print("        ", getFieldInfoLiteral(field), ",");
 }
 
-// prettier-ignore
-export function getFieldInfoLiteral(field: DescField | DescExtension): Printable {
+export function getFieldInfoLiteral(
+  field: DescField | DescExtension,
+): Printable {
   const e: Printable = [];
   e.push("{ no: ", field.number, `, `);
   if (field.kind == "field") {
@@ -209,16 +253,40 @@ export function getFieldInfoLiteral(field: DescField | DescExtension): Printable
   }
   switch (field.fieldKind) {
     case "scalar":
-      e.push(`kind: "scalar", T: `, field.scalar, ` /* ScalarType.`, ScalarType[field.scalar], ` */, `);
+      e.push(
+        `kind: "scalar", T: `,
+        field.scalar,
+        ` /* ScalarType.`,
+        ScalarType[field.scalar],
+        ` */, `,
+      );
       if (field.longType != LongType.BIGINT) {
-        e.push(`L: `, field.longType, ` /* LongType.`, LongType[field.longType], ` */, `);
+        e.push(
+          `L: `,
+          field.longType,
+          ` /* LongType.`,
+          LongType[field.longType],
+          ` */, `,
+        );
       }
       break;
     case "map":
-      e.push(`kind: "map", K: `, field.mapKey, ` /* ScalarType.`, ScalarType[field.mapKey], ` */, `);
+      e.push(
+        `kind: "map", K: `,
+        field.mapKey,
+        ` /* ScalarType.`,
+        ScalarType[field.mapKey],
+        ` */, `,
+      );
       switch (field.mapValue.kind) {
         case "scalar":
-          e.push(`V: {kind: "scalar", T: `, field.mapValue.scalar, ` /* ScalarType.`, ScalarType[field.mapValue.scalar], ` */}, `);
+          e.push(
+            `V: {kind: "scalar", T: `,
+            field.mapValue.scalar,
+            ` /* ScalarType.`,
+            ScalarType[field.mapValue.scalar],
+            ` */}, `,
+          );
           break;
         case "message":
           e.push(`V: {kind: "message", T: `, field.mapValue.message, `}, `);

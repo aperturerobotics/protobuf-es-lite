@@ -45,33 +45,6 @@ import {
 } from "./json.js";
 
 /**
- * Message is the base type of every message.
- */
-export interface Message<T extends Message<T>> {
-  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
-}
-
-// prettier-ignore
-export type Field<F> =
-  F extends (Date | Uint8Array | bigint | boolean | string | number) ? F
-  : F extends Array<infer U> ? Array<Field<U>>
-  : F extends ReadonlyArray<infer U> ? ReadonlyArray<Field<U>>
-  : F extends Message<infer U> ? Message<U>
-  : F extends OneofSelectedMessage<infer C, infer V> ? { case: C; value: Message<V> }
-  : F extends { case: string | undefined; value?: unknown; } ? F
-  : F extends { [key: string | number]: Message<infer U> } ? { [key: string | number]: Message<U> }
-  : F;
-
-/**
- * AnyMessage is an interface implemented by all messages. If you need to
- * handle messages of unknown type, this interface provides a convenient
- * index signature to access fields with message["fieldname"].
- */
-export interface AnyMessage extends Message<AnyMessage> {
-  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
-}
-
-/**
  * PartialMessage<T> constructs a type from a message. The resulting type
  * only contains the protobuf field members of the message, and all of them
  * are optional.
@@ -82,23 +55,74 @@ export interface AnyMessage extends Message<AnyMessage> {
  * PartialMessage is similar to the built-in type Partial<T>, but recursive,
  * and respects `oneof` groups.
  */
-export type PartialMessage<T extends Message<T>> = {
-  // eslint-disable-next-line @typescript-eslint/ban-types -- we use `Function` to identify methods
-  [P in keyof T as T[P] extends Function ? never : P]?: PartialField<T[P]>;
+export type Message<T extends Message<T>> = {
+  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
 };
 
-// prettier-ignore
-export type PartialField<F> =
-  F extends (Date | Uint8Array | bigint | boolean | string | number) ? F
-  : F extends Array<infer U> ? Array<PartialField<U>>
-  : F extends ReadonlyArray<infer U> ? ReadonlyArray<PartialField<U>>
-  : F extends Message<infer U> ? PartialMessage<U>
-  : F extends OneofSelectedMessage<infer C, infer V> ? { case: C; value: PartialMessage<V> }
-  : F extends { case: string | undefined; value?: unknown; } ? F
-  : F extends { [key: string | number]: Message<infer U> } ? { [key: string | number]: PartialMessage<U> }
-  : F;
+/**
+ * AnyMessage is an interface implemented by all messages. If you need to
+ * handle messages of unknown type, this interface provides a convenient
+ * index signature to access fields with message["fieldname"].
+ */
+export interface AnyMessage extends Message<AnyMessage> {
+  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+}
 
-// prettier-ignore
+export type Field<F> = F extends
+  | Date
+  | Uint8Array
+  | bigint
+  | boolean
+  | string
+  | number
+  ? F
+  : F extends Array<infer U>
+    ? Array<Field<U>>
+    : F extends ReadonlyArray<infer U>
+      ? ReadonlyArray<Field<U>>
+      : F extends CompleteMessage<infer U>
+        ? Message<U>
+        : F extends OneofSelectedMessage<infer C, infer V>
+          ? { case: C; value: Message<V> }
+          : F extends { case: string | undefined; value?: unknown }
+            ? F
+            : F extends { [key: string | number]: CompleteMessage<infer U> }
+              ? { [key: string | number]: Message<U> }
+              : F;
+
+/**
+ * CompleteMessage<T> constructs a type from a message which requires all fields
+ * be present in the object recursively (including zero values if unset).
+ *
+ * This type corresponds to Message in protobuf-es.
+ */
+export type CompleteMessage<T extends Message<T>> = {
+  // eslint-disable-next-line @typescript-eslint/ban-types -- we use `Function` to identify methods
+  [P in keyof T as T[P] extends Function ? never : P]?: CompleteField<T[P]>;
+};
+
+export type CompleteField<F> = F extends
+  | Date
+  | Uint8Array
+  | bigint
+  | boolean
+  | string
+  | number
+  ? F
+  : F extends Array<infer U>
+    ? Array<Field<U>>
+    : F extends ReadonlyArray<infer U>
+      ? ReadonlyArray<Field<U>>
+      : F extends CompleteMessage<infer U>
+        ? CompleteMessage<U>
+        : F extends OneofSelectedMessage<infer C, infer V>
+          ? { case: C; value: CompleteMessage<V> }
+          : F extends { case: string | undefined; value?: unknown }
+            ? F
+            : F extends { [key: string | number]: CompleteMessage<infer U> }
+              ? { [key: string | number]: CompleteMessage<U> }
+              : F;
+
 type OneofSelectedMessage<K extends string, M extends Message<M>> = {
   case: K;
   value: M;
@@ -125,7 +149,7 @@ export interface MessageType<T extends Message<T> = AnyMessage>
   /**
    * Create a new instance of this message with zero values for fields.
    */
-  create(partial?: PartialMessage<T>): T;
+  create(partial?: Message<T>): T;
 
   /**
    * Create a deep copy.
@@ -208,6 +232,9 @@ export function compareMessages<T extends Message<T>>(
   a: T | undefined | null,
   b: T | undefined | null,
 ): boolean {
+  if (a == null && b == null) {
+    return true;
+  }
   if (a === b) {
     return true;
   }
@@ -362,7 +389,7 @@ export function createMessageType<T extends Message<T>>(
     fields,
     fieldWrapper,
 
-    create(partial?: PartialMessage<T>): T {
+    create(partial?: Message<T>): T {
       const message = createMessage<T>(fields);
       applyPartialMessage(partial, message, fields);
       return message;

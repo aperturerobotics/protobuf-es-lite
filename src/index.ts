@@ -1,11 +1,14 @@
 export {
   Message,
+  CompleteMessage,
   AnyMessage,
-  PartialMessage,
   MessageType,
+  Field,
+  CompleteField,
   compareMessages,
   createMessageType,
 } from "./message.js";
+export { isCompleteMessage, isCompleteField } from "./is-message.js";
 export {
   newFieldList,
   FieldList,

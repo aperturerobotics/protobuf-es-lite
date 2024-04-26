@@ -1,12 +1,12 @@
 import { ScalarType } from "@bufbuild/protobuf";
 import { FieldList } from "./field.js";
-import { AnyMessage, Message, PartialMessage } from "./message.js";
+import { AnyMessage, Message } from "./message.js";
 import { isCompleteMessage } from "./is-message.js";
 
 // applyPartialMessage applies a partial message to a message.
 export function applyPartialMessage<T extends Message<T>>(
-  source: PartialMessage<T> | undefined,
-  target: T,
+  source: Message<T> | undefined,
+  target: Message<T>,
   fields: FieldList,
 ): void {
   if (source === undefined) {
@@ -15,7 +15,7 @@ export function applyPartialMessage<T extends Message<T>>(
   for (const member of fields.byMember()) {
     const localName = member.localName,
       t = target as AnyMessage,
-      s = source as PartialMessage<AnyMessage>;
+      s = source as Message<AnyMessage>;
     if (s[localName] === undefined) {
       // TODO if source is a Message instance, we should use isFieldSet() here to support future field presence
       continue;

@@ -45,16 +45,16 @@ export interface EchoMsg extends Message<EchoMsg> {
   /**
    * @generated from field: string body = 1;
    */
-  body: string;
+  body?: string;
   /**
    * @generated from field: google.protobuf.Timestamp ts = 2;
    */
-  ts: Timestamp;
+  ts?: Timestamp;
 
   /**
    * @generated from oneof example.EchoMsg.demo
    */
-  demo: {
+  demo?: {
     value?: undefined,
     case: undefined
   } | {
