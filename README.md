@@ -48,6 +48,8 @@ const myMessageBin = new MyMessage(myMessage).toBinary()
 declaration object containing the marshal and unmarshal functions. This allows
 using interfaces and plain messages everywhere and does not need classes.
 
+[ts-proto]: https://github.com/stephenh/ts-proto
+
 This fork generates the ts-proto style with the protoc-gen-es tools:
 
 ```typescript
