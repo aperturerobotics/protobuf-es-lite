@@ -1,10 +1,10 @@
 {
-  "files": ["src/protoc-gen-es-lite-plugin.ts", "src/index.ts"],
+  "files": ["src/protoc-gen-es-lite/protoc-gen-es-lite-plugin.ts", "src/index.ts", "src/protoplugin/index.ts", "src/protoplugin/ecmascript/index.ts"],
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "resolveJsonModule": true,
     "verbatimModuleSyntax": false,
-    "module": "CommonJS",
-    "moduleResolution": "Node10"
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "rootDir": "./src"
   }
 }

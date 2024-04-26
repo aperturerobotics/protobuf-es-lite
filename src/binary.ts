@@ -1,16 +1,4 @@
 import {
-  BinaryReadOptions,
-  BinaryReader,
-  BinaryWriteOptions,
-  BinaryWriter,
-  IBinaryReader,
-  IBinaryWriter,
-  LongType,
-  ScalarType,
-  ScalarValue,
-  WireType,
-} from "@bufbuild/protobuf";
-import {
   FieldInfo,
   FieldList,
   isFieldSet,
@@ -19,8 +7,56 @@ import {
 import { isCompleteMessage } from "./is-message.js";
 import { handleUnknownField, unknownFieldsSymbol } from "./unknown.js";
 import { wrapField } from "./field-wrapper.js";
-import { scalarZeroValue } from "./scalar.js";
+import {
+  LongType,
+  ScalarType,
+  ScalarValue,
+  scalarZeroValue,
+} from "./scalar.js";
 import { assert } from "./assert.js";
+import {
+  BinaryReader,
+  BinaryWriter,
+  IBinaryReader,
+  IBinaryWriter,
+  WireType,
+} from "./binary-encoding.js";
+
+/**
+ * Options for parsing binary data.
+ */
+export interface BinaryReadOptions {
+  /**
+   * Retain unknown fields during parsing? The default behavior is to retain
+   * unknown fields and include them in the serialized output.
+   *
+   * For more details see https://developers.google.com/protocol-buffers/docs/proto3#unknowns
+   */
+  readUnknownFields: boolean;
+
+  /**
+   * Allows to use a custom implementation to decode binary data.
+   */
+  readerFactory: (bytes: Uint8Array) => IBinaryReader;
+}
+
+/**
+ * Options for serializing to binary data.
+ */
+export interface BinaryWriteOptions {
+  /**
+   * Include unknown fields in the serialized output? The default behavior
+   * is to retain unknown fields and include them in the serialized output.
+   *
+   * For more details see https://developers.google.com/protocol-buffers/docs/proto3#unknowns
+   */
+  writeUnknownFields: boolean;
+
+  /**
+   * Allows to use a custom implementation to encode binary data.
+   */
+  writerFactory: () => IBinaryWriter;
+}
 
 export function readField(
   target: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
@@ -139,7 +175,7 @@ export function readMapEntry(
   field: FieldInfo & { kind: "map" },
   reader: IBinaryReader,
   options: BinaryReadOptions,
-): [string | number, ScalarValue | AnyMessage] {
+): [string | number, ScalarValue | AnyMessage | undefined] {
   const length = reader.uint32(),
     end = reader.pos + length;
   let key: ScalarValue | undefined, val: ScalarValue | AnyMessage | undefined;
@@ -178,7 +214,8 @@ export function readMapEntry(
     key = key.toString();
   }
   if (val === undefined) {
-    switch (field.V.kind) {
+    const fieldKind = field.V.kind;
+    switch (fieldKind) {
       case "scalar":
         val = scalarZeroValue(field.V.T, LongType.BIGINT);
         break;
@@ -295,9 +332,8 @@ export function readMessage<T>(
   delimitedMessageEncoding?: boolean,
 ) {
   // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-  const end = delimitedMessageEncoding
-    ? reader.len
-    : reader.pos + lengthOrEndTagFieldNo;
+  const end =
+    delimitedMessageEncoding ? reader.len : reader.pos + lengthOrEndTagFieldNo;
   let fieldNo: number | undefined, wireType: WireType | undefined;
   while (reader.pos < end) {
     [fieldNo, wireType] = reader.tag();
@@ -340,8 +376,9 @@ export function writeMessage<T>(
       }
       continue;
     }
-    const value = field.oneof
-      ? (message as AnyMessage)[field.oneof.localName].value
+    const value =
+      field.oneof ?
+        (message as AnyMessage)[field.oneof.localName].value
       : (message as AnyMessage)[field.localName];
     writeField(field, value, writer, options);
   }
@@ -417,12 +454,12 @@ function writeMessageField<T>(
   if (field.delimited)
     writer
       .tag(field.no, WireType.StartGroup)
-      .raw(messageType.toBinary(message, options))
+      .raw(messageType.toBinary(message as AnyMessage, options))
       .tag(field.no, WireType.EndGroup);
   else
     writer
       .tag(field.no, WireType.LengthDelimited)
-      .bytes(messageType.toBinary(message, options));
+      .bytes(messageType.toBinary(message as AnyMessage, options));
 }
 
 function writeScalar(

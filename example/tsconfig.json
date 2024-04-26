@@ -1,7 +1,13 @@
 {
   "extends": "../tsconfig.json",
-  "files": ["example_pb.ts"],
+  "files": ["example.pb.ts"],
   "compilerOptions": {
-    "paths": {"@aptre/protobuf-es-lite": ["../", "../dist"]}
+    "paths": {
+      "@aptre/protobuf-es-lite": [
+        "../",
+        "../dist"
+      ],
+      "@aptre/protobuf-es-lite/google": ["../src/google", "../dist/google"],
+    }
   }
 }

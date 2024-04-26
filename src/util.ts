@@ -13,18 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  codegenInfo,
-  DescEnumValue,
-  DescExtension,
-  DescField,
-  FieldDescriptorProto_Label,
-  LongType,
-  ScalarType,
-  ScalarValue,
-} from "@bufbuild/protobuf";
-import type { Printable } from "@bufbuild/protoplugin/ecmascript";
-import { localName } from "@bufbuild/protoplugin/ecmascript";
+import type { Printable } from "./protoplugin/ecmascript";
+import { DescEnumValue, DescExtension, DescField } from "./descriptor-set.js";
+import { FieldDescriptorProto_Label } from "./google/protobuf/descriptor.pb.js";
+import { codegenInfo } from "./codegen-info.js";
+import { LongType, ScalarType, ScalarValue } from "./scalar.js";
+import { localName } from "./names.js";
 
 export function getFieldTypeInfo(field: DescField | DescExtension): {
   typing: Printable;

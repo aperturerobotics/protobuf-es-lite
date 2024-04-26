@@ -9,9 +9,9 @@
 
 protobuf-es-lite is a TypeScript and JavaScript protobuf implementation.
 
-It uses [@bufbuild/protoplugin] to implement **protoc-gen-es-lite** which generates js and/or ts code.
+It uses [protoplugin] to implement **protoc-gen-es-lite** which generates js and/or ts code.
 
-[@bufbuild/protoplugin]: https://github.com/bufbuild/protobuf-es/tree/main/packages/protoplugin
+[protoplugin]: ./src/protoplugin
 
 See [protobuf-es] for information about protoplugin.
 
@@ -53,8 +53,11 @@ using interfaces and plain messages everywhere and does not need classes.
 This fork generates the ts-proto style with the protoc-gen-es tools:
 
 ```typescript
+// Create a partial MyMessage with just one field sets.
 const myMessage: MyMessage = {body: "Hello world"}
-const myCompleteMessage: CompleteMessage<MyMessage> = MyMessage.create(myMessage)
+// Creates a version of MyMessage filled with zeros.
+const myCompleteMessage: MyMessage = MyMessage.create(myMessage)
+// Convert MyMessage to binary.
 const myMessageBin = MyMessage.toBinary(myCompleteMessage)
 ```
 
@@ -63,21 +66,18 @@ const myMessageBin = MyMessage.toBinary(myCompleteMessage)
 ## Installation
 
 `protoc-gen-es` generates base types - messages and enumerations - from your
-Protocol Buffer schema. The generated code requires the runtime library
-[@bufbuild/protobuf].
-
-[@bufbuild/protobuf]: https://www.npmjs.com/package/@bufbuild/protobuf
+Protocol Buffer schema.
 
 To install the plugin and the runtime library, run:
 
 ```shell
-npm install --save-dev @aptre/protoc-gen-es-lite
-npm install @bufbuild/protobuf
+npm install @aptre/protoc-gen-es-lite
 ```
 
 We use peer dependencies to ensure that code generator and runtime library are
 compatible with each other. Note that npm installs them automatically, but yarn
 and pnpm do not.
+
 ## Generating code
 
 ### With buf
@@ -93,10 +93,10 @@ Add a new configuration file `buf.gen.yaml`:
 # For details, see https://docs.buf.build/configuration/v1/buf-gen-yaml
 version: v1
 plugins:
-  # This will invoke protoc-gen-es and write output to src/gen
-  - plugin: es
+  # This will invoke protoc-gen-es-lite and write output to src/gen
+  - plugin: es-lite
     out: src/gen
-    opt: 
+    opt:
       # Add more plugin options here
       - target=ts
 ```
@@ -108,16 +108,15 @@ npx buf generate
 ```
 
 Note that `buf` can generate from various [inputs](https://docs.buf.build/reference/inputs),
-not just local protobuf files. 
-
+not just local protobuf files.
 
 ### With protoc
 
 ```bash
 PATH=$PATH:$(pwd)/node_modules/.bin \
   protoc -I . \
-  --es_out src/gen \
-  --es_opt target=ts \
+  --es-lite_out src/gen \
+  --es-lite_opt target=ts \
   a.proto b.proto c.proto
 ```
 
@@ -128,7 +127,7 @@ Since yarn v2 and above does not use a `node_modules` directory, you need to
 change the variable a bit:
 
 ```bash
-PATH=$(dirname $(yarn bin protoc-gen-es)):$PATH
+PATH=$(dirname $(yarn bin protoc-gen-es-lite)):$PATH
 ```
 
 ## Plugin options
@@ -139,9 +138,9 @@ This option controls whether the plugin generates JavaScript, TypeScript,
 or TypeScript declaration files.
 
 Possible values:
-- `target=js` - generates a `_pb.js` file for every `.proto` input file.
-- `target=ts` - generates a `_pb.ts` file for every `.proto` input file.
-- `target=dts` - generates a `_pb.d.ts` file for every `.proto` input file.
+- `target=js` - generates a `.pb.js` file for every `.proto` input file.
+- `target=ts` - generates a `.pb.ts` file for every `.proto` input file.
+- `target=dts` - generates a `.pb.d.ts` file for every `.proto` input file.
 
 Multiple values can be given by separating them with `+`, for example
 `target=js+dts`.
@@ -153,7 +152,7 @@ bundler configurations. If you prefer to generate TypeScript, use `target=ts`.
 ### `import_extension=.js`
 
 By default, [protoc-gen-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-es)
-(and all other plugins based on [@bufbuild/protoplugin](https://www.npmjs.com/package/@bufbuild/protoplugin))
+(and all other plugins based on [@aptre/protobuf-es-lite/protoplugin](https://www.npmjs.com/package/@aptre/protobuf-es-lite/protoplugin))
 uses a `.js` file extensions in import paths, even in TypeScript files.
 
 This is unintuitive, but necessary for [ECMAScript modules in Node.js](https://www.typescriptlang.org/docs/handbook/esm-node.html).
@@ -167,7 +166,7 @@ in import paths with the given value. For example, set
 ### `js_import_style`
 
 By default, [protoc-gen-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-es)
-(and all other plugins based on [@bufbuild/protoplugin](https://www.npmjs.com/package/@bufbuild/protoplugin))
+(and all other plugins based on [@aptre/protobuf-es-lite/protoplugin](https://www.npmjs.com/package/@aptre/protobuf-es-lite/protoplugin))
 generate ECMAScript `import` and `export` statements. For use cases where 
 CommonJS is difficult to avoid, this option can be used to generate CommonJS 
 `require()` calls.
@@ -180,7 +179,7 @@ Possible values:
 ### `keep_empty_files=true`
 
 By default, [protoc-gen-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-es)
-(and all other plugins based on [@bufbuild/protoplugin](https://www.npmjs.com/package/@bufbuild/protoplugin))
+(and all other plugins based on [@aptre/protobuf-es-lite/protoplugin](https://www.npmjs.com/package/@aptre/protobuf-es-lite/protoplugin))
 omit empty files from the plugin output. This option disables pruning of
 empty files, to allow for smooth interoperation with Bazel and similar
 tooling that requires all output files to be declared ahead of time.
@@ -189,7 +188,7 @@ Unless you use Bazel, it is very unlikely that you need this option.
 ### `ts_nocheck=false`
 
 By default, [protoc-gen-es](https://www.npmjs.com/package/@bufbuild/protoc-gen-es)
-(and all other plugins based on [@bufbuild/protoplugin](https://www.npmjs.com/package/@bufbuild/protoplugin))
+(and all other plugins based on [@aptre/protobuf-es-lite/protoplugin](https://www.npmjs.com/package/@aptre/protobuf-es-lite/protoplugin))
 generate an annotation at the top of each file: `// @ts-nocheck`.
 
 We generate the annotation to support a wide range of compiler configurations and

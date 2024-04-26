@@ -1,4 +1,4 @@
-import { WireType } from "@bufbuild/protobuf";
+import { WireType } from "./binary-encoding.js";
 
 // unknownFieldsSymbol is the symbol used for unknown fields.
 export const unknownFieldsSymbol = Symbol(

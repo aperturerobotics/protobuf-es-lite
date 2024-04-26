@@ -1,4 +1,3 @@
-// Copyright 2024 Aperture Robotics, LLC.
 // Copyright 2021-2024 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createEcmaScriptPlugin } from "@bufbuild/protoplugin";
-import { generateTs } from "./typescript.js";
-// import { version } from "../package.json";
+import type { Schema as SchemaInternal } from "./ecmascript/schema.js";
+export type { Plugin } from "./plugin.js";
+export { runNodeJs } from "./run-node.js";
+export { createEcmaScriptPlugin } from "./create-es-plugin.js";
 
-export const protocGenEsLite = createEcmaScriptPlugin({
-  name: "protoc-gen-es-lite",
-  version: `unknown`,
-  generateTs,
-});
+/**
+ * @deprecated Please use Schema from @bufbuild/protoplugin/ecmascript instead
+ */
+export type Schema = SchemaInternal;

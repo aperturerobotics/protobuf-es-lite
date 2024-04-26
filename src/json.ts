@@ -1,17 +1,4 @@
 import {
-  EnumType,
-  JsonObject,
-  JsonReadOptions,
-  JsonValue,
-  JsonWriteOptions,
-  JsonWriteStringOptions,
-  LongType,
-  ScalarType,
-  ScalarValue,
-  protoBase64,
-  protoInt64,
-} from "@bufbuild/protobuf";
-import {
   FieldInfo,
   FieldList,
   OneofInfo,
@@ -19,8 +6,97 @@ import {
   resolveMessageType,
 } from "./field.js";
 import { assert, assertFloat32, assertInt32, assertUInt32 } from "./assert.js";
-import { scalarZeroValue } from "./scalar.js";
+import {
+  LongType,
+  ScalarType,
+  ScalarValue,
+  scalarZeroValue,
+} from "./scalar.js";
 import { wrapField } from "./field-wrapper.js";
+import { IMessageTypeRegistry } from "./type-registry.js";
+import { EnumType } from "./enum.js";
+import { protoInt64 } from "./proto-int64.js";
+import { protoBase64 } from "./proto-base64.js";
+
+/**
+ * Options for parsing JSON data.
+ */
+export interface JsonReadOptions {
+  /**
+   * Ignore unknown fields: Proto3 JSON parser should reject unknown fields
+   * by default. This option ignores unknown fields in parsing, as well as
+   * unrecognized enum string representations.
+   */
+  ignoreUnknownFields: boolean;
+
+  /**
+   * This option is required to read `google.protobuf.Any`
+   */
+  typeRegistry?: IMessageTypeRegistry;
+}
+
+/**
+ * Options for serializing to JSON.
+ */
+export interface JsonWriteOptions {
+  /**
+   * Emit fields with default values: Fields with default values are omitted
+   * by default in proto3 JSON output. This option overrides this behavior
+   * and outputs fields with their default values.
+   */
+  emitDefaultValues: boolean;
+
+  /**
+   * Emit enum values as integers instead of strings: The name of an enum
+   * value is used by default in JSON output. An option may be provided to
+   * use the numeric value of the enum value instead.
+   */
+  enumAsInteger: boolean;
+
+  /**
+   * Use proto field name instead of lowerCamelCase name: By default proto3
+   * JSON printer should convert the field name to lowerCamelCase and use
+   * that as the JSON name. An implementation may provide an option to use
+   * proto field name as the JSON name instead. Proto3 JSON parsers are
+   * required to accept both the converted lowerCamelCase name and the proto
+   * field name.
+   */
+  useProtoFieldName: boolean;
+
+  /**
+   * This option is required to write `google.protobuf.Any`
+   */
+  typeRegistry?: IMessageTypeRegistry;
+}
+
+/**
+ * Options for serializing to JSON.
+ */
+export interface JsonWriteStringOptions extends JsonWriteOptions {
+  prettySpaces: number;
+}
+
+/**
+ * Represents any possible JSON value:
+ * - number
+ * - string
+ * - boolean
+ * - null
+ * - object (with any JSON value as property)
+ * - array (with any JSON value as element)
+ */
+export type JsonValue =
+  | number
+  | string
+  | boolean
+  | null
+  | JsonObject
+  | JsonValue[];
+
+/**
+ * Represents a JSON object.
+ */
+export type JsonObject = { [k: string]: JsonValue };
 
 // Default options for parsing JSON.
 const jsonReadDefaults: Readonly<JsonReadOptions> = {
@@ -74,7 +150,6 @@ export function readMessage<T>(
     );
   }
   const oneofSeen = new Map<OneofInfo, string>();
-  const registry = options.typeRegistry;
   for (const [jsonKey, jsonValue] of Object.entries(json)) {
     const field = fields.findJsonName(jsonKey);
     if (field) {
@@ -94,32 +169,6 @@ export function readMessage<T>(
       readField(message as Record<string, unknown>, jsonValue, field, options);
     } else {
       let found = false;
-      if (
-        registry?.findExtension &&
-        jsonKey.startsWith("[") &&
-        jsonKey.endsWith("]")
-      ) {
-        // TODO: handle extension
-        /*
-            const ext = registry.findExtension(
-              jsonKey.substring(1, jsonKey.length - 1),
-            );
-            if (ext && ext.extendee.typeName == typeName) {
-              found = true;
-              const [container, get] = createExtensionContainer(ext);
-              readField(container, jsonValue, ext.field, options, ext);
-              // We pass on the options as BinaryReadOptions/BinaryWriteOptions,
-              // so that users can bring their own binary reader and writer factories
-              // if necessary.
-              setExtension(
-                message,
-                ext as Extension<T>,
-                get(),
-                options as Partial<BinaryReadOptions & BinaryWriteOptions>,
-              );
-            }
-            */
-      }
       if (!found && !options.ignoreUnknownFields) {
         throw new Error(
           `cannot decode message ${typeName} from JSON: key "${jsonKey}" is unknown`,
@@ -151,8 +200,9 @@ export function writeMessage<T>(
           continue;
         }
       }
-      const value = field.oneof
-        ? (message as any)[field.oneof.localName].value
+      const value =
+        field.oneof ?
+          (message as any)[field.oneof.localName].value
         : (message as any)[field.localName];
       const jsonValue = writeField(field, value, options);
       if (jsonValue !== undefined) {
@@ -183,8 +233,9 @@ export function writeMessage<T>(
         }
         */
   } catch (e) {
-    const m = field
-      ? `cannot encode field ${field.name} to JSON`
+    const m =
+      field ?
+        `cannot encode field ${field.name} to JSON`
       : `cannot encode message to JSON`;
     const r = e instanceof Error ? e.message : String(e);
     throw new Error(m + (r.length > 0 ? `: ${r}` : ""));
@@ -595,9 +646,8 @@ export function clearField(
         target[localName] = implicitPresence ? field.T.values[0].no : undefined;
         break;
       case "scalar":
-        target[localName] = implicitPresence
-          ? scalarZeroValue(field.T, field.L)
-          : undefined;
+        target[localName] =
+          implicitPresence ? scalarZeroValue(field.T, field.L) : undefined;
         break;
       case "message":
         target[localName] = undefined;
@@ -665,8 +715,8 @@ function writeField(
         }
         break;
     }
-    return options.emitDefaultValues || entries.length > 0
-      ? jsonObj
+    return options.emitDefaultValues || entries.length > 0 ?
+        jsonObj
       : undefined;
   }
   if (field.repeated) {
@@ -691,8 +741,8 @@ function writeField(
         }
         break;
     }
-    return options.emitDefaultValues || jsonArr.length > 0
-      ? jsonArr
+    return options.emitDefaultValues || jsonArr.length > 0 ?
+        jsonArr
       : undefined;
   }
   switch (field.kind) {
@@ -701,9 +751,8 @@ function writeField(
     case "enum":
       return writeEnum(field.T, value, options.enumAsInteger);
     case "message":
-      return wrapField(resolveMessageType(field.T).fieldWrapper, value).toJson(
-        options,
-      );
+      const messageType = resolveMessageType(field.T);
+      return messageType.toJson(wrapField(messageType.fieldWrapper, value));
   }
 }
 

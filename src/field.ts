@@ -1,7 +1,8 @@
-import { EnumType, LongType, ScalarType } from "@bufbuild/protobuf";
-import { MessageType } from "./message.js";
+import { EnumType } from "./enum.js";
+import { Message, MessageType } from "./message.js";
 import { assert } from "./assert.js";
-import { isScalarZeroValue } from "./scalar.js";
+import { LongType, ScalarType, isScalarZeroValue } from "./scalar.js";
+import { localFieldName, localOneofName, protoCamelCase } from "./names.js";
 
 /**
  * FieldInfo describes a field of a protobuf message for runtime reflection. We
@@ -161,44 +162,6 @@ export function newFieldList(
   );
 }
 
-/*
- * Converts snake_case to protoCamelCase according to the convention
- * used by protoc to convert a field name to a JSON name.
- */
-export function protoCamelCase(snakeCase: string): string {
-  let capNext = false;
-  const b: string[] = [];
-  for (let i = 0; i < snakeCase.length; i++) {
-    let c = snakeCase.charAt(i);
-    switch (c) {
-      case "_":
-        capNext = true;
-        break;
-      case "0":
-      case "1":
-      case "2":
-      case "3":
-      case "4":
-      case "5":
-      case "6":
-      case "7":
-      case "8":
-      case "9":
-        b.push(c);
-        capNext = false;
-        break;
-      default:
-        if (capNext) {
-          capNext = false;
-          c = c.toUpperCase();
-        }
-        b.push(c);
-        break;
-    }
-  }
-  return b.join("");
-}
-
 /**
  * Returns true if the field is set.
  */
@@ -237,89 +200,14 @@ export function isFieldSet(
  */
 export const fieldJsonName = protoCamelCase;
 
-/**
- * Returns the name of a field in generated code.
- */
-export function localFieldName(protoName: string, inOneof: boolean) {
-  const name = protoCamelCase(protoName);
-  if (inOneof) {
-    // oneof member names are not properties, but values of the `case` property.
-    return name;
-  }
-  return safeObjectProperty(safeMessageProperty(name));
-}
-
-// isMessageType checks if the given message type variable is a message type.
-export function isMessageType(t: fiMessage["T"]): t is MessageType {
-  return typeof t === "object" && t !== null && "typeName" in t;
-}
-
 // resolveMessageType returns the message type calling the function if necessary.
-export function resolveMessageType(t: fiMessage["T"]): MessageType {
-  return isMessageType(t) ? t : t();
-}
-
-/**
- * Names that cannot be used for object properties because they are reserved
- * by built-in JavaScript properties.
- */
-const reservedObjectProperties = new Set([
-  // names reserved by JavaScript
-  "constructor",
-  "toString",
-  "toJSON",
-  "valueOf",
-]);
-
-/*
- * Names that cannot be used for object properties because they are reserved
- * by the runtime.
- */
-const reservedMessageProperties = new Set([
-  // names reserved by the runtime
-  "getType",
-  "clone",
-  "equals",
-  "fromBinary",
-  "fromJson",
-  "fromJsonString",
-  "toBinary",
-  "toJson",
-  "toJsonString",
-
-  // names reserved by the runtime for the future
-  "toObject",
-]);
-
-const fallback = <T extends string>(name: T) => `${name}$` as const;
-
-/**
- * Will wrap names that are Object prototype properties or names reserved
- * for `Message`s.
- */
-const safeMessageProperty = (name: string): string => {
-  if (reservedMessageProperties.has(name)) {
-    return fallback(name);
+export function resolveMessageType<T extends Message<T>>(
+  t: fiMessage<T>["T"],
+): MessageType<T> {
+  if (t instanceof Function) {
+    return t();
   }
-  return name;
-};
-
-/**
- * Names that cannot be used for object properties because they are reserved
- * by built-in JavaScript properties.
- */
-export const safeObjectProperty = (name: string): string => {
-  if (reservedObjectProperties.has(name)) {
-    return fallback(name);
-  }
-  return name;
-};
-
-/**
- * Returns the name of a oneof group in generated code.
- */
-export function localOneofName(protoName: string): string {
-  return localFieldName(protoName, false);
+  return t;
 }
 
 // InternarlOneofInfo implements OneofInfo.
@@ -370,9 +258,9 @@ export function normalizeFieldInfos(
 ): FieldInfo[] {
   const r: FieldInfo[] = [];
   let o: InternalOneofInfo | undefined;
-  for (const field of typeof fieldInfos == "function"
-    ? fieldInfos()
-    : fieldInfos) {
+  for (const field of typeof fieldInfos == "function" ? fieldInfos() : (
+    fieldInfos
+  )) {
     const f = field as Record<string, unknown>;
     f.localName = localFieldName(field.name, field.oneof !== undefined);
     f.jsonName = field.jsonName ?? fieldJsonName(field.name);
@@ -511,12 +399,12 @@ interface fiScalar extends fiShared {
   readonly delimited?: undefined;
 }
 
-interface fiMessage extends fiShared {
+interface fiMessage<T extends Message<T> = any> extends fiShared {
   readonly kind: "message";
   /**
    * Message handler for the field.
    */
-  readonly T: MessageType | (() => MessageType);
+  readonly T: MessageType<T> | (() => MessageType<T>);
   /**
    * Is the field repeated?
    */
@@ -606,7 +494,7 @@ interface fiMap extends fiShared {
       }
     | {
         readonly kind: "message";
-        readonly T: MessageType | (() => MessageType);
+        readonly T: MessageType<any> | (() => MessageType<any>);
       };
   /**
    * Is the field repeated? Never true for maps.

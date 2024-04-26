@@ -14,48 +14,37 @@
 // limitations under the License.
 
 import type {
+  GeneratedFile,
+  ImportSymbol,
+  Printable,
+  Schema,
+} from "../protoplugin/ecmascript/index.js";
+import { createImportSymbol } from "../protoplugin/ecmascript/index.js";
+import { getFieldDefaultValueExpression, getFieldTypeInfo } from "../util.js";
+import {
   DescEnum,
   DescExtension,
   DescField,
   DescFile,
   DescMessage,
   DescOneof,
-} from "@bufbuild/protobuf";
+} from "../descriptor-set.js";
+import { localName } from "../names.js";
+import { LongType, ScalarType } from "../scalar.js";
 import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
-  LongType,
-  ScalarType,
-} from "@bufbuild/protobuf";
-import type {
-  GeneratedFile,
-  ImportSymbol,
-  Printable,
-  Schema,
-} from "@bufbuild/protoplugin/ecmascript";
-import {
-  createImportSymbol,
-  localName,
-} from "@bufbuild/protoplugin/ecmascript";
-import { getNonEditionRuntime } from "./editions.js";
-import { getFieldDefaultValueExpression, getFieldTypeInfo } from "./util.js";
-
-const libPkg = "@aptre/protobuf-es-lite";
-const MessageImport = createImportSymbol("Message", libPkg);
-const MessageTypeImport = createImportSymbol("MessageType", libPkg);
-const CreateMessageTypeImport = createImportSymbol("createMessageType", libPkg);
-const PartialFieldInfo = createImportSymbol("PartialFieldInfo", libPkg);
-const CreateEnumTypeImport = createImportSymbol("createEnumType", libPkg);
+} from "../google/protobuf/descriptor.pb.js";
 
 export function generateTs(schema: Schema) {
   for (const file of schema.files) {
-    const f = schema.generateFile(file.name + "_pb.ts");
+    const f = schema.generateFile(file.name + ".pb.ts");
     f.preamble(file);
     f.print(`export const protobufPackage = "${file.proto.package}";`);
     f.print();
 
     for (const enumeration of file.enums) {
-      generateEnum(f, enumeration);
+      generateEnum(schema, f, enumeration);
     }
 
     const messageTypes: DescMessage[] = [];
@@ -66,7 +55,7 @@ export function generateTs(schema: Schema) {
       }
 
       for (const nestedEnum of message.nestedEnums) {
-        generateEnum(f, nestedEnum);
+        generateEnum(schema, f, nestedEnum);
       }
 
       messageTypes.push(message);
@@ -127,7 +116,7 @@ function topologicalSort(
   return result;
 }
 
-function generateEnum(f: GeneratedFile, enumeration: DescEnum) {
+function generateEnum(schema: Schema, f: GeneratedFile, enumeration: DescEnum) {
   f.print(f.jsDoc(enumeration));
   f.print(f.exportDecl("enum", enumeration), " {");
   for (const value of enumeration.values) {
@@ -141,9 +130,10 @@ function generateEnum(f: GeneratedFile, enumeration: DescEnum) {
   f.print();
   f.print("// ", enumeration, "_Enum is the enum type for ", enumeration, ".");
   f.print(
-    f.exportDecl("const", enumeration.name + "_Enum"),
+    f.exportDecl("const", enumeration),
+    "_Enum",
     " = ",
-    CreateEnumTypeImport,
+    schema.runtime.createEnumType,
     "(",
     f.string(enumeration.typeName),
     ", [",
@@ -155,23 +145,35 @@ function generateEnum(f: GeneratedFile, enumeration: DescEnum) {
   f.print();
 }
 
+export function checkSupportedSyntax(file: DescFile) {
+  if (file.syntax === "editions") {
+    throw new Error(
+      `${file.proto.name ?? ""}: syntax "editions" is not supported`,
+    );
+  }
+}
+
 function generateMessage(
   schema: Schema,
   f: GeneratedFile,
   message: DescMessage,
 ) {
   // check if we support this runtime
-  getNonEditionRuntime(schema, message.file);
+  checkSupportedSyntax(message.file);
 
   f.print(f.jsDoc(message));
+  /*
   f.print(
     f.exportDecl("interface", message),
     " extends ",
-    MessageImport,
+    schema.runtime.Message,
     "<",
     message,
-    "> {",
+    ">",
+    " {",
   );
+  */
+  f.print(f.exportDecl("type", message), " = ", schema.runtime.Message, "<{");
   for (const field of message.fields) {
     generateField(f, field);
   }
@@ -181,16 +183,16 @@ function generateMessage(
   }
 
   f.print();
-  f.print("}");
+  f.print("}>;");
   f.print();
   f.print(
     f.exportDecl("const", message),
     ": ",
-    MessageTypeImport,
+    schema.runtime.MessageType,
     "<",
     message,
     "> = ",
-    CreateMessageTypeImport,
+    schema.runtime.createMessageType,
     "(",
   );
   f.print("  {");
@@ -199,7 +201,7 @@ function generateMessage(
   for (const field of message.fields) {
     generateFieldInfo(f, field);
   }
-  f.print("    ] as readonly ", PartialFieldInfo, "[],");
+  f.print("    ] as readonly ", schema.runtime.PartialFieldInfo, "[],");
   f.print("    packedByDefault: ", message.file.proto.syntax === "proto3", ",");
   f.print("  },");
   f.print(");");
@@ -243,7 +245,7 @@ function generateOneof(f: GeneratedFile, oneof: DescOneof) {
 }
 
 export function makeImportPath(file: DescFile): string {
-  return "./" + file.name + "_pb.js";
+  return "./" + file.name + ".pb.js";
 }
 
 export function generateFieldInfo(

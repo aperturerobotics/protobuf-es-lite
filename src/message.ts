@@ -13,16 +13,6 @@
 // limitations under the License.
 
 import {
-  BinaryReadOptions,
-  JsonReadOptions,
-  JsonValue,
-  MessageType as BufMessageType,
-  BinaryWriteOptions,
-  JsonWriteOptions,
-  JsonWriteStringOptions,
-  ScalarType,
-} from "@bufbuild/protobuf";
-import {
   FieldInfo,
   FieldList,
   FieldListSource,
@@ -31,102 +21,53 @@ import {
   resolveMessageType,
 } from "./field.js";
 import { applyPartialMessage } from "./partial.js";
-import { scalarEquals } from "./scalar.js";
+import { ScalarType, scalarEquals } from "./scalar.js";
 import {
   makeReadOptions as makeBinaryReadOptions,
   readMessage as readBinaryMessage,
   makeWriteOptions as makeBinaryWriteOptions,
   writeMessage as writeBinaryMessage,
+  BinaryReadOptions,
+  BinaryWriteOptions,
 } from "./binary.js";
 import {
   makeReadOptions as makeJsonReadOptions,
   readMessage as readJsonMessage,
   makeWriteOptions as makeJsonWriteOptions,
   writeMessage as writeJsonMessage,
+  JsonValue,
+  JsonReadOptions,
+  JsonWriteOptions,
+  JsonWriteStringOptions,
 } from "./json.js";
+import { FieldWrapper } from "./field-wrapper.js";
 
-/**
- * PartialMessage<T> constructs a type from a message. The resulting type
- * only contains the protobuf field members of the message, and all of them
- * are optional.
- *
- * Note that the optionality of the fields is the only difference between
- * PartialMessage and PlainMessage.
- *
- * PartialMessage is similar to the built-in type Partial<T>, but recursive,
- * and respects `oneof` groups.
- */
-export type Message<T extends Message<T>> = {
-  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+export type Field<T> =
+  T extends Date | Uint8Array | bigint | boolean | string | number ? T
+  : T extends Array<infer U> ? Array<Field<U>>
+  : T extends ReadonlyArray<infer U> ? ReadonlyArray<Field<U>>
+  : T extends { case: string; value: any } ?
+    OneofSelectedMessage<T["case"], T["value"]>
+  : T extends object ? Message<T>
+  : never;
+
+export type OneofSelectedMessage<C extends string, V> = {
+  case: C;
+  value: Field<V>;
 };
 
-/**
- * AnyMessage is an interface implemented by all messages. If you need to
- * handle messages of unknown type, this interface provides a convenient
- * index signature to access fields with message["fieldname"].
- */
-export interface AnyMessage extends Message<AnyMessage> {
-  [k: string]: Field<any>; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
-}
-
-export type Field<F> = F extends
-  | Date
-  | Uint8Array
-  | bigint
-  | boolean
-  | string
-  | number
-  ? F
-  : F extends Array<infer U>
-    ? Array<Field<U>>
-    : F extends ReadonlyArray<infer U>
-      ? ReadonlyArray<Field<U>>
-      : F extends CompleteMessage<infer U>
-        ? Message<U>
-        : F extends OneofSelectedMessage<infer C, infer V>
-          ? { case: C; value: Message<V> }
-          : F extends { case: string | undefined; value?: unknown }
-            ? F
-            : F extends { [key: string | number]: CompleteMessage<infer U> }
-              ? { [key: string | number]: Message<U> }
-              : F;
-
-/**
- * CompleteMessage<T> constructs a type from a message which requires all fields
- * be present in the object recursively (including zero values if unset).
- *
- * This type corresponds to Message in protobuf-es.
- */
-export type CompleteMessage<T extends Message<T>> = {
-  // eslint-disable-next-line @typescript-eslint/ban-types -- we use `Function` to identify methods
-  [P in keyof T as T[P] extends Function ? never : P]?: CompleteField<T[P]>;
+export type Message<T extends object> = {
+  [K in keyof T]?: Field<T[K]>;
 };
 
-export type CompleteField<F> = F extends
-  | Date
-  | Uint8Array
-  | bigint
-  | boolean
-  | string
-  | number
-  ? F
-  : F extends Array<infer U>
-    ? Array<Field<U>>
-    : F extends ReadonlyArray<infer U>
-      ? ReadonlyArray<Field<U>>
-      : F extends CompleteMessage<infer U>
-        ? CompleteMessage<U>
-        : F extends OneofSelectedMessage<infer C, infer V>
-          ? { case: C; value: CompleteMessage<V> }
-          : F extends { case: string | undefined; value?: unknown }
-            ? F
-            : F extends { [key: string | number]: CompleteMessage<infer U> }
-              ? { [key: string | number]: CompleteMessage<U> }
-              : F;
+export type CompleteMessage<T extends object> = {
+  [K in keyof T]-?: Field<T[K]>;
+};
 
-type OneofSelectedMessage<K extends string, M extends Message<M>> = {
-  case: K;
-  value: M;
+// AnyMessage is a type that represents a message with arbitrary field names and values.
+// It allows accessing fields dynamically using string keys.
+export type AnyMessage = {
+  [key: string]: any | undefined;
 };
 
 /**
@@ -135,8 +76,7 @@ type OneofSelectedMessage<K extends string, M extends Message<M>> = {
  * - metadata for reflection-based operations
  * - common functionality like serialization
  */
-export interface MessageType<T extends Message<T> = AnyMessage>
-  extends Pick<BufMessageType, "fieldWrapper"> {
+export interface MessageType<T extends Message<T>> {
   /**
    * The fully qualified name of the message.
    */
@@ -148,9 +88,14 @@ export interface MessageType<T extends Message<T> = AnyMessage>
   readonly fields: FieldList;
 
   /**
+   * When used as a field, unwrap this message to a simple value.
+   */
+  readonly fieldWrapper?: FieldWrapper<T>;
+
+  /**
    * Create a new instance of this message with zero values for fields.
    */
-  create(partial?: Message<T>): T;
+  create(partial?: Message<T>): CompleteMessage<T>;
 
   /**
    * Create a deep copy.
@@ -166,17 +111,26 @@ export interface MessageType<T extends Message<T> = AnyMessage>
    * If a message field is already present, it will be merged with the
    * new data.
    */
-  fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T;
+  fromBinary(
+    bytes: Uint8Array,
+    options?: Partial<BinaryReadOptions>,
+  ): CompleteMessage<T>;
 
   /**
    * Parse a message from a JSON value.
    */
-  fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T;
+  fromJson(
+    jsonValue: JsonValue,
+    options?: Partial<JsonReadOptions>,
+  ): CompleteMessage<T>;
 
   /**
    * Parse a message from a JSON string.
    */
-  fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): T;
+  fromJsonString(
+    jsonString: string,
+    options?: Partial<JsonReadOptions>,
+  ): CompleteMessage<T>;
 
   /**
    * Returns true if the given arguments have equal field values, recursively.
@@ -358,8 +312,9 @@ export function cloneMessage<T extends Message<T>>(
       }
     } else if (member.kind == "oneof") {
       const f = member.findField(source.case);
-      copy = f
-        ? { case: source.case, value: cloneSingularField(source.value, member) }
+      copy =
+        f ?
+          { case: source.case, value: cloneSingularField(source.value, member) }
         : { case: undefined };
     } else {
       copy = cloneSingularField(source, member);
@@ -392,9 +347,9 @@ export function createMessageType<T extends Message<T>>(
     fields,
     fieldWrapper,
 
-    create(partial?: Message<T>): T {
+    create(partial?: Message<T>) {
       const message = createMessage<T>(fields);
-      applyPartialMessage(partial, message, fields);
+      applyPartialMessage(partial, message as Message<T>, fields);
       return message;
     },
 
@@ -409,7 +364,7 @@ export function createMessageType<T extends Message<T>>(
       return cloneMessage(a, fields);
     },
 
-    fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T {
+    fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>) {
       const message = this.create();
       const opt = makeBinaryReadOptions(options);
       readBinaryMessage(
@@ -423,14 +378,14 @@ export function createMessageType<T extends Message<T>>(
       return message;
     },
 
-    fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T {
+    fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>) {
       const message = this.create();
       const opts = makeJsonReadOptions(options);
       readJsonMessage(fields, typeName, jsonValue, opts, message);
       return message;
     },
 
-    fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): T {
+    fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>) {
       let json: JsonValue;
       try {
         json = JSON.parse(jsonString) as JsonValue;
@@ -472,29 +427,67 @@ export function createMessageType<T extends Message<T>>(
 /**
  * createMessage recursively builds a message filled with zero values based on the given FieldList.
  */
-function createMessage<T extends Message<T>>(fields: FieldList): T {
+export function createMessage<T extends Message<T>>(
+  fields: FieldList,
+): CompleteMessage<T> {
   const message = {} as T;
   for (const field of fields.list()) {
     const fieldKind = field.kind;
     switch (fieldKind) {
       case "scalar":
-        message[field.localName as keyof T] = (
-          field.T == ScalarType.BOOL ? false : 0
-        ) as T[keyof T];
+        if (field.repeated) {
+          message[field.localName as keyof T] = [] as T[keyof T];
+        } else {
+          switch (field.T) {
+            case ScalarType.DOUBLE:
+            case ScalarType.FLOAT:
+              message[field.localName as keyof T] = 0 as T[keyof T];
+              break;
+            case ScalarType.INT64:
+            case ScalarType.UINT64:
+            case ScalarType.INT32:
+            case ScalarType.FIXED64:
+            case ScalarType.FIXED32:
+            case ScalarType.UINT32:
+            case ScalarType.SFIXED32:
+            case ScalarType.SFIXED64:
+            case ScalarType.SINT32:
+            case ScalarType.SINT64:
+              message[field.localName as keyof T] = 0 as T[keyof T];
+              break;
+            case ScalarType.BOOL:
+              message[field.localName as keyof T] = false as T[keyof T];
+              break;
+            case ScalarType.STRING:
+              message[field.localName as keyof T] = "" as T[keyof T];
+              break;
+            case ScalarType.BYTES:
+              message[field.localName as keyof T] =
+                new Uint8Array() as T[keyof T];
+              break;
+          }
+        }
         break;
       case "enum":
-        message[field.localName as keyof T] = 0 as T[keyof T];
+        if (field.repeated) {
+          message[field.localName as keyof T] = [] as T[keyof T];
+        } else {
+          message[field.localName as keyof T] = 0 as T[keyof T];
+        }
         break;
       case "message":
         if (field.oneof) {
-          // leave oneofs undefined
           message[field.localName as keyof T] = undefined as T[keyof T];
           continue;
         }
         const messageType = resolveMessageType(field.T);
-        message[field.localName as keyof T] = createMessage(
-          messageType.fields,
-        ) as T[keyof T];
+        if (field.repeated) {
+          message[field.localName as keyof T] = [] as T[keyof T];
+        } else {
+          message[field.localName as keyof T] = createMessage(
+            messageType.fields,
+          ) as T[keyof T];
+        }
         break;
       case "map":
         message[field.localName as keyof T] = {} as T[keyof T];
@@ -503,5 +496,5 @@ function createMessage<T extends Message<T>>(fields: FieldList): T {
         field satisfies never;
     }
   }
-  return message;
+  return message as CompleteMessage<T>;
 }

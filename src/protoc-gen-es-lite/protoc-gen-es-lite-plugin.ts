@@ -1,3 +1,4 @@
+// Copyright 2024 Aperture Robotics, LLC.
 // Copyright 2021-2024 Buf Technologies, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,20 +13,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { ImportSymbol, Schema } from "@bufbuild/protoplugin/ecmascript";
-import { DescFile } from "@bufbuild/protobuf";
+import { createEcmaScriptPlugin } from "../protoplugin/index.js";
+import { generateTs } from "./typescript.js";
+// import { version } from "../package.json";
 
-/**
- * For syntax "editions", this function raises and error.
- */
-export function getNonEditionRuntime(
-  schema: Schema,
-  file: DescFile,
-): ImportSymbol {
-  if (file.syntax === "editions") {
-    throw new Error(
-      `${file.proto.name ?? ""}: syntax "editions" is not supported`,
-    );
-  }
-  return schema.runtime[file.syntax];
-}
+export const protocGenEsLite = createEcmaScriptPlugin({
+  name: "protoc-gen-es-lite",
+  version: `unknown`,
+  generateTs,
+});

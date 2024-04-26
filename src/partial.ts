@@ -1,7 +1,7 @@
-import { ScalarType } from "@bufbuild/protobuf";
 import { FieldList, resolveMessageType } from "./field.js";
 import { AnyMessage, Message } from "./message.js";
 import { isCompleteMessage } from "./is-message.js";
+import { ScalarType } from "./scalar.js";
 
 // applyPartialMessage applies a partial message to a message.
 export function applyPartialMessage<T extends Message<T>>(
@@ -46,8 +46,9 @@ export function applyPartialMessage<T extends Message<T>>(
       case "enum":
         let copy = s[localName];
         if (member.T === ScalarType.BYTES) {
-          copy = member.repeated
-            ? (copy as ArrayLike<number>[]).map(toU8Arr)
+          copy =
+            member.repeated ?
+              (copy as ArrayLike<number>[]).map(toU8Arr)
             : toU8Arr(copy);
         }
         t[localName] = copy;
@@ -97,9 +98,10 @@ export function applyPartialMessage<T extends Message<T>>(
             }
           } else {
             const messageType = mt;
-            t[localName] = isCompleteMessage(val, messageType.fields.list())
-              ? val
-              : messageType.create(val);
+            t[localName] =
+              isCompleteMessage(val, messageType.fields.list()) ? val : (
+                messageType.create(val)
+              );
           }
         }
         break;

@@ -30,4 +30,5 @@ message EchoMsg {
     ExampleEnum example_enum = 3;
     string example_string = 4;
   }
+  repeated google.protobuf.Timestamp timestamps = 5;
 }

@@ -1,9 +1,9 @@
+import { DescExtension, DescField } from "./descriptor-set.js";
+import { ScalarType } from "./scalar.js";
+
 /**
  * A field wrapper unwraps a message to a primitive value that is more
  * ergonomic for use as a message field.
- *
- * Note that this feature exists for google/protobuf/wrappers.proto
- * and cannot be used to arbitrarily modify types in generated code.
  */
 export interface FieldWrapper<T = any, U = any> {
   wrapField(value: U): T;
@@ -24,3 +24,34 @@ export function wrapField<T>(
   }
   return fieldWrapper.wrapField(value);
 }
+
+/**
+ * If the given field uses one of the well-known wrapper types, return
+ * the primitive type it wraps.
+ */
+export function getUnwrappedFieldType(
+  field: DescField | DescExtension,
+): ScalarType | undefined {
+  if (field.fieldKind !== "message") {
+    return undefined;
+  }
+  if (field.repeated) {
+    return undefined;
+  }
+  if (field.oneof != undefined) {
+    return undefined;
+  }
+  return wktWrapperToScalarType[field.message.typeName];
+}
+
+const wktWrapperToScalarType: Record<string, ScalarType> = {
+  "google.protobuf.DoubleValue": ScalarType.DOUBLE,
+  "google.protobuf.FloatValue": ScalarType.FLOAT,
+  "google.protobuf.Int64Value": ScalarType.INT64,
+  "google.protobuf.UInt64Value": ScalarType.UINT64,
+  "google.protobuf.Int32Value": ScalarType.INT32,
+  "google.protobuf.UInt32Value": ScalarType.UINT32,
+  "google.protobuf.BoolValue": ScalarType.BOOL,
+  "google.protobuf.StringValue": ScalarType.STRING,
+  "google.protobuf.BytesValue": ScalarType.BYTES,
+};
