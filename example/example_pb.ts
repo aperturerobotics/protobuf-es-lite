@@ -2,7 +2,7 @@
 // @generated from file example/example.proto (package example, syntax proto3)
 /* eslint-disable */
 
-import { createMessageType, Message, MessageType, PartialFieldInfo } from "@aptre/protobuf-es-lite";
+import { createEnumType, createMessageType, Message, MessageType, PartialFieldInfo } from "@aptre/protobuf-es-lite";
 import { Timestamp } from "@bufbuild/protobuf";
 
 export const protobufPackage = "example";
@@ -29,12 +29,12 @@ export enum ExampleEnum {
   SECOND = 2,
 }
 
-// ExampleEnum_Name maps the enum names to the values.
-export const ExampleEnum_Name = {
-  UNKNOWN: ExampleEnum.UNKNOWN,
-  FIRST: ExampleEnum.FIRST,
-  SECOND: ExampleEnum.SECOND,
-};
+// ExampleEnum_Enum is the enum type for ExampleEnum.
+export const ExampleEnum_Enum = createEnumType("example.ExampleEnum", [
+  { no: 0, name: "UNKNOWN" },
+  { no: 1, name: "FIRST" },
+  { no: 2, name: "SECOND" },
+]);
 
 /**
  * EchoMsg is the message body for Echo.
@@ -79,7 +79,7 @@ export const EchoMsg: MessageType<EchoMsg> = createMessageType(
     fields: [
         { no: 1, name: "body", kind: "scalar", T: 9 /* ScalarType.STRING */ },
         { no: 2, name: "ts", kind: "message", T: Timestamp },
-        { no: 3, name: "example_enum", kind: "enum", T: ExampleEnum, oneof: "demo" },
+        { no: 3, name: "example_enum", kind: "enum", T: ExampleEnum_Enum, oneof: "demo" },
         { no: 4, name: "example_string", kind: "scalar", T: 9 /* ScalarType.STRING */, oneof: "demo" },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,

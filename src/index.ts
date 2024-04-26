@@ -1,4 +1,12 @@
 export {
+  EnumType,
+  EnumValue,
+  EnumValueInfo,
+  ScalarType,
+  WireType,
+  LongType,
+} from "@bufbuild/protobuf";
+export {
   Message,
   CompleteMessage,
   AnyMessage,
@@ -20,3 +28,4 @@ export {
   localOneofName,
 } from "./field.js";
 export { scalarEquals, scalarZeroValue, isScalarZeroValue } from "./scalar.js";
+export { createEnumType, normalizeEnumValue } from "./enum.js";

@@ -43,6 +43,7 @@ const MessageImport = createImportSymbol("Message", libPkg);
 const MessageTypeImport = createImportSymbol("MessageType", libPkg);
 const CreateMessageTypeImport = createImportSymbol("createMessageType", libPkg);
 const PartialFieldInfo = createImportSymbol("PartialFieldInfo", libPkg);
+const CreateEnumTypeImport = createImportSymbol("createEnumType", libPkg);
 
 export function generateTs(schema: Schema) {
   for (const file of schema.files) {
@@ -130,20 +131,19 @@ function generateEnum(f: GeneratedFile, enumeration: DescEnum) {
   }
   f.print("}");
   f.print();
-  f.print("// ", enumeration, "_Name maps the enum names to the values.");
-  f.print(f.exportDecl("const", enumeration.name + "_Name"), " = {");
+  f.print("// ", enumeration, "_Enum is the enum type for ", enumeration, ".");
+  f.print(
+    f.exportDecl("const", enumeration.name + "_Enum"),
+    " = ",
+    CreateEnumTypeImport,
+    "(",
+    f.string(enumeration.typeName),
+    ", [",
+  );
   for (const value of enumeration.values) {
-    f.print(
-      "  ",
-      localName(value),
-      ": ",
-      enumeration,
-      ".",
-      localName(value),
-      ",",
-    );
+    f.print("  { no: ", value.number, ', name: "', value.name, '" },');
   }
-  f.print("};");
+  f.print("]);");
   f.print();
 }
 
@@ -310,7 +310,7 @@ export function getFieldInfoLiteral(
       }
       break;
     case "enum":
-      e.push(`kind: "enum", T: `, field.enum, `, `);
+      e.push(`kind: "enum", T: `, field.enum, `_Enum, `);
       break;
   }
   if (field.repeated) {
