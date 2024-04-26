@@ -2,7 +2,7 @@
 // @generated from file example/example.proto (package example, syntax proto3)
 /* eslint-disable */
 
-import { createMessageType, Message, MessageType } from "@aptre/protobuf-es-lite";
+import { createMessageType, Message, MessageType, PartialFieldInfo } from "@aptre/protobuf-es-lite";
 import { Timestamp } from "@bufbuild/protobuf";
 
 export const protobufPackage = "example";
@@ -66,7 +66,7 @@ export const EchoMsg: MessageType<EchoMsg> = createMessageType(
         { no: 1, name: "body", kind: "scalar", T: 9 /* ScalarType.STRING */ },
         { no: 2, name: "ts", kind: "message", T: Timestamp },
         { no: 3, name: "example_enum", kind: "enum", T: ExampleEnum },
-    ],
+    ] as readonly PartialFieldInfo[],
     packedByDefault: true,
   },
 );

@@ -41,6 +41,7 @@ const libPkg = "@aptre/protobuf-es-lite";
 const MessageImport = createImportSymbol("Message", libPkg);
 const MessageTypeImport = createImportSymbol("MessageType", libPkg);
 const CreateMessageTypeImport = createImportSymbol("createMessageType", libPkg);
+const PartialFieldInfo = createImportSymbol("PartialFieldInfo", libPkg);
 
 export function generateTs(schema: Schema) {
   for (const file of schema.files) {
@@ -104,7 +105,7 @@ function generateMessage(schema: Schema, f: GeneratedFile, message: DescMessage)
   for (const field of message.fields) {
     generateFieldInfo(f, field);
   }
-  f.print("    ],");
+  f.print("    ] as readonly ", PartialFieldInfo, "[],");
   f.print("    packedByDefault: ", message.file.proto.syntax === "proto3", ",");
   f.print("  },");
   f.print(");");
