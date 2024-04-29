@@ -7,7 +7,7 @@
 //
 
 import type { MessageType, PartialFieldInfo } from "@aptre/protobuf-es-lite";
-import { createEnumType, createMessageType, Message, Timestamp } from "../src/";
+import { createEnumType, createMessageType, Message, Timestamp } from "@aptre/protobuf-es-lite";
 
 export const protobufPackage = "example";
 

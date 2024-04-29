@@ -61,3 +61,17 @@ export {
   ListValue,
   Struct,
 } from "./google/index.js";
+export {
+  DescComments,
+  AnyDesc,
+  DescEnum,
+  DescEnumValue,
+  DescExtension,
+  DescField,
+  DescFile,
+  DescMessage,
+  DescMethod,
+  DescOneof,
+  DescService,
+  DescriptorSet,
+} from "./descriptor-set.js";
