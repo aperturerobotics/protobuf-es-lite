@@ -76,7 +76,7 @@ export type AnyMessage = {
  * - metadata for reflection-based operations
  * - common functionality like serialization
  */
-export interface MessageType<T extends Message<T>> {
+export interface MessageType<T extends Message<T> = AnyMessage> {
   /**
    * The fully qualified name of the message.
    */
@@ -100,7 +100,7 @@ export interface MessageType<T extends Message<T>> {
   /**
    * Create a deep copy.
    */
-  clone(a: T | undefined | null): T | undefined | null;
+  clone(a: Message<T> | undefined | null): Message<T> | undefined | null;
 
   /**
    * Parse from binary data, merging fields.
@@ -111,39 +111,39 @@ export interface MessageType<T extends Message<T>> {
    * If a message field is already present, it will be merged with the
    * new data.
    */
-  fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T;
+  fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Message<T>;
 
   /**
    * Parse a message from a JSON value.
    */
-  fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T;
+  fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Message<T>;
 
   /**
    * Parse a message from a JSON string.
    */
-  fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): T;
+  fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Message<T>;
 
   /**
    * Returns true if the given arguments have equal field values, recursively.
    * Will also return true if both messages are `undefined` or `null`.
    */
-  equals(a: T | undefined | null, b: T | undefined | null): boolean;
+  equals(a: Message<T> | undefined | null, b: Message<T> | undefined | null): boolean;
 
   /**
    * Serialize the message to binary data.
    */
-  toBinary(a: T, options?: Partial<BinaryWriteOptions>): Uint8Array;
+  toBinary(a: Message<T>, options?: Partial<BinaryWriteOptions>): Uint8Array;
 
   /**
    * Serialize the message to a JSON value, a JavaScript value that can be
    * passed to JSON.stringify().
    */
-  toJson(a: T, options?: Partial<JsonWriteOptions>): JsonValue;
+  toJson(a: Message<T>, options?: Partial<JsonWriteOptions>): JsonValue;
 
   /**
    * Serialize the message to a JSON string.
    */
-  toJsonString(a: T, options?: Partial<JsonWriteStringOptions>): string;
+  toJsonString(a: Message<T>, options?: Partial<JsonWriteStringOptions>): string;
 }
 
 // MessageTypeParams are parameters passed to the message type constructor.
