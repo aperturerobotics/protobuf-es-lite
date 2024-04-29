@@ -13,7 +13,6 @@ import {
   scalarZeroValue,
 } from "./scalar.js";
 import { wrapField } from "./field-wrapper.js";
-import { IMessageTypeRegistry } from "./type-registry.js";
 import { EnumType } from "./enum.js";
 import { protoInt64 } from "./proto-int64.js";
 import { protoBase64 } from "./proto-base64.js";
@@ -28,11 +27,6 @@ export interface JsonReadOptions {
    * unrecognized enum string representations.
    */
   ignoreUnknownFields: boolean;
-
-  /**
-   * This option is required to read `google.protobuf.Any`
-   */
-  typeRegistry?: IMessageTypeRegistry;
 }
 
 /**
@@ -62,11 +56,6 @@ export interface JsonWriteOptions {
    * field name.
    */
   useProtoFieldName: boolean;
-
-  /**
-   * This option is required to write `google.protobuf.Any`
-   */
-  typeRegistry?: IMessageTypeRegistry;
 }
 
 /**
@@ -210,28 +199,6 @@ export function writeMessage<T>(
           jsonValue;
       }
     }
-    // TODO: handle extensions
-    /*
-        const registry = options.typeRegistry;
-        if (registry?.findExtensionFor) {
-          for (const uf of listUnknownFields(message)) {
-            const ext = registry.findExtensionFor(typeName, uf.no);
-            if (ext && hasExtension(message, ext)) {
-              // We pass on the options as BinaryReadOptions, so that users can bring their own
-              // binary reader factory if necessary.
-              const value = getExtension(
-                message,
-                ext,
-                options as Partial<BinaryReadOptions>,
-              );
-              const jsonValue = writeField(ext.field, value, options);
-              if (jsonValue !== undefined) {
-                json[ext.field.jsonName] = jsonValue;
-              }
-            }
-          }
-        }
-        */
   } catch (e) {
     const m =
       field ?

@@ -23,7 +23,7 @@ import { Message } from "./message.js";
 import { applyPartialMessage } from "./partial.js";
 
 /**
- * Return the edition feature defaults supported by @bufbuild/protobuf.
+ * Return the edition feature defaults supported by @aptre/protobuf-es-lite.
  */
 function getFeatureSetDefaults(
   options?: Partial<BinaryReadOptions>,
@@ -55,7 +55,7 @@ export type FeatureResolverFn = (
 
 /**
  * Create an edition feature resolver with the given feature set defaults, or
- * the feature set defaults supported by @bufbuild/protobuf.
+ * the feature set defaults supported by @aptre/protobuf-es-lite.
  */
 export function createFeatureResolver(
   edition: Edition,

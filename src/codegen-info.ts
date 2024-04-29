@@ -52,7 +52,6 @@ const symbols = {
   LongType: symbolInfo(false, "./scalar.js"),
   MethodKind: symbolInfo(false, "./service-type.js"),
   MethodIdempotency: symbolInfo(false, "./service-type.js"),
-  IMessageTypeRegistry: symbolInfo(true, "./type-registry.js"),
   createEnumType: symbolInfo(false, "./enum.js"),
   createMessageType: symbolInfo(false, "./message.js"),
 } as const;
