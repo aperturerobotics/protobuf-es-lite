@@ -7,6 +7,16 @@ export {
   compareMessages,
   createMessageType,
 } from "./message.js";
+export {
+  ServiceType,
+  MethodInfo,
+  MethodInfoUnary,
+  MethodInfoServerStreaming,
+  MethodInfoClientStreaming,
+  MethodInfoBiDiStreaming,
+  MethodKind,
+  MethodIdempotency,
+} from "./service-type.js";
 export { isCompleteMessage, isCompleteField } from "./is-message.js";
 export {
   newFieldList,
