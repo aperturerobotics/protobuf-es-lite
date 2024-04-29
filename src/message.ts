@@ -100,7 +100,7 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
   /**
    * Create a deep copy.
    */
-  clone(a: Message<T> | undefined | null): Message<T> | undefined | null;
+  clone(a: T | undefined | null): T | undefined | null;
 
   /**
    * Parse from binary data, merging fields.
@@ -111,23 +111,23 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
    * If a message field is already present, it will be merged with the
    * new data.
    */
-  fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): Message<T>;
+  fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T;
 
   /**
    * Parse a message from a JSON value.
    */
-  fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): Message<T>;
+  fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T;
 
   /**
    * Parse a message from a JSON string.
    */
-  fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): Message<T>;
+  fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): T;
 
   /**
    * Returns true if the given arguments have equal field values, recursively.
    * Will also return true if both messages are `undefined` or `null`.
    */
-  equals(a: Message<T> | undefined | null, b: Message<T> | undefined | null): boolean;
+  equals(a: T | undefined | null, b: T | undefined | null): boolean;
 
   /**
    * Serialize the message to binary data.
