@@ -948,7 +948,7 @@ function findOneof(
     return undefined;
   }
   let oneof: DescOneof | undefined;
-  if (proto.proto3Optional) {
+  if (!proto.proto3Optional) {
     oneof = allOneofs[oneofIndex];
     assert(
       oneof,

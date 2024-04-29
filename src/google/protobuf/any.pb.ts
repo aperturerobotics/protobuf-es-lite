@@ -175,17 +175,13 @@ export type Any = Message<{
    * @generated from field: bytes value = 2 [packed = false, default = "", jstype = JS_NORMAL];
    */
   value?: Uint8Array;
-
 }>;
 
-export const Any: MessageType<Any> = createMessageType(
-  {
-    typeName: "google.protobuf.Any",
-    fields: [
-        { no: 1, name: "type_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "value", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
-
+export const Any: MessageType<Any> = createMessageType({
+  typeName: "google.protobuf.Any",
+  fields: [
+    { no: 1, name: "type_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "value", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});

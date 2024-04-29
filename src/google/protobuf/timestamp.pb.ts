@@ -157,17 +157,13 @@ export type Timestamp = Message<{
    * @generated from field: int32 nanos = 2 [packed = false, default = , jstype = JS_NORMAL];
    */
   nanos?: number;
-
 }>;
 
-export const Timestamp: MessageType<Timestamp> = createMessageType(
-  {
-    typeName: "google.protobuf.Timestamp",
-    fields: [
-        { no: 1, name: "seconds", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
-        { no: 2, name: "nanos", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
-
+export const Timestamp: MessageType<Timestamp> = createMessageType({
+  typeName: "google.protobuf.Timestamp",
+  fields: [
+    { no: 1, name: "seconds", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 2, name: "nanos", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});

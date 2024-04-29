@@ -306,12 +306,15 @@ export enum Field_Cardinality {
 }
 
 // Field_Cardinality_Enum is the enum type for Field_Cardinality.
-export const Field_Cardinality_Enum = createEnumType("google.protobuf.Field.Cardinality", [
-  { no: 0, name: "CARDINALITY_UNKNOWN" },
-  { no: 1, name: "CARDINALITY_OPTIONAL" },
-  { no: 2, name: "CARDINALITY_REQUIRED" },
-  { no: 3, name: "CARDINALITY_REPEATED" },
-]);
+export const Field_Cardinality_Enum = createEnumType(
+  "google.protobuf.Field.Cardinality",
+  [
+    { no: 0, name: "CARDINALITY_UNKNOWN" },
+    { no: 1, name: "CARDINALITY_OPTIONAL" },
+    { no: 2, name: "CARDINALITY_REQUIRED" },
+    { no: 3, name: "CARDINALITY_REPEATED" },
+  ],
+);
 
 /**
  * A protocol buffer option, which can be attached to a message, field,
@@ -341,19 +344,16 @@ export type Option = Message<{
    * @generated from field: google.protobuf.Any value = 2 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: Any;
-
 }>;
 
-export const Option: MessageType<Option> = createMessageType(
-  {
-    typeName: "google.protobuf.Option",
-    fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "value", kind: "message", T: () => Any },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const Option: MessageType<Option> = createMessageType({
+  typeName: "google.protobuf.Option",
+  fields: [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "value", kind: "message", T: () => Any },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * A single field of a message type.
@@ -434,27 +434,35 @@ export type Field = Message<{
    * @generated from field: string default_value = 11 [packed = false, default = "", jstype = JS_NORMAL];
    */
   defaultValue?: string;
-
 }>;
 
-export const Field: MessageType<Field> = createMessageType(
-  {
-    typeName: "google.protobuf.Field",
-    fields: [
-        { no: 1, name: "kind", kind: "enum", T: Field_Kind_Enum },
-        { no: 2, name: "cardinality", kind: "enum", T: Field_Cardinality_Enum },
-        { no: 3, name: "number", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-        { no: 4, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 6, name: "type_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 7, name: "oneof_index", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-        { no: 8, name: "packed", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-        { no: 9, name: "options", kind: "message", T: () => Option, repeated: true },
-        { no: 10, name: "json_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 11, name: "default_value", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const Field: MessageType<Field> = createMessageType({
+  typeName: "google.protobuf.Field",
+  fields: [
+    { no: 1, name: "kind", kind: "enum", T: Field_Kind_Enum },
+    { no: 2, name: "cardinality", kind: "enum", T: Field_Cardinality_Enum },
+    { no: 3, name: "number", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 4, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "type_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "oneof_index", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    { no: 8, name: "packed", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    {
+      no: 9,
+      name: "options",
+      kind: "message",
+      T: () => Option,
+      repeated: true,
+    },
+    { no: 10, name: "json_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    {
+      no: 11,
+      name: "default_value",
+      kind: "scalar",
+      T: 9 /* ScalarType.STRING */,
+    },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * A protocol buffer message type.
@@ -512,24 +520,33 @@ export type Type = Message<{
    * @generated from field: string edition = 7 [packed = false, default = "", jstype = JS_NORMAL];
    */
   edition?: string;
-
 }>;
 
-export const Type: MessageType<Type> = createMessageType(
-  {
-    typeName: "google.protobuf.Type",
-    fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "fields", kind: "message", T: () => Field, repeated: true },
-        { no: 3, name: "oneofs", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
-        { no: 4, name: "options", kind: "message", T: () => Option, repeated: true },
-        { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
-        { no: 6, name: "syntax", kind: "enum", T: Syntax_Enum },
-        { no: 7, name: "edition", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const Type: MessageType<Type> = createMessageType({
+  typeName: "google.protobuf.Type",
+  fields: [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "fields", kind: "message", T: () => Field, repeated: true },
+    {
+      no: 3,
+      name: "oneofs",
+      kind: "scalar",
+      T: 9 /* ScalarType.STRING */,
+      repeated: true,
+    },
+    {
+      no: 4,
+      name: "options",
+      kind: "message",
+      T: () => Option,
+      repeated: true,
+    },
+    { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
+    { no: 6, name: "syntax", kind: "enum", T: Syntax_Enum },
+    { no: 7, name: "edition", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Enum value definition.
@@ -559,20 +576,23 @@ export type EnumValue = Message<{
    * @generated from field: repeated google.protobuf.Option options = 3 [packed = false, default = , jstype = JS_NORMAL];
    */
   options?: Option[];
-
 }>;
 
-export const EnumValue: MessageType<EnumValue> = createMessageType(
-  {
-    typeName: "google.protobuf.EnumValue",
-    fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "number", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-        { no: 3, name: "options", kind: "message", T: () => Option, repeated: true },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const EnumValue: MessageType<EnumValue> = createMessageType({
+  typeName: "google.protobuf.EnumValue",
+  fields: [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "number", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+    {
+      no: 3,
+      name: "options",
+      kind: "message",
+      T: () => Option,
+      repeated: true,
+    },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Enum type definition.
@@ -623,21 +643,29 @@ export type Enum = Message<{
    * @generated from field: string edition = 6 [packed = false, default = "", jstype = JS_NORMAL];
    */
   edition?: string;
-
 }>;
 
-export const Enum: MessageType<Enum> = createMessageType(
-  {
-    typeName: "google.protobuf.Enum",
-    fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "enumvalue", kind: "message", T: () => EnumValue, repeated: true },
-        { no: 3, name: "options", kind: "message", T: () => Option, repeated: true },
-        { no: 4, name: "source_context", kind: "message", T: () => SourceContext },
-        { no: 5, name: "syntax", kind: "enum", T: Syntax_Enum },
-        { no: 6, name: "edition", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
-
+export const Enum: MessageType<Enum> = createMessageType({
+  typeName: "google.protobuf.Enum",
+  fields: [
+    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    {
+      no: 2,
+      name: "enumvalue",
+      kind: "message",
+      T: () => EnumValue,
+      repeated: true,
+    },
+    {
+      no: 3,
+      name: "options",
+      kind: "message",
+      T: () => Option,
+      repeated: true,
+    },
+    { no: 4, name: "source_context", kind: "message", T: () => SourceContext },
+    { no: 5, name: "syntax", kind: "enum", T: Syntax_Enum },
+    { no: 6, name: "edition", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});

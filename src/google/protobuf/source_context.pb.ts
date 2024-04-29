@@ -57,16 +57,12 @@ export type SourceContext = Message<{
    * @generated from field: string file_name = 1 [packed = false, default = "", jstype = JS_NORMAL];
    */
   fileName?: string;
-
 }>;
 
-export const SourceContext: MessageType<SourceContext> = createMessageType(
-  {
-    typeName: "google.protobuf.SourceContext",
-    fields: [
-        { no: 1, name: "file_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
-
+export const SourceContext: MessageType<SourceContext> = createMessageType({
+  typeName: "google.protobuf.SourceContext",
+  fields: [
+    { no: 1, name: "file_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});

@@ -81,18 +81,15 @@ export type ListValue = Message<{
    * @generated from field: repeated google.protobuf.Value values = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   values?: Value[];
-
 }>;
 
-export const ListValue: MessageType<ListValue> = createMessageType(
-  {
-    typeName: "google.protobuf.ListValue",
-    fields: [
-        { no: 1, name: "values", kind: "message", T: () => Value, repeated: true },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const ListValue: MessageType<ListValue> = createMessageType({
+  typeName: "google.protobuf.ListValue",
+  fields: [
+    { no: 1, name: "values", kind: "message", T: () => Value, repeated: true },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * `Value` represents a dynamically typed value which can be either
@@ -148,23 +145,30 @@ export type Value = Message<{
    * @generated from field: google.protobuf.ListValue list_value = 6 [packed = false, default = , jstype = JS_NORMAL];
    */
   listValue?: ListValue;
-
 }>;
 
-export const Value: MessageType<Value> = createMessageType(
-  {
-    typeName: "google.protobuf.Value",
-    fields: [
-        { no: 1, name: "null_value", kind: "enum", T: NullValue_Enum },
-        { no: 2, name: "number_value", kind: "scalar", T: 1 /* ScalarType.DOUBLE */ },
-        { no: 3, name: "string_value", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 4, name: "bool_value", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-        { no: 5, name: "struct_value", kind: "message", T: () => Struct },
-        { no: 6, name: "list_value", kind: "message", T: () => ListValue },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const Value: MessageType<Value> = createMessageType({
+  typeName: "google.protobuf.Value",
+  fields: [
+    { no: 1, name: "null_value", kind: "enum", T: NullValue_Enum },
+    {
+      no: 2,
+      name: "number_value",
+      kind: "scalar",
+      T: 1 /* ScalarType.DOUBLE */,
+    },
+    {
+      no: 3,
+      name: "string_value",
+      kind: "scalar",
+      T: 9 /* ScalarType.STRING */,
+    },
+    { no: 4, name: "bool_value", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+    { no: 5, name: "struct_value", kind: "message", T: () => Struct },
+    { no: 6, name: "list_value", kind: "message", T: () => ListValue },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * `Struct` represents a structured data value, consisting of fields
@@ -187,16 +191,18 @@ export type Struct = Message<{
    * @generated from field: map<string, google.protobuf.Value> fields = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   fields?: { [key: string]: Value };
-
 }>;
 
-export const Struct: MessageType<Struct> = createMessageType(
-  {
-    typeName: "google.protobuf.Struct",
-    fields: [
-        { no: 1, name: "fields", kind: "map", K: 9 /* ScalarType.STRING */, V: {kind: "message", T: () => Value} },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
-
+export const Struct: MessageType<Struct> = createMessageType({
+  typeName: "google.protobuf.Struct",
+  fields: [
+    {
+      no: 1,
+      name: "fields",
+      kind: "map",
+      K: 9 /* ScalarType.STRING */,
+      V: { kind: "message", T: () => Value },
+    },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});

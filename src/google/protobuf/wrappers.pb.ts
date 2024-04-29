@@ -69,18 +69,15 @@ export type DoubleValue = Message<{
    * @generated from field: double value = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: number;
-
 }>;
 
-export const DoubleValue: MessageType<DoubleValue> = createMessageType(
-  {
-    typeName: "google.protobuf.DoubleValue",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 1 /* ScalarType.DOUBLE */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const DoubleValue: MessageType<DoubleValue> = createMessageType({
+  typeName: "google.protobuf.DoubleValue",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 1 /* ScalarType.DOUBLE */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `float`.
@@ -100,18 +97,15 @@ export type FloatValue = Message<{
    * @generated from field: float value = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: number;
-
 }>;
 
-export const FloatValue: MessageType<FloatValue> = createMessageType(
-  {
-    typeName: "google.protobuf.FloatValue",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 2 /* ScalarType.FLOAT */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const FloatValue: MessageType<FloatValue> = createMessageType({
+  typeName: "google.protobuf.FloatValue",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 2 /* ScalarType.FLOAT */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `int64`.
@@ -131,18 +125,15 @@ export type Int64Value = Message<{
    * @generated from field: int64 value = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: bigint;
-
 }>;
 
-export const Int64Value: MessageType<Int64Value> = createMessageType(
-  {
-    typeName: "google.protobuf.Int64Value",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const Int64Value: MessageType<Int64Value> = createMessageType({
+  typeName: "google.protobuf.Int64Value",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `uint64`.
@@ -162,18 +153,15 @@ export type UInt64Value = Message<{
    * @generated from field: uint64 value = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: bigint;
-
 }>;
 
-export const UInt64Value: MessageType<UInt64Value> = createMessageType(
-  {
-    typeName: "google.protobuf.UInt64Value",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const UInt64Value: MessageType<UInt64Value> = createMessageType({
+  typeName: "google.protobuf.UInt64Value",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 4 /* ScalarType.UINT64 */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `int32`.
@@ -193,18 +181,15 @@ export type Int32Value = Message<{
    * @generated from field: int32 value = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: number;
-
 }>;
 
-export const Int32Value: MessageType<Int32Value> = createMessageType(
-  {
-    typeName: "google.protobuf.Int32Value",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const Int32Value: MessageType<Int32Value> = createMessageType({
+  typeName: "google.protobuf.Int32Value",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `uint32`.
@@ -224,18 +209,15 @@ export type UInt32Value = Message<{
    * @generated from field: uint32 value = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: number;
-
 }>;
 
-export const UInt32Value: MessageType<UInt32Value> = createMessageType(
-  {
-    typeName: "google.protobuf.UInt32Value",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const UInt32Value: MessageType<UInt32Value> = createMessageType({
+  typeName: "google.protobuf.UInt32Value",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 13 /* ScalarType.UINT32 */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `bool`.
@@ -255,18 +237,15 @@ export type BoolValue = Message<{
    * @generated from field: bool value = 1 [packed = false, default = , jstype = JS_NORMAL];
    */
   value?: boolean;
-
 }>;
 
-export const BoolValue: MessageType<BoolValue> = createMessageType(
-  {
-    typeName: "google.protobuf.BoolValue",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const BoolValue: MessageType<BoolValue> = createMessageType({
+  typeName: "google.protobuf.BoolValue",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `string`.
@@ -286,18 +265,15 @@ export type StringValue = Message<{
    * @generated from field: string value = 1 [packed = false, default = "", jstype = JS_NORMAL];
    */
   value?: string;
-
 }>;
 
-export const StringValue: MessageType<StringValue> = createMessageType(
-  {
-    typeName: "google.protobuf.StringValue",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
+export const StringValue: MessageType<StringValue> = createMessageType({
+  typeName: "google.protobuf.StringValue",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
 
 /**
  * Wrapper message for `bytes`.
@@ -317,16 +293,12 @@ export type BytesValue = Message<{
    * @generated from field: bytes value = 1 [packed = false, default = "", jstype = JS_NORMAL];
    */
   value?: Uint8Array;
-
 }>;
 
-export const BytesValue: MessageType<BytesValue> = createMessageType(
-  {
-    typeName: "google.protobuf.BytesValue",
-    fields: [
-        { no: 1, name: "value", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-);
-
+export const BytesValue: MessageType<BytesValue> = createMessageType({
+  typeName: "google.protobuf.BytesValue",
+  fields: [
+    { no: 1, name: "value", kind: "scalar", T: 12 /* ScalarType.BYTES */ },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});

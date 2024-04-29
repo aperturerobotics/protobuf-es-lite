@@ -223,7 +223,7 @@ function toResponse(
     supportedFeatures =
       supportedFeatures | CodeGeneratorResponse_Feature.SUPPORTS_EDITIONS;
   }
-  return CodeGeneratorResponse.create({
+  return {
     supportedFeatures: protoInt64.parse(supportedFeatures),
     file: files.map((f) => {
       if (f.preamble !== undefined) {
@@ -231,5 +231,5 @@ function toResponse(
       }
       return f;
     }),
-  });
+  };
 }

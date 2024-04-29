@@ -94,7 +94,7 @@ export function createFeatureResolver(
     }
     highestMatch = {
       e,
-      f: c.features ?? FeatureSet.create(),
+      f: c.features ?? {},
     };
   }
   if (highestMatch === undefined) {

@@ -4,7 +4,6 @@ import {
   isFieldSet,
   resolveMessageType,
 } from "./field.js";
-import { isCompleteMessage } from "./is-message.js";
 import { handleUnknownField, unknownFieldsSymbol } from "./unknown.js";
 import { wrapField } from "./field-wrapper.js";
 import {
@@ -119,34 +118,24 @@ export function readField(
         tgtArr.push(
           readMessageField(
             reader,
-            messageType.create(),
+            {},
             messageType.fields,
             options,
             field,
           ),
         );
       } else {
-        if (isCompleteMessage(target[localName], messageType.fields.list())) {
-          readMessageField(
-            reader,
+        target[localName] = readMessageField(
+          reader,
+          {},
+          messageType.fields,
+          options,
+          field,
+        );
+        if (messageType.fieldWrapper && !field.oneof && !field.repeated) {
+          target[localName] = messageType.fieldWrapper.unwrapField(
             target[localName],
-            messageType.fields,
-            options,
-            field,
           );
-        } else {
-          target[localName] = readMessageField(
-            reader,
-            messageType.create(),
-            messageType.fields,
-            options,
-            field,
-          );
-          if (messageType.fieldWrapper && !field.oneof && !field.repeated) {
-            target[localName] = messageType.fieldWrapper.unwrapField(
-              target[localName],
-            );
-          }
         }
       }
       break;
@@ -197,7 +186,7 @@ export function readMapEntry(
             const messageType = resolveMessageType(field.V.T);
             val = readMessageField(
               reader,
-              messageType.create(),
+              {},
               messageType.fields,
               options,
               undefined,
@@ -223,7 +212,7 @@ export function readMapEntry(
         val = field.V.T.values[0].no;
         break;
       case "message":
-        val = resolveMessageType(field.V.T).create();
+        val = {};
         break;
     }
   }

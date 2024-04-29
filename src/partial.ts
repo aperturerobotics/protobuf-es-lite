@@ -1,6 +1,5 @@
 import { FieldList, resolveMessageType } from "./field.js";
 import { AnyMessage, Message } from "./message.js";
-import { isCompleteMessage } from "./is-message.js";
 import { ScalarType } from "./scalar.js";
 
 // applyPartialMessage applies a partial message to a message.
@@ -17,7 +16,6 @@ export function applyPartialMessage<T extends Message<T>>(
       t = target as AnyMessage,
       s = source as Message<AnyMessage>;
     if (s[localName] === undefined) {
-      // TODO if source is a Message instance, we should use isFieldSet() here to support future field presence
       continue;
     }
     switch (member.kind) {
@@ -29,9 +27,8 @@ export function applyPartialMessage<T extends Message<T>>(
         const sourceField = member.findField(sk);
         let val = s[localName].value;
         if (sourceField?.kind == "message") {
-          const messageType = resolveMessageType(sourceField.T);
-          if (!isCompleteMessage(val, messageType.fields.list())) {
-            val = messageType.create(val);
+          if (val === undefined) {
+            val = {}
           }
         } else if (
           sourceField &&
@@ -70,9 +67,9 @@ export function applyPartialMessage<T extends Message<T>>(
             for (const k of Object.keys(s[localName])) {
               let val = s[localName][k];
               if (!messageType.fieldWrapper) {
-                // We only take partial input for messages that are not a wrapper type.
-                // For those messages, we recursively normalize the partial input.
-                val = messageType.create(val);
+                if (val === undefined) {
+                  val = {}
+                }
               }
               t[localName][k] = val;
             }
@@ -83,7 +80,7 @@ export function applyPartialMessage<T extends Message<T>>(
         const mt = resolveMessageType(member.T);
         if (member.repeated) {
           t[localName] = (s[localName] as any[]).map((val) =>
-            isCompleteMessage(val, mt.fields.list()) ? val : mt.create(val),
+            val ?? {},
           );
         } else {
           const val = s[localName];
@@ -97,11 +94,7 @@ export function applyPartialMessage<T extends Message<T>>(
               t[localName] = val;
             }
           } else {
-            const messageType = mt;
-            t[localName] =
-              isCompleteMessage(val, messageType.fields.list()) ? val : (
-                messageType.create(val)
-              );
+            t[localName] = val ?? {}
           }
         }
         break;

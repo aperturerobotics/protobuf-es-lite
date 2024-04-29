@@ -111,26 +111,17 @@ export interface MessageType<T extends Message<T>> {
    * If a message field is already present, it will be merged with the
    * new data.
    */
-  fromBinary(
-    bytes: Uint8Array,
-    options?: Partial<BinaryReadOptions>,
-  ): CompleteMessage<T>;
+  fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T;
 
   /**
    * Parse a message from a JSON value.
    */
-  fromJson(
-    jsonValue: JsonValue,
-    options?: Partial<JsonReadOptions>,
-  ): CompleteMessage<T>;
+  fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T;
 
   /**
    * Parse a message from a JSON string.
    */
-  fromJsonString(
-    jsonString: string,
-    options?: Partial<JsonReadOptions>,
-  ): CompleteMessage<T>;
+  fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): T;
 
   /**
    * Returns true if the given arguments have equal field values, recursively.
@@ -347,7 +338,7 @@ export function createMessageType<T extends Message<T>>(
     fields,
     fieldWrapper,
 
-    create(partial?: Message<T>) {
+    create(partial?: Message<T>): CompleteMessage<T> {
       const message = createMessage<T>(fields);
       applyPartialMessage(partial, message as Message<T>, fields);
       return message;
@@ -364,8 +355,8 @@ export function createMessageType<T extends Message<T>>(
       return cloneMessage(a, fields);
     },
 
-    fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>) {
-      const message = this.create();
+    fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T {
+      const message = {} as T;
       const opt = makeBinaryReadOptions(options);
       readBinaryMessage(
         message,
@@ -378,8 +369,8 @@ export function createMessageType<T extends Message<T>>(
       return message;
     },
 
-    fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>) {
-      const message = this.create();
+    fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T {
+      const message = {} as T;
       const opts = makeJsonReadOptions(options);
       readJsonMessage(fields, typeName, jsonValue, opts, message);
       return message;
