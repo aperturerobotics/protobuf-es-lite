@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import type { FileInfo } from "./generated-file.js";
-import ts, { ModuleDetectionKind } from "typescript";
+import ts from "typescript";
 import {
   createDefaultMapFromNodeModules,
   createSystem,
@@ -45,7 +45,7 @@ const defaultOptions: ts.CompilerOptions = {
 
   // Language and Environment
   lib: [],
-  moduleDetection: ModuleDetectionKind.Force,
+  moduleDetection: ts.ModuleDetectionKind.Force,
   target: ts.ScriptTarget.ES2020,
 
   // Completeness
@@ -121,8 +121,8 @@ export function transpile(
     (
       fileName: string,
       data: string,
-      writeByteOrderMark: boolean,
-      onError?: (message: string) => void,
+      _writeByteOrderMark: boolean,
+      _onError?: (message: string) => void,
       sourceFiles?: readonly ts.SourceFile[],
     ) => {
       // We have to go through some hoops here because the header we add to each

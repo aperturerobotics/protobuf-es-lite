@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { Printable } from "./protoplugin/ecmascript";
+import type { Printable } from "./protoplugin/ecmascript/index.js";
 import { DescEnumValue, DescExtension, DescField } from "./descriptor-set.js";
 import { FieldDescriptorProto_Label } from "./google/protobuf/descriptor.pb.js";
 import { codegenInfo } from "./codegen-info.js";

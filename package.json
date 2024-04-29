@@ -20,24 +20,27 @@
   "bin": {
     "protoc-gen-es-lite": "bin/protoc-gen-es-lite"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     },
     "./protoplugin": {
       "import": "./dist/protoplugin/index.js",
-      "require": "./dist/protoplugin/index.js"
+      "require": "./dist/protoplugin/index.js",
+      "types": "./dist/protoplugin/index.d.ts"
     },
     "./protoplugin/ecmascript": {
       "import": "./dist/protoplugin/ecmascript/index.js",
-      "require": "./dist/protoplugin/ecmascript/index.js"
+      "require": "./dist/protoplugin/ecmascript/index.js",
+      "types": "./dist/protoplugin/ecmascript/index.d.ts"
     },
     "./google": {
       "import": "./dist/google/index.js",
-      "require": "./dist/google/index.js"
+      "require": "./dist/google/index.js",
+      "types": "./dist/google/index.d.ts"
     }
   },
   "engines": {

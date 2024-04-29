@@ -36,8 +36,8 @@
 
 //
 
-import type { MessageType, PartialFieldInfo } from "../../";
-import { createMessageType, Message } from "../../";
+import type { MessageType, PartialFieldInfo } from "../../index.js";
+import { createMessageType, Message } from "../../index.js";
 import type { Syntax } from "./type.pb.js";
 import { Option, Syntax_Enum } from "./type.pb.js";
 import { SourceContext } from "./source_context.pb.js";

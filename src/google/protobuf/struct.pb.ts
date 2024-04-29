@@ -36,8 +36,8 @@
 
 //
 
-import type { MessageType, PartialFieldInfo } from "../../";
-import { createEnumType, createMessageType, Message } from "../../";
+import type { MessageType, PartialFieldInfo } from "../../index.js";
+import { createEnumType, createMessageType, Message } from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 

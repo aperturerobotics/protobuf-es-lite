@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
     "esModuleInterop": false,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -15,8 +17,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
-    "moduleResolution": "Node16",
-    "module": "Node16",
     "verbatimModuleSyntax": true,
     "skipLibCheck": false,
     "declaration": true

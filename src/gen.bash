@@ -12,4 +12,4 @@ protoc \
     --es-lite_opt ts_nocheck=false \
     --proto_path ./ \
     ./google/protobuf/*.proto
-sed -i -e "s/@aptre\/protobuf-es-lite/..\/..\//g" ./google/protobuf/*.pb.ts
+sed -i -e "s/@aptre\/protobuf-es-lite/..\/..\/index.js/g" ./google/protobuf/*.pb.ts

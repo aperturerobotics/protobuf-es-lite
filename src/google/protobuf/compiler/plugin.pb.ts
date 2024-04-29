@@ -27,7 +27,7 @@ import {
   createMessageType,
   MessageType,
   PartialFieldInfo,
-} from "../../../";
+} from "../../../index.js";
 import { FileDescriptorProto, GeneratedCodeInfo } from "../descriptor.pb.js";
 
 export const protobufPackage = "google.protobuf.compiler";

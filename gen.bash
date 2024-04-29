@@ -9,16 +9,21 @@ if [ -z "SKIP_PROTOC" ] && [ $# -eq 0 ]; then
     exit 1
 fi
 
+# Fixes errors with the generated esm using require()
+# https://github.com/evanw/esbuild/issues/1944#issuecomment-1936954345
+ESM_BANNER='import{fileURLToPath}from"node:url";import{dirname}from"node:path";import{createRequire as topLevelCreateRequire}from"node:module";const require=topLevelCreateRequire(import.meta.url);const __filename=fileURLToPath(import.meta.url);const __dirname=dirname(__filename);'
+
 echo "Compiling ts..."
 mkdir -p ./dist/dev
 esbuild ./bin/dev/protoc-gen-es-lite \
-                             --bundle \
-                             --sourcemap \
-                             --platform=node \
-                             --format=cjs \
-                             --external:typescript \
-                             --banner:js="$ESM_BANNER" \
-                             --outfile=./dist/dev/protoc-gen-es-lite
+        --bundle \
+        --sourcemap \
+        --platform=node \
+        --format=esm \
+        --external:typescript \
+        --external:@typescript/vfs \
+        --banner:js="$ESM_BANNER" \
+        --outfile=./dist/dev/protoc-gen-es-lite
 
 if [ -z "$SKIP_PROTOC" ]; then
     protoc \
