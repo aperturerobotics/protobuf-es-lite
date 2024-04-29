@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {runNodeJs} from "../dist/protoplugin.js";
+import {runNodeJs} from "../dist/protoplugin/index.js";
 import {protocGenEsLite} from "../dist/protoc-gen-es-lite/protoc-gen-es-lite-plugin.js";
 
 runNodeJs(protocGenEsLite);
