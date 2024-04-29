@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const {runNodeJs} = require("../../src/protoplugin");
-const {protocGenEsLite} = require("../../src/protoc-gen-es-lite");
+import { runNodeJs } from "../../src/protoplugin/index.js";
+import { protocGenEsLite } from "../../src/protoc-gen-es-lite/index.js";
 
 runNodeJs(protocGenEsLite);
