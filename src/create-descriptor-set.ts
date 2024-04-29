@@ -1191,7 +1191,7 @@ function declarationString(this: DescField | DescExtension): string {
       this.proto.type == FieldDescriptorProto_Type.BYTES ||
       this.proto.type == FieldDescriptorProto_Type.STRING
     ) {
-      defaultValue = '"' + defaultValue.replace('"', '\\"') + '"';
+      defaultValue = '"' + defaultValue.replace(/"/g, '\\"') + '"';
     }
     options.push(`default = ${defaultValue}`);
   }
