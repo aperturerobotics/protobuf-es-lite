@@ -33,11 +33,10 @@ Lightweight Protobuf 3 RPCs are implemented in [StaRPC] for Go and TypeScript.
 
 ## Purpose
 
-[protobuf-es] generates a class for each message type and uses interfaces for
-partial or plain messages. The problem is that most js applications would
-usually prefer to construct and pass around PartialMessage in many cases (like
-using messages as part of React props) and end up having to use the wrapper
-interfaces very frequently:
+[protobuf-es] generates a class for each message with interfaces for partial or
+plain messages. It is significantly easier to construct and pass around plain
+and partial messages as opposed to using classes, and plain messages work better
+when used in React props/state. This ends up looking like:
 
 [protobuf-es]: https://github.com/bufbuild/protobuf-es
 
