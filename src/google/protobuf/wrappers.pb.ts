@@ -110,6 +110,14 @@ export const DoubleValue: MessageType<DoubleValue> & typeof DoubleValue_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.DOUBLE },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: number | null | undefined): DoubleValue {
+          return DoubleValue.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: DoubleValue): number | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     DoubleValue_Wkt,
   );
@@ -164,6 +172,14 @@ export const FloatValue: MessageType<FloatValue> & typeof FloatValue_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.FLOAT },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: number | null | undefined): FloatValue {
+          return FloatValue.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: FloatValue): number | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     FloatValue_Wkt,
   );
@@ -218,6 +234,14 @@ export const Int64Value: MessageType<Int64Value> & typeof Int64Value_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.INT64 },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: bigint | null | undefined): Int64Value {
+          return Int64Value.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: Int64Value): bigint | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     Int64Value_Wkt,
   );
@@ -272,6 +296,14 @@ export const UInt64Value: MessageType<UInt64Value> & typeof UInt64Value_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT64 },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: bigint | null | undefined): UInt64Value {
+          return UInt64Value.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: UInt64Value): bigint | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     UInt64Value_Wkt,
   );
@@ -326,6 +358,14 @@ export const Int32Value: MessageType<Int32Value> & typeof Int32Value_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.INT32 },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: number | null | undefined): Int32Value {
+          return Int32Value.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: Int32Value): number | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     Int32Value_Wkt,
   );
@@ -380,6 +420,14 @@ export const UInt32Value: MessageType<UInt32Value> & typeof UInt32Value_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT32 },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: number | null | undefined): UInt32Value {
+          return UInt32Value.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: UInt32Value): number | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     UInt32Value_Wkt,
   );
@@ -434,6 +482,14 @@ export const BoolValue: MessageType<BoolValue> & typeof BoolValue_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.BOOL },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: boolean | null | undefined): BoolValue {
+          return BoolValue.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: BoolValue): boolean | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     BoolValue_Wkt,
   );
@@ -488,6 +544,14 @@ export const StringValue: MessageType<StringValue> & typeof StringValue_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.STRING },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: string | null | undefined): StringValue {
+          return StringValue.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: StringValue): string | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     StringValue_Wkt,
   );
@@ -542,6 +606,14 @@ export const BytesValue: MessageType<BytesValue> & typeof BytesValue_Wkt =
         { no: 1, name: "value", kind: "scalar", T: ScalarType.BYTES },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: Uint8Array | null | undefined): BytesValue {
+          return BytesValue.create({ value: value ?? undefined });
+        },
+        unwrapField(msg: BytesValue): Uint8Array | null | undefined {
+          return msg.value;
+        },
+      } as const,
     },
     BytesValue_Wkt,
   );

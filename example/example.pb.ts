@@ -3,7 +3,13 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "@aptre/protobuf-es-lite";
-import { createEnumType, createMessageType, Message, ScalarType, Timestamp } from "@aptre/protobuf-es-lite";
+import {
+  createEnumType,
+  createMessageType,
+  Message,
+  ScalarType,
+  Timestamp,
+} from "@aptre/protobuf-es-lite";
 
 export const protobufPackage = "example";
 
@@ -58,35 +64,54 @@ export type EchoMsg = Message<{
   /**
    * @generated from oneof example.EchoMsg.demo
    */
-  demo?: {
-    value?: undefined,
-    case: undefined
-  } | {
-    /**
-     * @generated from field: example.ExampleEnum example_enum = 3;
-     */
-    value: ExampleEnum;
-    case: "exampleEnum";
-  } | {
-    /**
-     * @generated from field: string example_string = 4;
-     */
-    value: string;
-    case: "exampleString";
-  };
-
+  demo?:
+    | {
+        value?: undefined;
+        case: undefined;
+      }
+    | {
+        /**
+         * @generated from field: example.ExampleEnum example_enum = 3;
+         */
+        value: ExampleEnum;
+        case: "exampleEnum";
+      }
+    | {
+        /**
+         * @generated from field: string example_string = 4;
+         */
+        value: string;
+        case: "exampleString";
+      };
 }>;
 
 // EchoMsg contains the message type declaration for EchoMsg.
 export const EchoMsg: MessageType<EchoMsg> = createMessageType({
-    typeName: "example.EchoMsg",
-    fields: [
-        { no: 1, name: "body", kind: "scalar", T: ScalarType.STRING },
-        { no: 2, name: "ts", kind: "message", T: () => Timestamp },
-        { no: 3, name: "example_enum", kind: "enum", T: ExampleEnum_Enum, oneof: "demo" },
-        { no: 4, name: "example_string", kind: "scalar", T: ScalarType.STRING, oneof: "demo" },
-        { no: 5, name: "timestamps", kind: "message", T: () => Timestamp, repeated: true },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
+  typeName: "example.EchoMsg",
+  fields: [
+    { no: 1, name: "body", kind: "scalar", T: ScalarType.STRING },
+    { no: 2, name: "ts", kind: "message", T: () => Timestamp },
+    {
+      no: 3,
+      name: "example_enum",
+      kind: "enum",
+      T: ExampleEnum_Enum,
+      oneof: "demo",
+    },
+    {
+      no: 4,
+      name: "example_string",
+      kind: "scalar",
+      T: ScalarType.STRING,
+      oneof: "demo",
+    },
+    {
+      no: 5,
+      name: "timestamps",
+      kind: "message",
+      T: () => Timestamp,
+      repeated: true,
+    },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
 });
-

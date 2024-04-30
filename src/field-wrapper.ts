@@ -6,9 +6,9 @@ import { ScalarType } from "./scalar.js";
  * ergonomic for use as a message field.
  */
 export interface FieldWrapper<T = any, U = any> {
-  wrapField(value: U): T;
+  wrapField(value: U | null | undefined): T;
 
-  unwrapField(value: T): U;
+  unwrapField(value: T): U | null | undefined;
 }
 
 /**

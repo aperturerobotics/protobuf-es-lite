@@ -252,6 +252,7 @@ function generateMessage(
   if (reWkt == null) {
     f.print("});");
   } else {
+    generateWktFieldWrapper(f, message, reWkt);
     f.print("}, ", message, "_Wkt);");
   }
   f.print();
@@ -1143,5 +1144,50 @@ function generateWktMethods(
       f.print("    }");
       f.print("  },");
       break;
+  }
+}
+
+function generateWktFieldWrapper(
+  f: GeneratedFile,
+  message: DescMessage,
+  ref: DescWkt,
+) {
+  switch (ref?.typeName) {
+    case "google.protobuf.DoubleValue":
+    case "google.protobuf.FloatValue":
+    case "google.protobuf.Int64Value":
+    case "google.protobuf.UInt64Value":
+    case "google.protobuf.Int32Value":
+    case "google.protobuf.UInt32Value":
+    case "google.protobuf.BoolValue":
+    case "google.protobuf.StringValue":
+    case "google.protobuf.BytesValue": {
+      const { typing } = getFieldTypeInfo(ref.value);
+      f.print("  fieldWrapper: {");
+      f.print(
+        "    wrapField(value: ",
+        typing,
+        " | null | undefined): ",
+        message,
+        " {",
+      );
+      f.print(
+        "      return ",
+        message,
+        ".create({ value: value ?? undefined });",
+      );
+      f.print("    },");
+      f.print(
+        "    unwrapField(msg: ",
+        message,
+        "): ",
+        typing,
+        " | null | undefined {",
+      );
+      f.print("      return msg.", localName(ref.value), ";");
+      f.print("    }");
+      f.print("  } as const,");
+      break;
+    }
   }
 }
