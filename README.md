@@ -47,11 +47,9 @@ const myMessageBin = new MyMessage(myMessage).toBinary()
 
 [ts-proto] generates an interface for each protobuf message and a const message
 declaration object containing the marshal and unmarshal functions. This allows
-using interfaces and plain messages everywhere and does not need classes.
+using interfaces and plain messages everywhere:
 
 [ts-proto]: https://github.com/stephenh/ts-proto
-
-This fork generates the ts-proto style with the protoc-gen-es tools:
 
 ```typescript
 // Create a partial MyMessage with just one field sets.
@@ -62,7 +60,7 @@ const myCompleteMessage: MyMessage = MyMessage.create(myMessage)
 const myMessageBin = MyMessage.toBinary(myCompleteMessage)
 ```
 
-**Note that the default Message is equivalent to PartialMessage<T> from protobuf-es.**
+This fork generates the ts-proto style with the protobuf-es code generator.
 
 ## Installation
 
