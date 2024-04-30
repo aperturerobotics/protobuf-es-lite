@@ -28,7 +28,7 @@ export function applyPartialMessage<T extends Message<T>>(
         let val = s[localName].value;
         if (sourceField?.kind == "message") {
           if (val === undefined) {
-            val = {}
+            val = {};
           }
         } else if (
           sourceField &&
@@ -68,7 +68,7 @@ export function applyPartialMessage<T extends Message<T>>(
               let val = s[localName][k];
               if (!messageType.fieldWrapper) {
                 if (val === undefined) {
-                  val = {}
+                  val = {};
                 }
               }
               t[localName][k] = val;
@@ -79,9 +79,7 @@ export function applyPartialMessage<T extends Message<T>>(
       case "message":
         const mt = resolveMessageType(member.T);
         if (member.repeated) {
-          t[localName] = (s[localName] as any[]).map((val) =>
-            val ?? {},
-          );
+          t[localName] = (s[localName] as any[]).map((val) => val ?? {});
         } else {
           const val = s[localName];
           if (mt.fieldWrapper) {
@@ -94,7 +92,7 @@ export function applyPartialMessage<T extends Message<T>>(
               t[localName] = val;
             }
           } else {
-            t[localName] = val ?? {}
+            t[localName] = val ?? {};
           }
         }
         break;

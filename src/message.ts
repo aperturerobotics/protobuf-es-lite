@@ -111,17 +111,26 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
    * If a message field is already present, it will be merged with the
    * new data.
    */
-  fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T;
+  fromBinary(
+    bytes: Uint8Array | null | undefined,
+    options?: Partial<BinaryReadOptions>,
+  ): T;
 
   /**
    * Parse a message from a JSON value.
    */
-  fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T;
+  fromJson(
+    jsonValue: JsonValue | null | undefined,
+    options?: Partial<JsonReadOptions>,
+  ): T;
 
   /**
    * Parse a message from a JSON string.
    */
-  fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): T;
+  fromJsonString(
+    jsonString: string | null | undefined,
+    options?: Partial<JsonReadOptions>,
+  ): T;
 
   /**
    * Returns true if the given arguments have equal field values, recursively.
@@ -143,7 +152,10 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
   /**
    * Serialize the message to a JSON string.
    */
-  toJsonString(a: Message<T>, options?: Partial<JsonWriteStringOptions>): string;
+  toJsonString(
+    a: Message<T>,
+    options?: Partial<JsonWriteStringOptions>,
+  ): string;
 }
 
 // MessageTypeParams are parameters passed to the message type constructor.
@@ -355,37 +367,52 @@ export function createMessageType<T extends Message<T>>(
       return cloneMessage(a, fields);
     },
 
-    fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): T {
+    fromBinary(
+      bytes: Uint8Array | null | undefined,
+      options?: Partial<BinaryReadOptions>,
+    ): T {
       const message = {} as T;
-      const opt = makeBinaryReadOptions(options);
-      readBinaryMessage(
-        message,
-        fields,
-        opt.readerFactory(bytes),
-        bytes.byteLength,
-        opt,
-        delimitedMessageEncoding,
-      );
-      return message;
-    },
-
-    fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): T {
-      const message = {} as T;
-      const opts = makeJsonReadOptions(options);
-      readJsonMessage(fields, typeName, jsonValue, opts, message);
-      return message;
-    },
-
-    fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>) {
-      let json: JsonValue;
-      try {
-        json = JSON.parse(jsonString) as JsonValue;
-      } catch (e) {
-        throw new Error(
-          `cannot decode ${typeName} from JSON: ${
-            e instanceof Error ? e.message : String(e)
-          }`,
+      if (bytes && bytes.length) {
+        const opt = makeBinaryReadOptions(options);
+        readBinaryMessage(
+          message,
+          fields,
+          opt.readerFactory(bytes),
+          bytes.byteLength,
+          opt,
+          delimitedMessageEncoding,
         );
+      }
+      return message;
+    },
+
+    fromJson(
+      jsonValue: JsonValue | null | undefined,
+      options?: Partial<JsonReadOptions>,
+    ): T {
+      const message = {} as T;
+      if (jsonValue != null) {
+        const opts = makeJsonReadOptions(options);
+        readJsonMessage(fields, typeName, jsonValue, opts, message);
+      }
+      return message;
+    },
+
+    fromJsonString(
+      jsonString: string | null | undefined,
+      options?: Partial<JsonReadOptions>,
+    ) {
+      let json: JsonValue | null = null;
+      if (jsonString) {
+        try {
+          json = JSON.parse(jsonString) as JsonValue;
+        } catch (e) {
+          throw new Error(
+            `cannot decode ${typeName} from JSON: ${
+              e instanceof Error ? e.message : String(e)
+            }`,
+          );
+        }
       }
       return this.fromJson(json, options);
     },

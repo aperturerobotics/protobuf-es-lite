@@ -116,13 +116,7 @@ export function readField(
           tgtArr = target[localName] = [];
         }
         tgtArr.push(
-          readMessageField(
-            reader,
-            {},
-            messageType.fields,
-            options,
-            field,
-          ),
+          readMessageField(reader, {}, messageType.fields, options, field),
         );
       } else {
         target[localName] = readMessageField(
