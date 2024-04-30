@@ -33,11 +33,13 @@ Lightweight Protobuf 3 RPCs are implemented in [StaRPC] for Go and TypeScript.
 
 ## Purpose
 
-The main protoc-gen-es generates a class for each message type. Partial messages
-or plain messages are available with the PartialMessage and PlainMessage
-typescript types. The problem with this is that most js applications would
-usually construct and pass around PlainMessage in most cases, so we end up
-having to write the PlainMessage type very frequently:
+[protobuf-es] generates a class for each message type and uses interfaces for
+partial or plain messages. The problem is that most js applications would
+usually prefer to construct and pass around PartialMessage in many cases (like
+using messages as part of React props) and end up having to use the wrapper
+interfaces very frequently:
+
+[protobuf-es]: https://github.com/bufbuild/protobuf-es
 
 ```typescript
 const myMessage: PlainMessage<MyMessage> = {body: "Hello world"}
