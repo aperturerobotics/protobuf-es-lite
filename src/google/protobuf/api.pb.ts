@@ -88,22 +88,27 @@ export type Method = Message<{
    * @generated from field: google.protobuf.Syntax syntax = 7;
    */
   syntax?: Syntax;
-
 }>;
 
 // Method contains the message type declaration for Method.
 export const Method: MessageType<Method> = createMessageType({
-    typeName: "google.protobuf.Method",
-    fields: [
-        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-        { no: 2, name: "request_type_url", kind: "scalar", T: ScalarType.STRING },
-        { no: 3, name: "request_streaming", kind: "scalar", T: ScalarType.BOOL },
-        { no: 4, name: "response_type_url", kind: "scalar", T: ScalarType.STRING },
-        { no: 5, name: "response_streaming", kind: "scalar", T: ScalarType.BOOL },
-        { no: 6, name: "options", kind: "message", T: () => Option, repeated: true },
-        { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
+  typeName: "google.protobuf.Method",
+  fields: [
+    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
+    { no: 2, name: "request_type_url", kind: "scalar", T: ScalarType.STRING },
+    { no: 3, name: "request_streaming", kind: "scalar", T: ScalarType.BOOL },
+    { no: 4, name: "response_type_url", kind: "scalar", T: ScalarType.STRING },
+    { no: 5, name: "response_streaming", kind: "scalar", T: ScalarType.BOOL },
+    {
+      no: 6,
+      name: "options",
+      kind: "message",
+      T: () => Option,
+      repeated: true,
+    },
+    { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
 });
 
 /**
@@ -202,17 +207,16 @@ export type Mixin = Message<{
    * @generated from field: string root = 2;
    */
   root?: string;
-
 }>;
 
 // Mixin contains the message type declaration for Mixin.
 export const Mixin: MessageType<Mixin> = createMessageType({
-    typeName: "google.protobuf.Mixin",
-    fields: [
-        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-        { no: 2, name: "root", kind: "scalar", T: ScalarType.STRING },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
+  typeName: "google.protobuf.Mixin",
+  fields: [
+    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
+    { no: 2, name: "root", kind: "scalar", T: ScalarType.STRING },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
 });
 
 /**
@@ -292,21 +296,31 @@ export type Api = Message<{
    * @generated from field: google.protobuf.Syntax syntax = 7;
    */
   syntax?: Syntax;
-
 }>;
 
 // Api contains the message type declaration for Api.
 export const Api: MessageType<Api> = createMessageType({
-    typeName: "google.protobuf.Api",
-    fields: [
-        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-        { no: 2, name: "methods", kind: "message", T: () => Method, repeated: true },
-        { no: 3, name: "options", kind: "message", T: () => Option, repeated: true },
-        { no: 4, name: "version", kind: "scalar", T: ScalarType.STRING },
-        { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
-        { no: 6, name: "mixins", kind: "message", T: () => Mixin, repeated: true },
-        { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
+  typeName: "google.protobuf.Api",
+  fields: [
+    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
+    {
+      no: 2,
+      name: "methods",
+      kind: "message",
+      T: () => Method,
+      repeated: true,
+    },
+    {
+      no: 3,
+      name: "options",
+      kind: "message",
+      T: () => Option,
+      repeated: true,
+    },
+    { no: 4, name: "version", kind: "scalar", T: ScalarType.STRING },
+    { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
+    { no: 6, name: "mixins", kind: "message", T: () => Mixin, repeated: true },
+    { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
 });
-

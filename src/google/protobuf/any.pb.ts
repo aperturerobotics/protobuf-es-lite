@@ -32,8 +32,20 @@
 // @generated from file google/protobuf/any.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { IMessageTypeRegistry, JsonReadOptions, JsonValue, JsonWriteOptions, MessageType, PartialFieldInfo } from "../../index.js";
-import { applyPartialMessage, createMessageType, Message, ScalarType } from "../../index.js";
+import type {
+  IMessageTypeRegistry,
+  JsonReadOptions,
+  JsonValue,
+  JsonWriteOptions,
+  MessageType,
+  PartialFieldInfo,
+} from "../../index.js";
+import {
+  applyPartialMessage,
+  createMessageType,
+  Message,
+  ScalarType,
+} from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -168,7 +180,6 @@ export type Any = Message<{
    * @generated from field: bytes value = 2;
    */
   value?: Uint8Array;
-
 }>;
 
 // Any_Wkt contains the well-known-type overrides for Any.
@@ -180,12 +191,19 @@ const Any_Wkt = {
     }
     const messageType = options?.typeRegistry?.findMessage(typeName);
     if (!messageType) {
-      throw new Error(`cannot encode message google.protobuf.Any to JSON: "${typeName}" is not in the type registry`);
+      throw new Error(
+        `cannot encode message google.protobuf.Any to JSON: "${typeName}" is not in the type registry`,
+      );
     }
     const message = messageType.fromBinary(msg.value);
     let json = messageType.toJson(message, options);
-    if (typeName.startsWith("google.protobuf.") || (json === null || Array.isArray(json) || typeof json !== "object")) {
-      json = {value: json};
+    if (
+      typeName.startsWith("google.protobuf.") ||
+      json === null ||
+      Array.isArray(json) ||
+      typeof json !== "object"
+    ) {
+      json = { value: json };
     }
     json["@type"] = typeName;
     return json;
@@ -193,21 +211,35 @@ const Any_Wkt = {
 
   fromJson(json: JsonValue, options?: Partial<JsonReadOptions>) {
     if (json === null || Array.isArray(json) || typeof json != "object") {
-      throw new Error(`cannot decode message google.protobuf.Any from JSON: expected object but got ${json === null ? "null" : Array.isArray(json) ? "array" : typeof json}`);
+      throw new Error(
+        `cannot decode message google.protobuf.Any from JSON: expected object but got ${
+          json === null ? "null"
+          : Array.isArray(json) ? "array"
+          : typeof json
+        }`,
+      );
     }
     if (Object.keys(json).length == 0) {
       return {} as Any;
     }
     const typeUrl = json["@type"];
     if (typeof typeUrl != "string" || typeUrl == "") {
-      throw new Error(`cannot decode message google.protobuf.Any from JSON: "@type" is empty`);
+      throw new Error(
+        `cannot decode message google.protobuf.Any from JSON: "@type" is empty`,
+      );
     }
-    const typeName = typeUrl, messageType = options?.typeRegistry?.findMessage(typeName);
+    const typeName = typeUrl,
+      messageType = options?.typeRegistry?.findMessage(typeName);
     if (!messageType) {
-      throw new Error(`cannot decode message google.protobuf.Any from JSON: ${typeUrl} is not in the type registry`);
+      throw new Error(
+        `cannot decode message google.protobuf.Any from JSON: ${typeUrl} is not in the type registry`,
+      );
     }
     let message;
-    if (typeName.startsWith("google.protobuf.") &&  Object.prototype.hasOwnProperty.call(json, "value")) {
+    if (
+      typeName.startsWith("google.protobuf.") &&
+      Object.prototype.hasOwnProperty.call(json, "value")
+    ) {
       message = messageType.fromJson(json["value"], options);
     } else {
       const copy = Object.assign({}, json);
@@ -219,12 +251,20 @@ const Any_Wkt = {
     return out;
   },
 
-  packFrom<T extends Message<T>>(out: Any, message: Message<T>, messageType: MessageType<T>): void {
+  packFrom<T extends Message<T>>(
+    out: Any,
+    message: Message<T>,
+    messageType: MessageType<T>,
+  ): void {
     out.value = messageType.toBinary(message);
     out.typeUrl = messageType.typeName;
   },
 
-  unpackTo<T extends Message<T>>(msg: Any, target: Message<T>, targetMessageType: MessageType<T>): boolean {
+  unpackTo<T extends Message<T>>(
+    msg: Any,
+    target: Message<T>,
+    targetMessageType: MessageType<T>,
+  ): boolean {
     if (!Any.is(msg, targetMessageType)) {
       return false;
     }
@@ -233,25 +273,40 @@ const Any_Wkt = {
     return true;
   },
 
-  unpack<T extends Message<T>>(msg: Any, registry: IMessageTypeRegistry): {message: Message<T>, messageType: MessageType<T>} | undefined {
-    const typeUrl = msg.typeUrl
+  unpack<T extends Message<T>>(
+    msg: Any,
+    registry: IMessageTypeRegistry,
+  ): { message: Message<T>; messageType: MessageType<T> } | undefined {
+    const typeUrl = msg.typeUrl;
     const messageType = !!typeUrl && registry.findMessage<T>(typeUrl);
-    return messageType ? {message: messageType.fromBinary(msg.value), messageType} : undefined;
+    return messageType ?
+        { message: messageType.fromBinary(msg.value), messageType }
+      : undefined;
   },
 
   is(msg: Any, msgType: MessageType | string): boolean {
-    const name = msg.typeUrl
-    return !!name && (typeof msgType === 'string' ? name === msgType : name === msgType.typeName);
+    const name = msg.typeUrl;
+    return (
+      !!name &&
+      (typeof msgType === "string" ?
+        name === msgType
+      : name === msgType.typeName)
+    );
   },
 };
 
 // Any contains the message type declaration for Any.
-export const Any: MessageType<Any> & typeof Any_Wkt = createMessageType<Any, typeof Any_Wkt>({
+export const Any: MessageType<Any> & typeof Any_Wkt = createMessageType<
+  Any,
+  typeof Any_Wkt
+>(
+  {
     typeName: "google.protobuf.Any",
     fields: [
-        { no: 1, name: "type_url", kind: "scalar", T: ScalarType.STRING },
-        { no: 2, name: "value", kind: "scalar", T: ScalarType.BYTES },
+      { no: 1, name: "type_url", kind: "scalar", T: ScalarType.STRING },
+      { no: 2, name: "value", kind: "scalar", T: ScalarType.BYTES },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-}, Any_Wkt);
-
+  },
+  Any_Wkt,
+);

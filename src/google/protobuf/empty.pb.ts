@@ -49,15 +49,11 @@ export const protobufPackage = "google.protobuf";
  *
  * @generated from message google.protobuf.Empty
  */
-export type Empty = Message<{
-
-}>;
+export type Empty = Message<{}>;
 
 // Empty contains the message type declaration for Empty.
 export const Empty: MessageType<Empty> = createMessageType({
-    typeName: "google.protobuf.Empty",
-    fields: [
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
+  typeName: "google.protobuf.Empty",
+  fields: [] as readonly PartialFieldInfo[],
+  packedByDefault: true,
 });
-

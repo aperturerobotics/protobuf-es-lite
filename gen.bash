@@ -25,11 +25,30 @@ esbuild ./bin/dev/protoc-gen-es-lite \
         --banner:js="$ESM_BANNER" \
         --outfile=./dist/dev/protoc-gen-es-lite
 
+prettier_ts() {
+    local PROTO_FILES=$1
+    FMT_TS_FILES=()
+    for proto_file in ${PROTO_FILES}; do
+        proto_dir=$(dirname $proto_file)
+        proto_name=${proto_file%".proto"}
+        TS_FILES=$(git ls-files ":(glob)${proto_name}*.pb.ts")
+        if [ -n "$TS_FILES" ]; then FMT_TS_FILES+=($TS_FILES); fi
+    done
+    if [ -n "${FMT_TS_FILES}" ]; then
+        prettier --config .prettierrc.yaml -w ${FMT_TS_FILES[@]}
+    fi
+}
+
 if [ -z "$SKIP_PROTOC" ]; then
+    PROTO_FILES=$(git ls-files $@)
     protoc \
         --plugin=./dist/dev/protoc-gen-es-lite \
         --es-lite_out=. \
         --es-lite_opt target=ts \
         --es-lite_opt ts_nocheck=false \
-        $(git ls-files $@)
+        $PROTO_FILES
+
+    if [ -z "$SKIP_PRETTIER" ]; then
+        prettier_ts "${PROTO_FILES}"
+    fi
 fi

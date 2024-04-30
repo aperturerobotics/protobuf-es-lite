@@ -32,8 +32,21 @@
 // @generated from file google/protobuf/struct.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { JsonObject, JsonReadOptions, JsonValue, JsonWriteOptions, MessageType, PartialFieldInfo } from "../../index.js";
-import { createEnumType, createMessageType, jsonDebugValue, Message, ScalarType } from "../../index.js";
+import type {
+  JsonObject,
+  JsonReadOptions,
+  JsonValue,
+  JsonWriteOptions,
+  MessageType,
+  PartialFieldInfo,
+} from "../../index.js";
+import {
+  createEnumType,
+  createMessageType,
+  jsonDebugValue,
+  Message,
+  ScalarType,
+} from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -73,32 +86,50 @@ export type ListValue = Message<{
    * @generated from field: repeated google.protobuf.Value values = 1;
    */
   values?: Value[];
-
 }>;
 
 // ListValue_Wkt contains the well-known-type overrides for ListValue.
 const ListValue_Wkt = {
   toJson(msg: ListValue, options?: Partial<JsonWriteOptions>): JsonValue {
-    return msg.values?.map(v => Value.toJson(v, options)) ?? [];
+    return msg.values?.map((v) => Value.toJson(v, options)) ?? [];
   },
-  fromJson(json: JsonValue | null | undefined, options?: Partial<JsonReadOptions>): ListValue {
-    if (json == null) { return {}; }
-    if (!Array.isArray(json)) {
-      throw new Error(`cannot decode google.protobuf.ListValue from JSON ${jsonDebugValue(json)}`);
+  fromJson(
+    json: JsonValue | null | undefined,
+    options?: Partial<JsonReadOptions>,
+  ): ListValue {
+    if (json == null) {
+      return {};
     }
-    const values: Value[] = json.map(v => Value.fromJson(v, options));
-    return {values: values} as ListValue;
+    if (!Array.isArray(json)) {
+      throw new Error(
+        `cannot decode google.protobuf.ListValue from JSON ${jsonDebugValue(
+          json,
+        )}`,
+      );
+    }
+    const values: Value[] = json.map((v) => Value.fromJson(v, options));
+    return { values: values } as ListValue;
   },
 };
 
 // ListValue contains the message type declaration for ListValue.
-export const ListValue: MessageType<ListValue> & typeof ListValue_Wkt = createMessageType<ListValue, typeof ListValue_Wkt>({
-    typeName: "google.protobuf.ListValue",
-    fields: [
-        { no: 1, name: "values", kind: "message", T: () => Value, repeated: true },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, ListValue_Wkt);
+export const ListValue: MessageType<ListValue> & typeof ListValue_Wkt =
+  createMessageType<ListValue, typeof ListValue_Wkt>(
+    {
+      typeName: "google.protobuf.ListValue",
+      fields: [
+        {
+          no: 1,
+          name: "values",
+          kind: "message",
+          T: () => Value,
+          repeated: true,
+        },
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    ListValue_Wkt,
+  );
 
 /**
  * `Value` represents a dynamically typed value which can be either
@@ -111,65 +142,70 @@ export const ListValue: MessageType<ListValue> & typeof ListValue_Wkt = createMe
  * @generated from message google.protobuf.Value
  */
 export type Value = Message<{
-
   /**
    * The kind of value.
    *
    * @generated from oneof google.protobuf.Value.kind
    */
-  kind?: {
-    value?: undefined,
-    case: undefined
-  } | {
-    /**
-     * Represents a null value.
-     *
-     * @generated from field: google.protobuf.NullValue null_value = 1;
-     */
-    value: NullValue;
-    case: "nullValue";
-  } | {
-    /**
-     * Represents a double value.
-     *
-     * @generated from field: double number_value = 2;
-     */
-    value: number;
-    case: "numberValue";
-  } | {
-    /**
-     * Represents a string value.
-     *
-     * @generated from field: string string_value = 3;
-     */
-    value: string;
-    case: "stringValue";
-  } | {
-    /**
-     * Represents a boolean value.
-     *
-     * @generated from field: bool bool_value = 4;
-     */
-    value: boolean;
-    case: "boolValue";
-  } | {
-    /**
-     * Represents a structured value.
-     *
-     * @generated from field: google.protobuf.Struct struct_value = 5;
-     */
-    value: Struct;
-    case: "structValue";
-  } | {
-    /**
-     * Represents a repeated `Value`.
-     *
-     * @generated from field: google.protobuf.ListValue list_value = 6;
-     */
-    value: ListValue;
-    case: "listValue";
-  };
-
+  kind?:
+    | {
+        value?: undefined;
+        case: undefined;
+      }
+    | {
+        /**
+         * Represents a null value.
+         *
+         * @generated from field: google.protobuf.NullValue null_value = 1;
+         */
+        value: NullValue;
+        case: "nullValue";
+      }
+    | {
+        /**
+         * Represents a double value.
+         *
+         * @generated from field: double number_value = 2;
+         */
+        value: number;
+        case: "numberValue";
+      }
+    | {
+        /**
+         * Represents a string value.
+         *
+         * @generated from field: string string_value = 3;
+         */
+        value: string;
+        case: "stringValue";
+      }
+    | {
+        /**
+         * Represents a boolean value.
+         *
+         * @generated from field: bool bool_value = 4;
+         */
+        value: boolean;
+        case: "boolValue";
+      }
+    | {
+        /**
+         * Represents a structured value.
+         *
+         * @generated from field: google.protobuf.Struct struct_value = 5;
+         */
+        value: Struct;
+        case: "structValue";
+      }
+    | {
+        /**
+         * Represents a repeated `Value`.
+         *
+         * @generated from field: google.protobuf.ListValue list_value = 6;
+         */
+        value: ListValue;
+        case: "listValue";
+      };
 }>;
 
 // Value_Wkt contains the well-known-type overrides for Value.
@@ -188,16 +224,25 @@ const Value_Wkt = {
       case "stringValue":
         return msg.kind.value;
       case "structValue":
-        return Struct.toJson(msg.kind.value, {...options, emitDefaultValues: true});
+        return Struct.toJson(msg.kind.value, {
+          ...options,
+          emitDefaultValues: true,
+        });
       case "listValue":
-        return ListValue.toJson(msg.kind.value, {...options, emitDefaultValues: true});
+        return ListValue.toJson(msg.kind.value, {
+          ...options,
+          emitDefaultValues: true,
+        });
       case null:
       case undefined:
       default:
         return null;
     }
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): Value {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): Value {
     const msg = {} as Value;
     switch (typeof json) {
       case "number":
@@ -219,25 +264,71 @@ const Value_Wkt = {
         }
         break;
       default:
-        throw new Error(`cannot decode google.protobuf.Value from JSON ${jsonDebugValue(json)}`);
+        throw new Error(
+          `cannot decode google.protobuf.Value from JSON ${jsonDebugValue(
+            json,
+          )}`,
+        );
     }
     return msg;
   },
 };
 
 // Value contains the message type declaration for Value.
-export const Value: MessageType<Value> & typeof Value_Wkt = createMessageType<Value, typeof Value_Wkt>({
+export const Value: MessageType<Value> & typeof Value_Wkt = createMessageType<
+  Value,
+  typeof Value_Wkt
+>(
+  {
     typeName: "google.protobuf.Value",
     fields: [
-        { no: 1, name: "null_value", kind: "enum", T: NullValue_Enum, oneof: "kind" },
-        { no: 2, name: "number_value", kind: "scalar", T: ScalarType.DOUBLE, oneof: "kind" },
-        { no: 3, name: "string_value", kind: "scalar", T: ScalarType.STRING, oneof: "kind" },
-        { no: 4, name: "bool_value", kind: "scalar", T: ScalarType.BOOL, oneof: "kind" },
-        { no: 5, name: "struct_value", kind: "message", T: () => Struct, oneof: "kind" },
-        { no: 6, name: "list_value", kind: "message", T: () => ListValue, oneof: "kind" },
+      {
+        no: 1,
+        name: "null_value",
+        kind: "enum",
+        T: NullValue_Enum,
+        oneof: "kind",
+      },
+      {
+        no: 2,
+        name: "number_value",
+        kind: "scalar",
+        T: ScalarType.DOUBLE,
+        oneof: "kind",
+      },
+      {
+        no: 3,
+        name: "string_value",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        oneof: "kind",
+      },
+      {
+        no: 4,
+        name: "bool_value",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        oneof: "kind",
+      },
+      {
+        no: 5,
+        name: "struct_value",
+        kind: "message",
+        T: () => Struct,
+        oneof: "kind",
+      },
+      {
+        no: 6,
+        name: "list_value",
+        kind: "message",
+        T: () => ListValue,
+        oneof: "kind",
+      },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-}, Value_Wkt);
+  },
+  Value_Wkt,
+);
 
 /**
  * `Struct` represents a structured data value, consisting of fields
@@ -258,37 +349,54 @@ export type Struct = Message<{
    * @generated from field: map<string, google.protobuf.Value> fields = 1;
    */
   fields?: { [key: string]: Value };
-
 }>;
 
 // Struct_Wkt contains the well-known-type overrides for Struct.
 const Struct_Wkt = {
   toJson(msg: Struct, options?: Partial<JsonWriteOptions>): JsonValue {
-    const json: JsonObject = {}
-    if (!msg.fields) { return json; }
+    const json: JsonObject = {};
+    if (!msg.fields) {
+      return json;
+    }
     for (const [k, v] of Object.entries(msg.fields)) {
       json[k] = v != null ? Value.toJson(v, options) : null;
     }
     return json;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): Struct {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): Struct {
     if (typeof json != "object" || json == null || Array.isArray(json)) {
-      throw new Error(`cannot decode google.protobuf.Struct from JSON ${jsonDebugValue(json)}`);
+      throw new Error(
+        `cannot decode google.protobuf.Struct from JSON ${jsonDebugValue(
+          json,
+        )}`,
+      );
     }
     const fields = {} as { [key: string]: Value };
     for (const [k, v] of Object.entries(json)) {
       fields[k] = Value.fromJson(v);
     }
-    return {fields: fields} as Struct;
+    return { fields: fields } as Struct;
   },
 };
 
 // Struct contains the message type declaration for Struct.
-export const Struct: MessageType<Struct> & typeof Struct_Wkt = createMessageType<Struct, typeof Struct_Wkt>({
-    typeName: "google.protobuf.Struct",
-    fields: [
-        { no: 1, name: "fields", kind: "map", K: ScalarType.STRING, V: {kind: "message", T: () => Value} },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, Struct_Wkt);
-
+export const Struct: MessageType<Struct> & typeof Struct_Wkt =
+  createMessageType<Struct, typeof Struct_Wkt>(
+    {
+      typeName: "google.protobuf.Struct",
+      fields: [
+        {
+          no: 1,
+          name: "fields",
+          kind: "map",
+          K: ScalarType.STRING,
+          V: { kind: "message", T: () => Value },
+        },
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    Struct_Wkt,
+  );

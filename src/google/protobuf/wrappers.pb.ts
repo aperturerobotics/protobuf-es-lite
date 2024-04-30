@@ -42,8 +42,21 @@
 // @generated from file google/protobuf/wrappers.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { JsonReadOptions, JsonValue, JsonWriteOptions, MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, jsonReadScalar, jsonWriteScalar, LongType, Message, ScalarType } from "../../index.js";
+import type {
+  JsonReadOptions,
+  JsonValue,
+  JsonWriteOptions,
+  MessageType,
+  PartialFieldInfo,
+} from "../../index.js";
+import {
+  createMessageType,
+  jsonReadScalar,
+  jsonWriteScalar,
+  LongType,
+  Message,
+  ScalarType,
+} from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -63,7 +76,6 @@ export type DoubleValue = Message<{
    * @generated from field: double value = 1;
    */
   value?: number;
-
 }>;
 
 // DoubleValue_Wkt contains the well-known-type overrides for DoubleValue.
@@ -71,13 +83,18 @@ const DoubleValue_Wkt = {
   toJson(msg: DoubleValue, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.DOUBLE, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): DoubleValue {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): DoubleValue {
     try {
-      return {value: jsonReadScalar(ScalarType.DOUBLE, json, LongType.BIGINT)} as DoubleValue;
+      return {
+        value: jsonReadScalar(ScalarType.DOUBLE, json, LongType.BIGINT),
+      } as DoubleValue;
     } catch (e) {
       let m = `cannot decode message google.protobuf.DoubleValue from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -85,13 +102,17 @@ const DoubleValue_Wkt = {
 };
 
 // DoubleValue contains the message type declaration for DoubleValue.
-export const DoubleValue: MessageType<DoubleValue> & typeof DoubleValue_Wkt = createMessageType<DoubleValue, typeof DoubleValue_Wkt>({
-    typeName: "google.protobuf.DoubleValue",
-    fields: [
+export const DoubleValue: MessageType<DoubleValue> & typeof DoubleValue_Wkt =
+  createMessageType<DoubleValue, typeof DoubleValue_Wkt>(
+    {
+      typeName: "google.protobuf.DoubleValue",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.DOUBLE },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, DoubleValue_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    DoubleValue_Wkt,
+  );
 
 /**
  * Wrapper message for `float`.
@@ -109,7 +130,6 @@ export type FloatValue = Message<{
    * @generated from field: float value = 1;
    */
   value?: number;
-
 }>;
 
 // FloatValue_Wkt contains the well-known-type overrides for FloatValue.
@@ -117,13 +137,18 @@ const FloatValue_Wkt = {
   toJson(msg: FloatValue, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.FLOAT, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): FloatValue {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): FloatValue {
     try {
-      return {value: jsonReadScalar(ScalarType.FLOAT, json, LongType.BIGINT)} as FloatValue;
+      return {
+        value: jsonReadScalar(ScalarType.FLOAT, json, LongType.BIGINT),
+      } as FloatValue;
     } catch (e) {
       let m = `cannot decode message google.protobuf.FloatValue from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -131,13 +156,17 @@ const FloatValue_Wkt = {
 };
 
 // FloatValue contains the message type declaration for FloatValue.
-export const FloatValue: MessageType<FloatValue> & typeof FloatValue_Wkt = createMessageType<FloatValue, typeof FloatValue_Wkt>({
-    typeName: "google.protobuf.FloatValue",
-    fields: [
+export const FloatValue: MessageType<FloatValue> & typeof FloatValue_Wkt =
+  createMessageType<FloatValue, typeof FloatValue_Wkt>(
+    {
+      typeName: "google.protobuf.FloatValue",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.FLOAT },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, FloatValue_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    FloatValue_Wkt,
+  );
 
 /**
  * Wrapper message for `int64`.
@@ -155,7 +184,6 @@ export type Int64Value = Message<{
    * @generated from field: int64 value = 1;
    */
   value?: bigint;
-
 }>;
 
 // Int64Value_Wkt contains the well-known-type overrides for Int64Value.
@@ -163,13 +191,18 @@ const Int64Value_Wkt = {
   toJson(msg: Int64Value, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.INT64, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): Int64Value {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): Int64Value {
     try {
-      return {value: jsonReadScalar(ScalarType.INT64, json, LongType.BIGINT)} as Int64Value;
+      return {
+        value: jsonReadScalar(ScalarType.INT64, json, LongType.BIGINT),
+      } as Int64Value;
     } catch (e) {
       let m = `cannot decode message google.protobuf.Int64Value from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -177,13 +210,17 @@ const Int64Value_Wkt = {
 };
 
 // Int64Value contains the message type declaration for Int64Value.
-export const Int64Value: MessageType<Int64Value> & typeof Int64Value_Wkt = createMessageType<Int64Value, typeof Int64Value_Wkt>({
-    typeName: "google.protobuf.Int64Value",
-    fields: [
+export const Int64Value: MessageType<Int64Value> & typeof Int64Value_Wkt =
+  createMessageType<Int64Value, typeof Int64Value_Wkt>(
+    {
+      typeName: "google.protobuf.Int64Value",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.INT64 },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, Int64Value_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    Int64Value_Wkt,
+  );
 
 /**
  * Wrapper message for `uint64`.
@@ -201,7 +238,6 @@ export type UInt64Value = Message<{
    * @generated from field: uint64 value = 1;
    */
   value?: bigint;
-
 }>;
 
 // UInt64Value_Wkt contains the well-known-type overrides for UInt64Value.
@@ -209,13 +245,18 @@ const UInt64Value_Wkt = {
   toJson(msg: UInt64Value, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.UINT64, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): UInt64Value {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): UInt64Value {
     try {
-      return {value: jsonReadScalar(ScalarType.UINT64, json, LongType.BIGINT)} as UInt64Value;
+      return {
+        value: jsonReadScalar(ScalarType.UINT64, json, LongType.BIGINT),
+      } as UInt64Value;
     } catch (e) {
       let m = `cannot decode message google.protobuf.UInt64Value from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -223,13 +264,17 @@ const UInt64Value_Wkt = {
 };
 
 // UInt64Value contains the message type declaration for UInt64Value.
-export const UInt64Value: MessageType<UInt64Value> & typeof UInt64Value_Wkt = createMessageType<UInt64Value, typeof UInt64Value_Wkt>({
-    typeName: "google.protobuf.UInt64Value",
-    fields: [
+export const UInt64Value: MessageType<UInt64Value> & typeof UInt64Value_Wkt =
+  createMessageType<UInt64Value, typeof UInt64Value_Wkt>(
+    {
+      typeName: "google.protobuf.UInt64Value",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT64 },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, UInt64Value_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    UInt64Value_Wkt,
+  );
 
 /**
  * Wrapper message for `int32`.
@@ -247,7 +292,6 @@ export type Int32Value = Message<{
    * @generated from field: int32 value = 1;
    */
   value?: number;
-
 }>;
 
 // Int32Value_Wkt contains the well-known-type overrides for Int32Value.
@@ -255,13 +299,18 @@ const Int32Value_Wkt = {
   toJson(msg: Int32Value, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.INT32, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): Int32Value {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): Int32Value {
     try {
-      return {value: jsonReadScalar(ScalarType.INT32, json, LongType.BIGINT)} as Int32Value;
+      return {
+        value: jsonReadScalar(ScalarType.INT32, json, LongType.BIGINT),
+      } as Int32Value;
     } catch (e) {
       let m = `cannot decode message google.protobuf.Int32Value from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -269,13 +318,17 @@ const Int32Value_Wkt = {
 };
 
 // Int32Value contains the message type declaration for Int32Value.
-export const Int32Value: MessageType<Int32Value> & typeof Int32Value_Wkt = createMessageType<Int32Value, typeof Int32Value_Wkt>({
-    typeName: "google.protobuf.Int32Value",
-    fields: [
+export const Int32Value: MessageType<Int32Value> & typeof Int32Value_Wkt =
+  createMessageType<Int32Value, typeof Int32Value_Wkt>(
+    {
+      typeName: "google.protobuf.Int32Value",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.INT32 },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, Int32Value_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    Int32Value_Wkt,
+  );
 
 /**
  * Wrapper message for `uint32`.
@@ -293,7 +346,6 @@ export type UInt32Value = Message<{
    * @generated from field: uint32 value = 1;
    */
   value?: number;
-
 }>;
 
 // UInt32Value_Wkt contains the well-known-type overrides for UInt32Value.
@@ -301,13 +353,18 @@ const UInt32Value_Wkt = {
   toJson(msg: UInt32Value, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.UINT32, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): UInt32Value {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): UInt32Value {
     try {
-      return {value: jsonReadScalar(ScalarType.UINT32, json, LongType.BIGINT)} as UInt32Value;
+      return {
+        value: jsonReadScalar(ScalarType.UINT32, json, LongType.BIGINT),
+      } as UInt32Value;
     } catch (e) {
       let m = `cannot decode message google.protobuf.UInt32Value from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -315,13 +372,17 @@ const UInt32Value_Wkt = {
 };
 
 // UInt32Value contains the message type declaration for UInt32Value.
-export const UInt32Value: MessageType<UInt32Value> & typeof UInt32Value_Wkt = createMessageType<UInt32Value, typeof UInt32Value_Wkt>({
-    typeName: "google.protobuf.UInt32Value",
-    fields: [
+export const UInt32Value: MessageType<UInt32Value> & typeof UInt32Value_Wkt =
+  createMessageType<UInt32Value, typeof UInt32Value_Wkt>(
+    {
+      typeName: "google.protobuf.UInt32Value",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT32 },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, UInt32Value_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    UInt32Value_Wkt,
+  );
 
 /**
  * Wrapper message for `bool`.
@@ -339,7 +400,6 @@ export type BoolValue = Message<{
    * @generated from field: bool value = 1;
    */
   value?: boolean;
-
 }>;
 
 // BoolValue_Wkt contains the well-known-type overrides for BoolValue.
@@ -347,13 +407,18 @@ const BoolValue_Wkt = {
   toJson(msg: BoolValue, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.BOOL, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): BoolValue {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): BoolValue {
     try {
-      return {value: jsonReadScalar(ScalarType.BOOL, json, LongType.BIGINT)} as BoolValue;
+      return {
+        value: jsonReadScalar(ScalarType.BOOL, json, LongType.BIGINT),
+      } as BoolValue;
     } catch (e) {
       let m = `cannot decode message google.protobuf.BoolValue from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -361,13 +426,17 @@ const BoolValue_Wkt = {
 };
 
 // BoolValue contains the message type declaration for BoolValue.
-export const BoolValue: MessageType<BoolValue> & typeof BoolValue_Wkt = createMessageType<BoolValue, typeof BoolValue_Wkt>({
-    typeName: "google.protobuf.BoolValue",
-    fields: [
+export const BoolValue: MessageType<BoolValue> & typeof BoolValue_Wkt =
+  createMessageType<BoolValue, typeof BoolValue_Wkt>(
+    {
+      typeName: "google.protobuf.BoolValue",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.BOOL },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, BoolValue_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    BoolValue_Wkt,
+  );
 
 /**
  * Wrapper message for `string`.
@@ -385,7 +454,6 @@ export type StringValue = Message<{
    * @generated from field: string value = 1;
    */
   value?: string;
-
 }>;
 
 // StringValue_Wkt contains the well-known-type overrides for StringValue.
@@ -393,13 +461,18 @@ const StringValue_Wkt = {
   toJson(msg: StringValue, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.STRING, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): StringValue {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): StringValue {
     try {
-      return {value: jsonReadScalar(ScalarType.STRING, json, LongType.BIGINT)} as StringValue;
+      return {
+        value: jsonReadScalar(ScalarType.STRING, json, LongType.BIGINT),
+      } as StringValue;
     } catch (e) {
       let m = `cannot decode message google.protobuf.StringValue from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -407,13 +480,17 @@ const StringValue_Wkt = {
 };
 
 // StringValue contains the message type declaration for StringValue.
-export const StringValue: MessageType<StringValue> & typeof StringValue_Wkt = createMessageType<StringValue, typeof StringValue_Wkt>({
-    typeName: "google.protobuf.StringValue",
-    fields: [
+export const StringValue: MessageType<StringValue> & typeof StringValue_Wkt =
+  createMessageType<StringValue, typeof StringValue_Wkt>(
+    {
+      typeName: "google.protobuf.StringValue",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.STRING },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, StringValue_Wkt);
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    StringValue_Wkt,
+  );
 
 /**
  * Wrapper message for `bytes`.
@@ -431,7 +508,6 @@ export type BytesValue = Message<{
    * @generated from field: bytes value = 1;
    */
   value?: Uint8Array;
-
 }>;
 
 // BytesValue_Wkt contains the well-known-type overrides for BytesValue.
@@ -439,13 +515,18 @@ const BytesValue_Wkt = {
   toJson(msg: BytesValue, _options?: Partial<JsonWriteOptions>): JsonValue {
     return jsonWriteScalar(ScalarType.BYTES, msg.value)!;
   },
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): BytesValue {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): BytesValue {
     try {
-      return {value: jsonReadScalar(ScalarType.BYTES, json, LongType.BIGINT)} as BytesValue;
+      return {
+        value: jsonReadScalar(ScalarType.BYTES, json, LongType.BIGINT),
+      } as BytesValue;
     } catch (e) {
       let m = `cannot decode message google.protobuf.BytesValue from JSON"`;
       if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`
+        m += `: ${e.message}`;
       }
       throw new Error(m);
     }
@@ -453,11 +534,14 @@ const BytesValue_Wkt = {
 };
 
 // BytesValue contains the message type declaration for BytesValue.
-export const BytesValue: MessageType<BytesValue> & typeof BytesValue_Wkt = createMessageType<BytesValue, typeof BytesValue_Wkt>({
-    typeName: "google.protobuf.BytesValue",
-    fields: [
+export const BytesValue: MessageType<BytesValue> & typeof BytesValue_Wkt =
+  createMessageType<BytesValue, typeof BytesValue_Wkt>(
+    {
+      typeName: "google.protobuf.BytesValue",
+      fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.BYTES },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, BytesValue_Wkt);
-
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    BytesValue_Wkt,
+  );

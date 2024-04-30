@@ -32,8 +32,19 @@
 // @generated from file google/protobuf/duration.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { JsonReadOptions, JsonValue, MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, jsonDebugValue, Message, protoInt64, ScalarType } from "../../index.js";
+import type {
+  JsonReadOptions,
+  JsonValue,
+  MessageType,
+  PartialFieldInfo,
+} from "../../index.js";
+import {
+  createMessageType,
+  jsonDebugValue,
+  Message,
+  protoInt64,
+  ScalarType,
+} from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -121,22 +132,36 @@ export type Duration = Message<{
    * @generated from field: int32 nanos = 2;
    */
   nanos?: number;
-
 }>;
 
 // Duration_Wkt contains the well-known-type overrides for Duration.
 const Duration_Wkt = {
-  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): Duration {
+  fromJson(
+    json: JsonValue | null | undefined,
+    _options?: Partial<JsonReadOptions>,
+  ): Duration {
     if (typeof json !== "string") {
-      throw new Error(`cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`);
+      throw new Error(
+        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(
+          json,
+        )}`,
+      );
     }
     const match = json.match(/^(-?[0-9]+)(?:\.([0-9]+))?s/);
     if (match === null) {
-      throw new Error(`cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`);
+      throw new Error(
+        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(
+          json,
+        )}`,
+      );
     }
     const longSeconds = Number(match[1]);
     if (longSeconds > 315576000000 || longSeconds < -315576000000) {
-      throw new Error(`cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`);
+      throw new Error(
+        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(
+          json,
+        )}`,
+      );
     }
     const msg = {} as Duration;
     msg.seconds = protoInt64.parse(longSeconds);
@@ -153,7 +178,9 @@ const Duration_Wkt = {
     const secs = Number(msg.seconds ?? 0);
     const nanos = Number(msg.nanos ?? 0);
     if (secs > 315576000000 || secs < -315576000000) {
-      throw new Error(`cannot encode google.protobuf.Duration to JSON: value out of range`);
+      throw new Error(
+        `cannot encode google.protobuf.Duration to JSON: value out of range`,
+      );
     }
     let text = secs.toString();
     if (nanos !== 0) {
@@ -166,7 +193,7 @@ const Duration_Wkt = {
       }
       text += "." + nanosStr;
       if (nanos < 0 && secs === 0) {
-          text = "-" + text;
+        text = "-" + text;
       }
     }
     return text + "s";
@@ -174,12 +201,15 @@ const Duration_Wkt = {
 };
 
 // Duration contains the message type declaration for Duration.
-export const Duration: MessageType<Duration> & typeof Duration_Wkt = createMessageType<Duration, typeof Duration_Wkt>({
-    typeName: "google.protobuf.Duration",
-    fields: [
+export const Duration: MessageType<Duration> & typeof Duration_Wkt =
+  createMessageType<Duration, typeof Duration_Wkt>(
+    {
+      typeName: "google.protobuf.Duration",
+      fields: [
         { no: 1, name: "seconds", kind: "scalar", T: ScalarType.INT64 },
         { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-}, Duration_Wkt);
-
+      ] as readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    Duration_Wkt,
+  );

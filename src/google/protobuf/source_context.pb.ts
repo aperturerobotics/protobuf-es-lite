@@ -51,15 +51,13 @@ export type SourceContext = Message<{
    * @generated from field: string file_name = 1;
    */
   fileName?: string;
-
 }>;
 
 // SourceContext contains the message type declaration for SourceContext.
 export const SourceContext: MessageType<SourceContext> = createMessageType({
-    typeName: "google.protobuf.SourceContext",
-    fields: [
-        { no: 1, name: "file_name", kind: "scalar", T: ScalarType.STRING },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
+  typeName: "google.protobuf.SourceContext",
+  fields: [
+    { no: 1, name: "file_name", kind: "scalar", T: ScalarType.STRING },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
 });
-
