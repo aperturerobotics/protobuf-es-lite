@@ -23,18 +23,18 @@ import {
 import { applyPartialMessage } from "./partial.js";
 import { ScalarType, scalarEquals } from "./scalar.js";
 import {
-  makeReadOptions as makeBinaryReadOptions,
-  readMessage as readBinaryMessage,
-  makeWriteOptions as makeBinaryWriteOptions,
-  writeMessage as writeBinaryMessage,
+  binaryReadMessage,
+  binaryWriteMessage,
+  binaryMakeReadOptions,
+  binaryMakeWriteOptions,
   BinaryReadOptions,
   BinaryWriteOptions,
 } from "./binary.js";
 import {
-  makeReadOptions as makeJsonReadOptions,
-  readMessage as readJsonMessage,
-  makeWriteOptions as makeJsonWriteOptions,
-  writeMessage as writeJsonMessage,
+  jsonReadMessage,
+  jsonWriteMessage,
+  jsonMakeReadOptions,
+  jsonMakeWriteOptions,
   JsonValue,
   JsonReadOptions,
   JsonWriteOptions,
@@ -159,8 +159,10 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
 }
 
 // MessageTypeParams are parameters passed to the message type constructor.
-export interface MessageTypeParams<T extends Message<T>>
-  extends Pick<MessageType<T>, "typeName" | "fieldWrapper"> {
+export type MessageTypeParams<T extends Message<T>> = Pick<
+  MessageType<T>,
+  "fieldWrapper" | "typeName"
+> & {
   /**
    * Fields contains the list of message fields.
    */
@@ -175,13 +177,119 @@ export interface MessageTypeParams<T extends Message<T>>
    * delimited fields (proto3) or with (proto2 legacy).
    */
   delimitedMessageEncoding?: boolean;
-  /**
-   * Serialize the message to a JSON value, a JavaScript value that can be
-   * passed to JSON.stringify().
-   *
-   * When passed as MessageTypeParams this will override the default serializer behavior.
-   */
-  toJson?: MessageType<T>["toJson"];
+};
+
+/**
+ * createMessageType creates a new message type.
+ *
+ * The argument `packedByDefault` specifies whether fields that do not specify
+ * `packed` should be packed (proto3) or unpacked (proto2).
+ */
+export function createMessageType<
+  T extends Message<T>,
+  E extends Record<string, Function> = {},
+>(params: MessageTypeParams<T>, exts?: E): MessageType<T> & E {
+  const {
+    fields: fieldsSource,
+    typeName,
+    packedByDefault,
+    delimitedMessageEncoding,
+    fieldWrapper,
+  } = params;
+  const fields = newFieldList(fieldsSource as FieldListSource, packedByDefault);
+
+  const mt: MessageType<T> = {
+    typeName,
+    fields,
+    fieldWrapper,
+
+    create(partial?: Message<T>): CompleteMessage<T> {
+      const message = createMessage<T>(fields);
+      applyPartialMessage(partial, message as Message<T>, fields);
+      return message;
+    },
+
+    equals(a: T | undefined | null, b: T | undefined | null): boolean {
+      return compareMessages(fields, a, b);
+    },
+
+    clone(a: T | undefined | null): T | undefined | null {
+      if (a == null) {
+        return a;
+      }
+      return cloneMessage(a, fields);
+    },
+
+    fromBinary(
+      bytes: Uint8Array | null | undefined,
+      options?: Partial<BinaryReadOptions>,
+    ): T {
+      const message = {} as T;
+      if (bytes && bytes.length) {
+        const opt = binaryMakeReadOptions(options);
+        binaryReadMessage(
+          message,
+          fields,
+          opt.readerFactory(bytes),
+          bytes.byteLength,
+          opt,
+          delimitedMessageEncoding,
+        );
+      }
+      return message;
+    },
+
+    fromJson(
+      jsonValue: JsonValue | null | undefined,
+      options?: Partial<JsonReadOptions>,
+    ): T {
+      const message = {} as T;
+      if (jsonValue != null) {
+        const opts = jsonMakeReadOptions(options);
+        jsonReadMessage(fields, typeName, jsonValue, opts, message);
+      }
+      return message;
+    },
+
+    fromJsonString(
+      jsonString: string | null | undefined,
+      options?: Partial<JsonReadOptions>,
+    ) {
+      let json: JsonValue | null = null;
+      if (jsonString) {
+        try {
+          json = JSON.parse(jsonString) as JsonValue;
+        } catch (e) {
+          throw new Error(
+            `cannot decode ${typeName} from JSON: ${
+              e instanceof Error ? e.message : String(e)
+            }`,
+          );
+        }
+      }
+      return mt.fromJson(json, options);
+    },
+
+    toBinary(a: T, options?: Partial<BinaryWriteOptions>): Uint8Array {
+      const opt = binaryMakeWriteOptions(options);
+      const writer = opt.writerFactory();
+      binaryWriteMessage(a, fields, writer, opt);
+      return writer.finish();
+    },
+
+    toJson(a: T, options?: Partial<JsonWriteOptions>): JsonValue {
+      const opt = jsonMakeWriteOptions(options);
+      return jsonWriteMessage(a, fields, opt);
+    },
+
+    toJsonString(a: T, options?: Partial<JsonWriteStringOptions>): string {
+      const value = mt.toJson(a, options);
+      return JSON.stringify(value, null, options?.prettySpaces ?? 0);
+    },
+
+    ...(exts ?? {}),
+  };
+  return mt as MessageType<T> & E;
 }
 
 // compareMessages compares two messages for equality.
@@ -325,121 +433,6 @@ export function cloneMessage<T extends Message<T>>(
     (clone as AnyMessage)[member.localName] = copy;
   }
   return clone;
-}
-
-/**
- * createMessageType creates a new message type.
- *
- * The argument `packedByDefault` specifies whether fields that do not specify
- * `packed` should be packed (proto3) or unpacked (proto2).
- */
-export function createMessageType<T extends Message<T>>(
-  params: MessageTypeParams<T>,
-): MessageType<T> {
-  const {
-    fields: fieldsSource,
-    typeName,
-    packedByDefault,
-    delimitedMessageEncoding,
-    fieldWrapper,
-  } = params;
-  const fields = newFieldList(fieldsSource, packedByDefault);
-
-  const mt = {
-    typeName,
-    fields,
-    fieldWrapper,
-
-    create(partial?: Message<T>): CompleteMessage<T> {
-      const message = createMessage<T>(fields);
-      applyPartialMessage(partial, message as Message<T>, fields);
-      return message;
-    },
-
-    equals(a: T | undefined | null, b: T | undefined | null): boolean {
-      return compareMessages(fields, a, b);
-    },
-
-    clone(a: T | undefined | null): T | undefined | null {
-      if (a == null) {
-        return a;
-      }
-      return cloneMessage(a, fields);
-    },
-
-    fromBinary(
-      bytes: Uint8Array | null | undefined,
-      options?: Partial<BinaryReadOptions>,
-    ): T {
-      const message = {} as T;
-      if (bytes && bytes.length) {
-        const opt = makeBinaryReadOptions(options);
-        readBinaryMessage(
-          message,
-          fields,
-          opt.readerFactory(bytes),
-          bytes.byteLength,
-          opt,
-          delimitedMessageEncoding,
-        );
-      }
-      return message;
-    },
-
-    fromJson(
-      jsonValue: JsonValue | null | undefined,
-      options?: Partial<JsonReadOptions>,
-    ): T {
-      const message = {} as T;
-      if (jsonValue != null) {
-        const opts = makeJsonReadOptions(options);
-        readJsonMessage(fields, typeName, jsonValue, opts, message);
-      }
-      return message;
-    },
-
-    fromJsonString(
-      jsonString: string | null | undefined,
-      options?: Partial<JsonReadOptions>,
-    ) {
-      let json: JsonValue | null = null;
-      if (jsonString) {
-        try {
-          json = JSON.parse(jsonString) as JsonValue;
-        } catch (e) {
-          throw new Error(
-            `cannot decode ${typeName} from JSON: ${
-              e instanceof Error ? e.message : String(e)
-            }`,
-          );
-        }
-      }
-      return this.fromJson(json, options);
-    },
-
-    toBinary(a: T, options?: Partial<BinaryWriteOptions>): Uint8Array {
-      const opt = makeBinaryWriteOptions(options);
-      const writer = opt.writerFactory();
-      writeBinaryMessage(a, fields, writer, opt);
-      return writer.finish();
-    },
-
-    toJson(a: T, options?: Partial<JsonWriteOptions>): JsonValue {
-      const opt = makeJsonWriteOptions(options);
-      return writeJsonMessage(a, fields, opt);
-    },
-
-    toJsonString(a: T, options?: Partial<JsonWriteStringOptions>): string {
-      const value = this.toJson(a, options);
-      return JSON.stringify(value, null, options?.prettySpaces ?? 0);
-    },
-  };
-
-  if (params.toJson) {
-    mt.toJson = params.toJson;
-  }
-
-  return mt;
 }
 
 /**

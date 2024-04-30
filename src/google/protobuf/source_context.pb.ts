@@ -33,7 +33,7 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, Message } from "../../index.js";
+import { createMessageType, Message, ScalarType } from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -54,13 +54,12 @@ export type SourceContext = Message<{
 
 }>;
 
-export const SourceContext: MessageType<SourceContext> = createMessageType(
-  {
+// SourceContext contains the message type declaration for SourceContext.
+export const SourceContext: MessageType<SourceContext> = createMessageType({
     typeName: "google.protobuf.SourceContext",
     fields: [
-        { no: 1, name: "file_name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+        { no: 1, name: "file_name", kind: "scalar", T: ScalarType.STRING },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-  },
-);
+});
 

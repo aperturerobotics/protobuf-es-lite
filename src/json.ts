@@ -16,6 +16,7 @@ import { wrapField } from "./field-wrapper.js";
 import { EnumType } from "./enum.js";
 import { protoInt64 } from "./proto-int64.js";
 import { protoBase64 } from "./proto-base64.js";
+import { IMessageTypeRegistry } from "./type-registry.js";
 
 /**
  * Options for parsing JSON data.
@@ -27,6 +28,11 @@ export interface JsonReadOptions {
    * unrecognized enum string representations.
    */
   ignoreUnknownFields: boolean;
+
+  /**
+   * This option is required to read `google.protobuf.Any` from JSON format.
+   */
+  typeRegistry?: IMessageTypeRegistry;
 }
 
 /**
@@ -56,6 +62,11 @@ export interface JsonWriteOptions {
    * field name.
    */
   useProtoFieldName: boolean;
+
+  /**
+   * This option is required to write `google.protobuf.Any` to JSON format.
+   */
+  typeRegistry?: IMessageTypeRegistry;
 }
 
 /**
@@ -100,19 +111,19 @@ const jsonWriteDefaults: Readonly<JsonWriteStringOptions> = {
   prettySpaces: 0,
 };
 
-export function makeReadOptions(
+function makeReadOptions(
   options?: Partial<JsonReadOptions>,
 ): Readonly<JsonReadOptions> {
   return options ? { ...jsonReadDefaults, ...options } : jsonReadDefaults;
 }
 
-export function makeWriteOptions(
+function makeWriteOptions(
   options?: Partial<JsonWriteStringOptions>,
 ): Readonly<JsonWriteStringOptions> {
   return options ? { ...jsonWriteDefaults, ...options } : jsonWriteDefaults;
 }
 
-function debugJsonValue(json: unknown): string {
+function jsonDebugValue(json: unknown): string {
   if (json === null) {
     return "null";
   }
@@ -126,7 +137,7 @@ function debugJsonValue(json: unknown): string {
   }
 }
 
-export function readMessage<T>(
+function readMessage<T>(
   fields: FieldList,
   typeName: string,
   json: JsonValue,
@@ -135,7 +146,7 @@ export function readMessage<T>(
 ): T {
   if (json == null || Array.isArray(json) || typeof json != "object") {
     throw new Error(
-      `cannot decode message ${typeName} from JSON: ${debugJsonValue(json)}`,
+      `cannot decode message ${typeName} from JSON: ${jsonDebugValue(json)}`,
     );
   }
   const oneofSeen = new Map<OneofInfo, string>();
@@ -168,7 +179,7 @@ export function readMessage<T>(
   return message;
 }
 
-export function writeMessage<T>(
+function writeMessage<T>(
   message: T,
   fields: FieldList,
   options: JsonWriteOptions,
@@ -228,7 +239,7 @@ function readField(
       throw new Error(
         `cannot decode field ${
           field.name
-        } from JSON: ${debugJsonValue(jsonValue)}`,
+        } from JSON: ${jsonDebugValue(jsonValue)}`,
       );
     }
     var targetArray = target[localName] as unknown[];
@@ -240,7 +251,7 @@ function readField(
         throw new Error(
           `cannot decode field ${
             field.name
-          } from JSON: ${debugJsonValue(jsonItem)}`,
+          } from JSON: ${jsonDebugValue(jsonItem)}`,
         );
       }
       switch (field.kind) {
@@ -265,7 +276,7 @@ function readField(
           } catch (e) {
             let m = `cannot decode field ${
               field.name
-            } from JSON: ${debugJsonValue(jsonItem)}`;
+            } from JSON: ${jsonDebugValue(jsonItem)}`;
             if (e instanceof Error && e.message.length > 0) {
               m += `: ${e.message}`;
             }
@@ -282,7 +293,7 @@ function readField(
       throw new Error(
         `cannot decode field ${
           field.name
-        } from JSON: ${debugJsonValue(jsonValue)}`,
+        } from JSON: ${jsonDebugValue(jsonValue)}`,
       );
     }
     var targetMap = target[localName] as Record<string, unknown>;
@@ -301,7 +312,7 @@ function readField(
       } catch (e) {
         let m = `cannot decode map key for field ${
           field.name
-        } from JSON: ${debugJsonValue(jsonValue)}`;
+        } from JSON: ${jsonDebugValue(jsonValue)}`;
         if (e instanceof Error && e.message.length > 0) {
           m += `: ${e.message}`;
         }
@@ -334,7 +345,7 @@ function readField(
           } catch (e) {
             let m = `cannot decode map value for field ${
               field.name
-            } from JSON: ${debugJsonValue(jsonValue)}`;
+            } from JSON: ${jsonDebugValue(jsonValue)}`;
             if (e instanceof Error && e.message.length > 0) {
               m += `: ${e.message}`;
             }
@@ -398,7 +409,7 @@ function readField(
               break;
           }
         } catch (e) {
-          let m = `cannot decode field ${field.name} from JSON: ${debugJsonValue(jsonValue)}`;
+          let m = `cannot decode field ${field.name} from JSON: ${jsonDebugValue(jsonValue)}`;
           if (e instanceof Error && e.message.length > 0) {
             m += `: ${e.message}`;
           }
@@ -454,29 +465,38 @@ function readEnum(
       break;
   }
   throw new Error(
-    `cannot decode enum ${type.typeName} from JSON: ${debugJsonValue(json)}`,
+    `cannot decode enum ${type.typeName} from JSON: ${jsonDebugValue(json)}`,
   );
 }
 
 function readScalar(
   type: ScalarType,
-  json: JsonValue,
+  json: JsonValue | null | undefined,
+): ScalarValue;
+function readScalar(
+  type: ScalarType,
+  json: JsonValue | null | undefined,
+  longType: LongType,
+): ScalarValue;
+function readScalar(
+  type: ScalarType,
+  json: JsonValue | null | undefined,
   longType: LongType,
   nullAsZeroValue: true,
 ): ScalarValue;
 function readScalar(
   type: ScalarType,
-  json: JsonValue,
+  json: JsonValue | null | undefined,
   longType: LongType,
   nullAsZeroValue: false,
 ): ScalarValue | typeof tokenNull;
 function readScalar(
   type: ScalarType,
-  json: JsonValue,
-  longType: LongType,
-  nullAsZeroValue: boolean,
+  json: JsonValue | null | undefined,
+  longType: LongType = LongType.BIGINT,
+  nullAsZeroValue: boolean = true,
 ): ScalarValue | typeof tokenNull {
-  if (json === null) {
+  if (json == null) {
     if (nullAsZeroValue) {
       return scalarZeroValue(type, longType);
     }
@@ -794,3 +814,18 @@ function writeEnum(
   const val = type.findNumber(value);
   return val?.name ?? value; // if we don't know the enum value, just return the number
 }
+
+export {
+  readEnum as jsonReadEnum,
+  readField as jsonReadField,
+  readMapKey as jsonReadMapKey,
+  readScalar as jsonReadScalar,
+  readMessage as jsonReadMessage,
+  writeEnum as jsonWriteEnum,
+  writeField as jsonWriteField,
+  writeScalar as jsonWriteScalar,
+  writeMessage as jsonWriteMessage,
+  makeReadOptions as jsonMakeReadOptions,
+  makeWriteOptions as jsonMakeWriteOptions,
+  jsonDebugValue,
+};

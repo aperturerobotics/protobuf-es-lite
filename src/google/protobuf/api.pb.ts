@@ -33,7 +33,7 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, Message } from "../../index.js";
+import { createMessageType, Message, ScalarType } from "../../index.js";
 import type { Syntax } from "./type.pb.js";
 import { Option, Syntax_Enum } from "./type.pb.js";
 import { SourceContext } from "./source_context.pb.js";
@@ -91,21 +91,20 @@ export type Method = Message<{
 
 }>;
 
-export const Method: MessageType<Method> = createMessageType(
-  {
+// Method contains the message type declaration for Method.
+export const Method: MessageType<Method> = createMessageType({
     typeName: "google.protobuf.Method",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "request_type_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 3, name: "request_streaming", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
-        { no: 4, name: "response_type_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 5, name: "response_streaming", kind: "scalar", T: 8 /* ScalarType.BOOL */ },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
+        { no: 2, name: "request_type_url", kind: "scalar", T: ScalarType.STRING },
+        { no: 3, name: "request_streaming", kind: "scalar", T: ScalarType.BOOL },
+        { no: 4, name: "response_type_url", kind: "scalar", T: ScalarType.STRING },
+        { no: 5, name: "response_streaming", kind: "scalar", T: ScalarType.BOOL },
         { no: 6, name: "options", kind: "message", T: () => Option, repeated: true },
         { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-  },
-);
+});
 
 /**
  * Declares an API Interface to be included in this interface. The including
@@ -206,16 +205,15 @@ export type Mixin = Message<{
 
 }>;
 
-export const Mixin: MessageType<Mixin> = createMessageType(
-  {
+// Mixin contains the message type declaration for Mixin.
+export const Mixin: MessageType<Mixin> = createMessageType({
     typeName: "google.protobuf.Mixin",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-        { no: 2, name: "root", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
+        { no: 2, name: "root", kind: "scalar", T: ScalarType.STRING },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-  },
-);
+});
 
 /**
  * Api is a light-weight descriptor for an API Interface.
@@ -297,19 +295,18 @@ export type Api = Message<{
 
 }>;
 
-export const Api: MessageType<Api> = createMessageType(
-  {
+// Api contains the message type declaration for Api.
+export const Api: MessageType<Api> = createMessageType({
     typeName: "google.protobuf.Api",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
         { no: 2, name: "methods", kind: "message", T: () => Method, repeated: true },
         { no: 3, name: "options", kind: "message", T: () => Option, repeated: true },
-        { no: 4, name: "version", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+        { no: 4, name: "version", kind: "scalar", T: ScalarType.STRING },
         { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
         { no: 6, name: "mixins", kind: "message", T: () => Mixin, repeated: true },
         { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-  },
-);
+});
 

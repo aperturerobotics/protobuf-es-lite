@@ -15,7 +15,7 @@
 import { DescField, DescMessage, DescOneof } from "../../descriptor-set.js";
 import { ScalarType } from "../../scalar.js";
 
-type DescWkt =
+export type DescWkt =
   | {
       typeName: "google.protobuf.Any";
       typeUrl: DescField;
@@ -48,10 +48,6 @@ type DescWkt =
   | {
       typeName: "google.protobuf.ListValue";
       values: DescField & { fieldKind: "message" };
-    }
-  | {
-      typeName: "google.protobuf.FieldMask";
-      paths: DescField;
     }
   | {
       typeName: "google.protobuf.DoubleValue";
@@ -253,19 +249,6 @@ export function reifyWkt(message: DescMessage): DescWkt | undefined {
         break;
       }
       return { typeName: message.typeName, values };
-    }
-    case "google.protobuf.FieldMask": {
-      const paths = message.fields.find(
-        (f) =>
-          f.number == 1 &&
-          f.fieldKind == "scalar" &&
-          f.scalar === ScalarType.STRING &&
-          f.repeated,
-      );
-      if (paths) {
-        return { typeName: message.typeName, paths };
-      }
-      break;
     }
     case "google.protobuf.DoubleValue":
     case "google.protobuf.FloatValue":

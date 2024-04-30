@@ -32,8 +32,8 @@
 // @generated from file google/protobuf/duration.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, Message } from "../../index.js";
+import type { JsonReadOptions, JsonValue, MessageType, PartialFieldInfo } from "../../index.js";
+import { createMessageType, jsonDebugValue, Message, protoInt64, ScalarType } from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -124,14 +124,62 @@ export type Duration = Message<{
 
 }>;
 
-export const Duration: MessageType<Duration> = createMessageType(
-  {
+// Duration_Wkt contains the well-known-type overrides for Duration.
+const Duration_Wkt = {
+  fromJson(json: JsonValue | null | undefined, _options?: Partial<JsonReadOptions>): Duration {
+    if (typeof json !== "string") {
+      throw new Error(`cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`);
+    }
+    const match = json.match(/^(-?[0-9]+)(?:\.([0-9]+))?s/);
+    if (match === null) {
+      throw new Error(`cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`);
+    }
+    const longSeconds = Number(match[1]);
+    if (longSeconds > 315576000000 || longSeconds < -315576000000) {
+      throw new Error(`cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`);
+    }
+    const msg = {} as Duration;
+    msg.seconds = protoInt64.parse(longSeconds);
+    if (typeof match[2] == "string") {
+      const nanosStr = match[2] + "0".repeat(9 - match[2].length);
+      msg.nanos = parseInt(nanosStr);
+      if (longSeconds < 0 || Object.is(longSeconds, -0)) {
+        msg.nanos = -msg.nanos;
+      }
+    }
+    return msg;
+  },
+  toJson(msg: Duration): JsonValue {
+    const secs = Number(msg.seconds ?? 0);
+    const nanos = Number(msg.nanos ?? 0);
+    if (secs > 315576000000 || secs < -315576000000) {
+      throw new Error(`cannot encode google.protobuf.Duration to JSON: value out of range`);
+    }
+    let text = secs.toString();
+    if (nanos !== 0) {
+      let nanosStr = Math.abs(nanos).toString();
+      nanosStr = "0".repeat(9 - nanosStr.length) + nanosStr;
+      if (nanosStr.substring(3) === "000000") {
+        nanosStr = nanosStr.substring(0, 3);
+      } else if (nanosStr.substring(6) === "000") {
+        nanosStr = nanosStr.substring(0, 6);
+      }
+      text += "." + nanosStr;
+      if (nanos < 0 && secs === 0) {
+          text = "-" + text;
+      }
+    }
+    return text + "s";
+  },
+};
+
+// Duration contains the message type declaration for Duration.
+export const Duration: MessageType<Duration> & typeof Duration_Wkt = createMessageType<Duration, typeof Duration_Wkt>({
     typeName: "google.protobuf.Duration",
     fields: [
-        { no: 1, name: "seconds", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
-        { no: 2, name: "nanos", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
+        { no: 1, name: "seconds", kind: "scalar", T: ScalarType.INT64 },
+        { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-  },
-);
+}, Duration_Wkt);
 

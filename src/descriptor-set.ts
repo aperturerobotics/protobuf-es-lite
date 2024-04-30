@@ -361,7 +361,7 @@ export type DescExtension = DescFieldCommon &
     readonly extendee: DescMessage;
   };
 
-interface DescFieldCommon {
+export interface DescFieldCommon {
   /**
    * The field name, as specified in the protobuf source
    */
@@ -426,7 +426,7 @@ interface DescFieldCommon {
   toString(): string;
 }
 
-interface DescFieldScalar {
+export interface DescFieldScalar {
   readonly fieldKind: "scalar";
   /**
    * Is the field repeated?
@@ -471,7 +471,7 @@ interface DescFieldScalar {
     | undefined;
 }
 
-interface DescFieldMessage {
+export interface DescFieldMessage {
   readonly fieldKind: "message";
   /**
    * Is the field repeated?
@@ -504,7 +504,7 @@ interface DescFieldMessage {
   readonly mapValue: undefined;
 }
 
-interface DescFieldEnum {
+export interface DescFieldEnum {
   readonly fieldKind: "enum";
   /**
    * Is the field repeated?
@@ -550,7 +550,7 @@ interface DescFieldEnum {
     | undefined;
 }
 
-interface DescFieldMap {
+export interface DescFieldMap {
   readonly fieldKind: "map";
   /**
    * Is the field repeated?
@@ -589,7 +589,7 @@ interface DescFieldMap {
     | DescFieldMapValueScalar;
 }
 
-interface DescFieldMapValueEnum {
+export interface DescFieldMapValueEnum {
   readonly kind: "enum";
   /**
    * The enum type, if this is a map field with enum values.
@@ -605,7 +605,7 @@ interface DescFieldMapValueEnum {
   readonly scalar: undefined;
 }
 
-interface DescFieldMapValueMessage {
+export interface DescFieldMapValueMessage {
   readonly kind: "message";
   /**
    * The enum type, if this is a map field with enum values.
@@ -621,7 +621,7 @@ interface DescFieldMapValueMessage {
   readonly scalar: undefined;
 }
 
-interface DescFieldMapValueScalar {
+export interface DescFieldMapValueScalar {
   readonly kind: "scalar";
   /**
    * The enum type, if this is a map field with enum values.

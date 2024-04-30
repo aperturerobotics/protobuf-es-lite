@@ -53,12 +53,11 @@ export type Empty = Message<{
 
 }>;
 
-export const Empty: MessageType<Empty> = createMessageType(
-  {
+// Empty contains the message type declaration for Empty.
+export const Empty: MessageType<Empty> = createMessageType({
     typeName: "google.protobuf.Empty",
     fields: [
     ] as readonly PartialFieldInfo[],
     packedByDefault: true,
-  },
-);
+});
 

@@ -57,7 +57,31 @@ export interface BinaryWriteOptions {
   writerFactory: () => IBinaryWriter;
 }
 
-export function readField(
+// Default options for parsing binary data.
+const readDefaults: Readonly<BinaryReadOptions> = {
+  readUnknownFields: true,
+  readerFactory: (bytes) => new BinaryReader(bytes),
+};
+
+// Default options for serializing binary data.
+const writeDefaults: Readonly<BinaryWriteOptions> = {
+  writeUnknownFields: true,
+  writerFactory: () => new BinaryWriter(),
+};
+
+function makeReadOptions(
+  options?: Partial<BinaryReadOptions>,
+): Readonly<BinaryReadOptions> {
+  return options ? { ...readDefaults, ...options } : readDefaults;
+}
+
+function makeWriteOptions(
+  options?: Partial<BinaryWriteOptions>,
+): Readonly<BinaryWriteOptions> {
+  return options ? { ...writeDefaults, ...options } : writeDefaults;
+}
+
+function readField(
   target: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
   reader: IBinaryReader,
   field: FieldInfo,
@@ -154,7 +178,7 @@ type AnyMessage = {
 };
 
 // Read a map field, expecting key field = 1, value field = 2
-export function readMapEntry(
+function readMapEntry(
   field: FieldInfo & { kind: "map" },
   reader: IBinaryReader,
   options: BinaryReadOptions,
@@ -213,10 +237,7 @@ export function readMapEntry(
   return [key, val];
 }
 
-export function readScalar(
-  reader: IBinaryReader,
-  type: ScalarType,
-): ScalarValue {
+function readScalar(reader: IBinaryReader, type: ScalarType): ScalarValue {
   switch (type) {
     case ScalarType.STRING:
       return reader.string();
@@ -253,7 +274,7 @@ export function readScalar(
 
 // Read a scalar value, but return 64 bit integral types (int64, uint64,
 // sint64, fixed64, sfixed64) as string instead of bigint.
-export function readScalarLTString(
+function readScalarLTString(
   reader: IBinaryReader,
   type: ScalarType,
 ): Exclude<ScalarValue, bigint> {
@@ -282,31 +303,7 @@ function readMessageField<T>(
   return message;
 }
 
-// Default options for parsing binary data.
-const readDefaults: Readonly<BinaryReadOptions> = {
-  readUnknownFields: true,
-  readerFactory: (bytes) => new BinaryReader(bytes),
-};
-
-// Default options for serializing binary data.
-const writeDefaults: Readonly<BinaryWriteOptions> = {
-  writeUnknownFields: true,
-  writerFactory: () => new BinaryWriter(),
-};
-
-export function makeReadOptions(
-  options?: Partial<BinaryReadOptions>,
-): Readonly<BinaryReadOptions> {
-  return options ? { ...readDefaults, ...options } : readDefaults;
-}
-
-export function makeWriteOptions(
-  options?: Partial<BinaryWriteOptions>,
-): Readonly<BinaryWriteOptions> {
-  return options ? { ...writeDefaults, ...options } : writeDefaults;
-}
-
-export function readMessage<T>(
+function readMessage<T>(
   message: T,
   fields: FieldList,
   reader: IBinaryReader,
@@ -344,7 +341,7 @@ export function readMessage<T>(
 /**
  * Serialize a message to binary data.
  */
-export function writeMessage<T>(
+function writeMessage<T>(
   message: T,
   fields: FieldList,
   writer: IBinaryWriter,
@@ -515,7 +512,7 @@ function scalarTypeInfo(
   return [wireType, method];
 }
 
-export function writeMapEntry(
+function writeMapEntry(
   writer: IBinaryWriter,
   options: BinaryWriteOptions,
   field: FieldInfo & { kind: "map" },
@@ -565,3 +562,17 @@ export function writeMapEntry(
 
   writer.join();
 }
+export {
+  readField as binaryReadField,
+  readMapEntry as binaryReadMapEntry,
+  readScalar as binaryReadScalar,
+  readScalarLTString as binaryReadScalarLTString,
+  readMessage as binaryReadMessage,
+  writeField as binaryWriteField,
+  writeScalar as binaryWriteScalar,
+  writePacked as binaryWritePacked,
+  writeMapEntry as binaryWriteMapEntry,
+  writeMessage as binaryWriteMessage,
+  makeReadOptions as binaryMakeReadOptions,
+  makeWriteOptions as binaryMakeWriteOptions,
+};

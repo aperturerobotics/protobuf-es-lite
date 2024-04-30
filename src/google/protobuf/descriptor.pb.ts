@@ -41,7 +41,7 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createEnumType, createMessageType, Message } from "../../index.js";
+import { createEnumType, createMessageType, Message, ScalarType } from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -805,16 +805,15 @@ export type FieldOptions_EditionDefault = Message<{
 
 }>;
 
-export const FieldOptions_EditionDefault: MessageType<FieldOptions_EditionDefault> = createMessageType(
-  {
+// FieldOptions_EditionDefault contains the message type declaration for FieldOptions_EditionDefault.
+export const FieldOptions_EditionDefault: MessageType<FieldOptions_EditionDefault> = createMessageType({
     typeName: "google.protobuf.FieldOptions.EditionDefault",
     fields: [
         { no: 3, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
-        { no: 2, name: "value", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 2, name: "value", kind: "scalar", T: ScalarType.STRING, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * TODO Enums in C++ gencode (and potentially other languages) are
@@ -854,8 +853,8 @@ export type FeatureSet = Message<{
 
 }>;
 
-export const FeatureSet: MessageType<FeatureSet> = createMessageType(
-  {
+// FeatureSet contains the message type declaration for FeatureSet.
+export const FeatureSet: MessageType<FeatureSet> = createMessageType({
     typeName: "google.protobuf.FeatureSet",
     fields: [
         { no: 1, name: "field_presence", kind: "enum", T: FeatureSet_FieldPresence_Enum, opt: true },
@@ -866,8 +865,7 @@ export const FeatureSet: MessageType<FeatureSet> = createMessageType(
         { no: 6, name: "json_format", kind: "enum", T: FeatureSet_JsonFormat_Enum, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * The name of the uninterpreted option.  Each string represents a segment in
@@ -890,16 +888,15 @@ export type UninterpretedOption_NamePart = Message<{
 
 }>;
 
-export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NamePart> = createMessageType(
-  {
+// UninterpretedOption_NamePart contains the message type declaration for UninterpretedOption_NamePart.
+export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NamePart> = createMessageType({
     typeName: "google.protobuf.UninterpretedOption.NamePart",
     fields: [
-        { no: 1, name: "name_part", kind: "scalar", T: 9 /* ScalarType.STRING */, req: true },
-        { no: 2, name: "is_extension", kind: "scalar", T: 8 /* ScalarType.BOOL */, req: true },
+        { no: 1, name: "name_part", kind: "scalar", T: ScalarType.STRING, req: true },
+        { no: 2, name: "is_extension", kind: "scalar", T: ScalarType.BOOL, req: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * A message representing a option the parser does not recognize. This only
@@ -946,21 +943,20 @@ export type UninterpretedOption = Message<{
 
 }>;
 
-export const UninterpretedOption: MessageType<UninterpretedOption> = createMessageType(
-  {
+// UninterpretedOption contains the message type declaration for UninterpretedOption.
+export const UninterpretedOption: MessageType<UninterpretedOption> = createMessageType({
     typeName: "google.protobuf.UninterpretedOption",
     fields: [
         { no: 2, name: "name", kind: "message", T: () => UninterpretedOption_NamePart, repeated: true },
-        { no: 3, name: "identifier_value", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 4, name: "positive_int_value", kind: "scalar", T: 4 /* ScalarType.UINT64 */, opt: true },
-        { no: 5, name: "negative_int_value", kind: "scalar", T: 3 /* ScalarType.INT64 */, opt: true },
-        { no: 6, name: "double_value", kind: "scalar", T: 1 /* ScalarType.DOUBLE */, opt: true },
-        { no: 7, name: "string_value", kind: "scalar", T: 12 /* ScalarType.BYTES */, opt: true },
-        { no: 8, name: "aggregate_value", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 3, name: "identifier_value", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 4, name: "positive_int_value", kind: "scalar", T: ScalarType.UINT64, opt: true },
+        { no: 5, name: "negative_int_value", kind: "scalar", T: ScalarType.INT64, opt: true },
+        { no: 6, name: "double_value", kind: "scalar", T: ScalarType.DOUBLE, opt: true },
+        { no: 7, name: "string_value", kind: "scalar", T: ScalarType.BYTES, opt: true },
+        { no: 8, name: "aggregate_value", kind: "scalar", T: ScalarType.STRING, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.FieldOptions
@@ -1089,18 +1085,18 @@ export type FieldOptions = Message<{
 
 }>;
 
-export const FieldOptions: MessageType<FieldOptions> = createMessageType(
-  {
+// FieldOptions contains the message type declaration for FieldOptions.
+export const FieldOptions: MessageType<FieldOptions> = createMessageType({
     typeName: "google.protobuf.FieldOptions",
     fields: [
         { no: 1, name: "ctype", kind: "enum", T: FieldOptions_CType_Enum, opt: true, default: FieldOptions_CType.STRING },
-        { no: 2, name: "packed", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
+        { no: 2, name: "packed", kind: "scalar", T: ScalarType.BOOL, opt: true },
         { no: 6, name: "jstype", kind: "enum", T: FieldOptions_JSType_Enum, opt: true, default: FieldOptions_JSType.JS_NORMAL },
-        { no: 5, name: "lazy", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 15, name: "unverified_lazy", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 3, name: "deprecated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 10, name: "weak", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 16, name: "debug_redact", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
+        { no: 5, name: "lazy", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 15, name: "unverified_lazy", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 3, name: "deprecated", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 10, name: "weak", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 16, name: "debug_redact", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
         { no: 17, name: "retention", kind: "enum", T: FieldOptions_OptionRetention_Enum, opt: true },
         { no: 19, name: "targets", kind: "enum", T: FieldOptions_OptionTargetType_Enum, repeated: true },
         { no: 20, name: "edition_defaults", kind: "message", T: () => FieldOptions_EditionDefault, repeated: true },
@@ -1108,8 +1104,7 @@ export const FieldOptions: MessageType<FieldOptions> = createMessageType(
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes a field within a message.
@@ -1211,25 +1206,24 @@ export type FieldDescriptorProto = Message<{
 
 }>;
 
-export const FieldDescriptorProto: MessageType<FieldDescriptorProto> = createMessageType(
-  {
+// FieldDescriptorProto contains the message type declaration for FieldDescriptorProto.
+export const FieldDescriptorProto: MessageType<FieldDescriptorProto> = createMessageType({
     typeName: "google.protobuf.FieldDescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 3, name: "number", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 3, name: "number", kind: "scalar", T: ScalarType.INT32, opt: true },
         { no: 4, name: "label", kind: "enum", T: FieldDescriptorProto_Label_Enum, opt: true },
         { no: 5, name: "type", kind: "enum", T: FieldDescriptorProto_Type_Enum, opt: true },
-        { no: 6, name: "type_name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 2, name: "extendee", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 7, name: "default_value", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 9, name: "oneof_index", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
-        { no: 10, name: "json_name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 6, name: "type_name", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 2, name: "extendee", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 7, name: "default_value", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 9, name: "oneof_index", kind: "scalar", T: ScalarType.INT32, opt: true },
+        { no: 10, name: "json_name", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 8, name: "options", kind: "message", T: () => FieldOptions, opt: true },
-        { no: 17, name: "proto3_optional", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
+        { no: 17, name: "proto3_optional", kind: "scalar", T: ScalarType.BOOL, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.EnumValueOptions
@@ -1267,18 +1261,17 @@ export type EnumValueOptions = Message<{
 
 }>;
 
-export const EnumValueOptions: MessageType<EnumValueOptions> = createMessageType(
-  {
+// EnumValueOptions contains the message type declaration for EnumValueOptions.
+export const EnumValueOptions: MessageType<EnumValueOptions> = createMessageType({
     typeName: "google.protobuf.EnumValueOptions",
     fields: [
-        { no: 1, name: "deprecated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
+        { no: 1, name: "deprecated", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
         { no: 2, name: "features", kind: "message", T: () => FeatureSet, opt: true },
-        { no: 3, name: "debug_redact", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
+        { no: 3, name: "debug_redact", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes a value within an enum.
@@ -1301,17 +1294,16 @@ export type EnumValueDescriptorProto = Message<{
 
 }>;
 
-export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> = createMessageType(
-  {
+// EnumValueDescriptorProto contains the message type declaration for EnumValueDescriptorProto.
+export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> = createMessageType({
     typeName: "google.protobuf.EnumValueDescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 2, name: "number", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 2, name: "number", kind: "scalar", T: ScalarType.INT32, opt: true },
         { no: 3, name: "options", kind: "message", T: () => EnumValueOptions, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.EnumOptions
@@ -1360,19 +1352,18 @@ export type EnumOptions = Message<{
 
 }>;
 
-export const EnumOptions: MessageType<EnumOptions> = createMessageType(
-  {
+// EnumOptions contains the message type declaration for EnumOptions.
+export const EnumOptions: MessageType<EnumOptions> = createMessageType({
     typeName: "google.protobuf.EnumOptions",
     fields: [
-        { no: 2, name: "allow_alias", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
-        { no: 3, name: "deprecated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 6, name: "deprecated_legacy_json_field_conflicts", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
+        { no: 2, name: "allow_alias", kind: "scalar", T: ScalarType.BOOL, opt: true },
+        { no: 3, name: "deprecated", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 6, name: "deprecated_legacy_json_field_conflicts", kind: "scalar", T: ScalarType.BOOL, opt: true },
         { no: 7, name: "features", kind: "message", T: () => FeatureSet, opt: true },
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Range of reserved numeric values. Reserved values may not be used by
@@ -1400,16 +1391,15 @@ export type EnumDescriptorProto_EnumReservedRange = Message<{
 
 }>;
 
-export const EnumDescriptorProto_EnumReservedRange: MessageType<EnumDescriptorProto_EnumReservedRange> = createMessageType(
-  {
+// EnumDescriptorProto_EnumReservedRange contains the message type declaration for EnumDescriptorProto_EnumReservedRange.
+export const EnumDescriptorProto_EnumReservedRange: MessageType<EnumDescriptorProto_EnumReservedRange> = createMessageType({
     typeName: "google.protobuf.EnumDescriptorProto.EnumReservedRange",
     fields: [
-        { no: 1, name: "start", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
-        { no: 2, name: "end", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
+        { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
+        { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes an enum type.
@@ -1447,19 +1437,18 @@ export type EnumDescriptorProto = Message<{
 
 }>;
 
-export const EnumDescriptorProto: MessageType<EnumDescriptorProto> = createMessageType(
-  {
+// EnumDescriptorProto contains the message type declaration for EnumDescriptorProto.
+export const EnumDescriptorProto: MessageType<EnumDescriptorProto> = createMessageType({
     typeName: "google.protobuf.EnumDescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 2, name: "value", kind: "message", T: () => EnumValueDescriptorProto, repeated: true },
         { no: 3, name: "options", kind: "message", T: () => EnumOptions, opt: true },
         { no: 4, name: "reserved_range", kind: "message", T: () => EnumDescriptorProto_EnumReservedRange, repeated: true },
-        { no: 5, name: "reserved_name", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+        { no: 5, name: "reserved_name", kind: "scalar", T: ScalarType.STRING, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.ExtensionRangeOptions.Declaration
@@ -1504,19 +1493,18 @@ export type ExtensionRangeOptions_Declaration = Message<{
 
 }>;
 
-export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOptions_Declaration> = createMessageType(
-  {
+// ExtensionRangeOptions_Declaration contains the message type declaration for ExtensionRangeOptions_Declaration.
+export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOptions_Declaration> = createMessageType({
     typeName: "google.protobuf.ExtensionRangeOptions.Declaration",
     fields: [
-        { no: 1, name: "number", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
-        { no: 2, name: "full_name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 3, name: "type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 5, name: "reserved", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
-        { no: 6, name: "repeated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
+        { no: 1, name: "number", kind: "scalar", T: ScalarType.INT32, opt: true },
+        { no: 2, name: "full_name", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 3, name: "type", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 5, name: "reserved", kind: "scalar", T: ScalarType.BOOL, opt: true },
+        { no: 6, name: "repeated", kind: "scalar", T: ScalarType.BOOL, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.ExtensionRangeOptions
@@ -1553,8 +1541,8 @@ export type ExtensionRangeOptions = Message<{
 
 }>;
 
-export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> = createMessageType(
-  {
+// ExtensionRangeOptions contains the message type declaration for ExtensionRangeOptions.
+export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> = createMessageType({
     typeName: "google.protobuf.ExtensionRangeOptions",
     fields: [
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
@@ -1563,8 +1551,7 @@ export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> = createM
         { no: 3, name: "verification", kind: "enum", T: ExtensionRangeOptions_VerificationState_Enum, opt: true, default: ExtensionRangeOptions_VerificationState.UNVERIFIED },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.DescriptorProto.ExtensionRange
@@ -1589,17 +1576,16 @@ export type DescriptorProto_ExtensionRange = Message<{
 
 }>;
 
-export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_ExtensionRange> = createMessageType(
-  {
+// DescriptorProto_ExtensionRange contains the message type declaration for DescriptorProto_ExtensionRange.
+export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_ExtensionRange> = createMessageType({
     typeName: "google.protobuf.DescriptorProto.ExtensionRange",
     fields: [
-        { no: 1, name: "start", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
-        { no: 2, name: "end", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
+        { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
+        { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
         { no: 3, name: "options", kind: "message", T: () => ExtensionRangeOptions, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.OneofOptions
@@ -1620,16 +1606,15 @@ export type OneofOptions = Message<{
 
 }>;
 
-export const OneofOptions: MessageType<OneofOptions> = createMessageType(
-  {
+// OneofOptions contains the message type declaration for OneofOptions.
+export const OneofOptions: MessageType<OneofOptions> = createMessageType({
     typeName: "google.protobuf.OneofOptions",
     fields: [
         { no: 1, name: "features", kind: "message", T: () => FeatureSet, opt: true },
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes a oneof.
@@ -1648,16 +1633,15 @@ export type OneofDescriptorProto = Message<{
 
 }>;
 
-export const OneofDescriptorProto: MessageType<OneofDescriptorProto> = createMessageType(
-  {
+// OneofDescriptorProto contains the message type declaration for OneofDescriptorProto.
+export const OneofDescriptorProto: MessageType<OneofDescriptorProto> = createMessageType({
     typeName: "google.protobuf.OneofDescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 2, name: "options", kind: "message", T: () => OneofOptions, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.MessageOptions
@@ -1760,21 +1744,20 @@ export type MessageOptions = Message<{
 
 }>;
 
-export const MessageOptions: MessageType<MessageOptions> = createMessageType(
-  {
+// MessageOptions contains the message type declaration for MessageOptions.
+export const MessageOptions: MessageType<MessageOptions> = createMessageType({
     typeName: "google.protobuf.MessageOptions",
     fields: [
-        { no: 1, name: "message_set_wire_format", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 2, name: "no_standard_descriptor_accessor", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 3, name: "deprecated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 7, name: "map_entry", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
-        { no: 11, name: "deprecated_legacy_json_field_conflicts", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
+        { no: 1, name: "message_set_wire_format", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 2, name: "no_standard_descriptor_accessor", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 3, name: "deprecated", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 7, name: "map_entry", kind: "scalar", T: ScalarType.BOOL, opt: true },
+        { no: 11, name: "deprecated_legacy_json_field_conflicts", kind: "scalar", T: ScalarType.BOOL, opt: true },
         { no: 12, name: "features", kind: "message", T: () => FeatureSet, opt: true },
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Range of reserved tag numbers. Reserved tag numbers may not be used by
@@ -1799,16 +1782,15 @@ export type DescriptorProto_ReservedRange = Message<{
 
 }>;
 
-export const DescriptorProto_ReservedRange: MessageType<DescriptorProto_ReservedRange> = createMessageType(
-  {
+// DescriptorProto_ReservedRange contains the message type declaration for DescriptorProto_ReservedRange.
+export const DescriptorProto_ReservedRange: MessageType<DescriptorProto_ReservedRange> = createMessageType({
     typeName: "google.protobuf.DescriptorProto.ReservedRange",
     fields: [
-        { no: 1, name: "start", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
-        { no: 2, name: "end", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
+        { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
+        { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes a message type.
@@ -1862,11 +1844,11 @@ export type DescriptorProto = Message<{
 
 }>;
 
-export const DescriptorProto: MessageType<DescriptorProto> = createMessageType(
-  {
+// DescriptorProto contains the message type declaration for DescriptorProto.
+export const DescriptorProto: MessageType<DescriptorProto> = createMessageType({
     typeName: "google.protobuf.DescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 2, name: "field", kind: "message", T: () => FieldDescriptorProto, repeated: true },
         { no: 6, name: "extension", kind: "message", T: () => FieldDescriptorProto, repeated: true },
         { no: 3, name: "nested_type", kind: "message", T: () => DescriptorProto, repeated: true },
@@ -1875,11 +1857,10 @@ export const DescriptorProto: MessageType<DescriptorProto> = createMessageType(
         { no: 8, name: "oneof_decl", kind: "message", T: () => OneofDescriptorProto, repeated: true },
         { no: 7, name: "options", kind: "message", T: () => MessageOptions, opt: true },
         { no: 9, name: "reserved_range", kind: "message", T: () => DescriptorProto_ReservedRange, repeated: true },
-        { no: 10, name: "reserved_name", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+        { no: 10, name: "reserved_name", kind: "scalar", T: ScalarType.STRING, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.MethodOptions
@@ -1913,18 +1894,17 @@ export type MethodOptions = Message<{
 
 }>;
 
-export const MethodOptions: MessageType<MethodOptions> = createMessageType(
-  {
+// MethodOptions contains the message type declaration for MethodOptions.
+export const MethodOptions: MessageType<MethodOptions> = createMessageType({
     typeName: "google.protobuf.MethodOptions",
     fields: [
-        { no: 33, name: "deprecated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
+        { no: 33, name: "deprecated", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
         { no: 34, name: "idempotency_level", kind: "enum", T: MethodOptions_IdempotencyLevel_Enum, opt: true, default: MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN },
         { no: 35, name: "features", kind: "message", T: () => FeatureSet, opt: true },
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes a method of a service.
@@ -1966,20 +1946,19 @@ export type MethodDescriptorProto = Message<{
 
 }>;
 
-export const MethodDescriptorProto: MessageType<MethodDescriptorProto> = createMessageType(
-  {
+// MethodDescriptorProto contains the message type declaration for MethodDescriptorProto.
+export const MethodDescriptorProto: MessageType<MethodDescriptorProto> = createMessageType({
     typeName: "google.protobuf.MethodDescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 2, name: "input_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 3, name: "output_type", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 2, name: "input_type", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 3, name: "output_type", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 4, name: "options", kind: "message", T: () => MethodOptions, opt: true },
-        { no: 5, name: "client_streaming", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 6, name: "server_streaming", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
+        { no: 5, name: "client_streaming", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 6, name: "server_streaming", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.ServiceOptions
@@ -2009,17 +1988,16 @@ export type ServiceOptions = Message<{
 
 }>;
 
-export const ServiceOptions: MessageType<ServiceOptions> = createMessageType(
-  {
+// ServiceOptions contains the message type declaration for ServiceOptions.
+export const ServiceOptions: MessageType<ServiceOptions> = createMessageType({
     typeName: "google.protobuf.ServiceOptions",
     fields: [
         { no: 34, name: "features", kind: "message", T: () => FeatureSet, opt: true },
-        { no: 33, name: "deprecated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
+        { no: 33, name: "deprecated", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes a service.
@@ -2042,17 +2020,16 @@ export type ServiceDescriptorProto = Message<{
 
 }>;
 
-export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> = createMessageType(
-  {
+// ServiceDescriptorProto contains the message type declaration for ServiceDescriptorProto.
+export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> = createMessageType({
     typeName: "google.protobuf.ServiceDescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 2, name: "method", kind: "message", T: () => MethodDescriptorProto, repeated: true },
         { no: 3, name: "options", kind: "message", T: () => ServiceOptions, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.FileOptions
@@ -2228,35 +2205,34 @@ export type FileOptions = Message<{
 
 }>;
 
-export const FileOptions: MessageType<FileOptions> = createMessageType(
-  {
+// FileOptions contains the message type declaration for FileOptions.
+export const FileOptions: MessageType<FileOptions> = createMessageType({
     typeName: "google.protobuf.FileOptions",
     fields: [
-        { no: 1, name: "java_package", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 8, name: "java_outer_classname", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 10, name: "java_multiple_files", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 20, name: "java_generate_equals_and_hash", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true },
-        { no: 27, name: "java_string_check_utf8", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
+        { no: 1, name: "java_package", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 8, name: "java_outer_classname", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 10, name: "java_multiple_files", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 20, name: "java_generate_equals_and_hash", kind: "scalar", T: ScalarType.BOOL, opt: true },
+        { no: 27, name: "java_string_check_utf8", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
         { no: 9, name: "optimize_for", kind: "enum", T: FileOptions_OptimizeMode_Enum, opt: true, default: FileOptions_OptimizeMode.SPEED },
-        { no: 11, name: "go_package", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 16, name: "cc_generic_services", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 17, name: "java_generic_services", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 18, name: "py_generic_services", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 23, name: "deprecated", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: false },
-        { no: 31, name: "cc_enable_arenas", kind: "scalar", T: 8 /* ScalarType.BOOL */, opt: true, default: true },
-        { no: 36, name: "objc_class_prefix", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 37, name: "csharp_namespace", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 39, name: "swift_prefix", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 40, name: "php_class_prefix", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 41, name: "php_namespace", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 44, name: "php_metadata_namespace", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 45, name: "ruby_package", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 11, name: "go_package", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 16, name: "cc_generic_services", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 17, name: "java_generic_services", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 18, name: "py_generic_services", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 23, name: "deprecated", kind: "scalar", T: ScalarType.BOOL, opt: true, default: false },
+        { no: 31, name: "cc_enable_arenas", kind: "scalar", T: ScalarType.BOOL, opt: true, default: true },
+        { no: 36, name: "objc_class_prefix", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 37, name: "csharp_namespace", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 39, name: "swift_prefix", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 40, name: "php_class_prefix", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 41, name: "php_namespace", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 44, name: "php_metadata_namespace", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 45, name: "ruby_package", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 50, name: "features", kind: "message", T: () => FeatureSet, opt: true },
         { no: 999, name: "uninterpreted_option", kind: "message", T: () => UninterpretedOption, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.SourceCodeInfo.Location
@@ -2363,19 +2339,18 @@ export type SourceCodeInfo_Location = Message<{
 
 }>;
 
-export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> = createMessageType(
-  {
+// SourceCodeInfo_Location contains the message type declaration for SourceCodeInfo_Location.
+export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> = createMessageType({
     typeName: "google.protobuf.SourceCodeInfo.Location",
     fields: [
-        { no: 1, name: "path", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true, packed: true },
-        { no: 2, name: "span", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true, packed: true },
-        { no: 3, name: "leading_comments", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 4, name: "trailing_comments", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 6, name: "leading_detached_comments", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+        { no: 1, name: "path", kind: "scalar", T: ScalarType.INT32, repeated: true, packed: true },
+        { no: 2, name: "span", kind: "scalar", T: ScalarType.INT32, repeated: true, packed: true },
+        { no: 3, name: "leading_comments", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 4, name: "trailing_comments", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 6, name: "leading_detached_comments", kind: "scalar", T: ScalarType.STRING, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Encapsulates information about the original source file from which a
@@ -2435,15 +2410,14 @@ export type SourceCodeInfo = Message<{
 
 }>;
 
-export const SourceCodeInfo: MessageType<SourceCodeInfo> = createMessageType(
-  {
+// SourceCodeInfo contains the message type declaration for SourceCodeInfo.
+export const SourceCodeInfo: MessageType<SourceCodeInfo> = createMessageType({
     typeName: "google.protobuf.SourceCodeInfo",
     fields: [
         { no: 1, name: "location", kind: "message", T: () => SourceCodeInfo_Location, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes a complete .proto file.
@@ -2531,27 +2505,26 @@ export type FileDescriptorProto = Message<{
 
 }>;
 
-export const FileDescriptorProto: MessageType<FileDescriptorProto> = createMessageType(
-  {
+// FileDescriptorProto contains the message type declaration for FileDescriptorProto.
+export const FileDescriptorProto: MessageType<FileDescriptorProto> = createMessageType({
     typeName: "google.protobuf.FileDescriptorProto",
     fields: [
-        { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 2, name: "package", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 3, name: "dependency", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
-        { no: 10, name: "public_dependency", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
-        { no: 11, name: "weak_dependency", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true },
+        { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 2, name: "package", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 3, name: "dependency", kind: "scalar", T: ScalarType.STRING, repeated: true },
+        { no: 10, name: "public_dependency", kind: "scalar", T: ScalarType.INT32, repeated: true },
+        { no: 11, name: "weak_dependency", kind: "scalar", T: ScalarType.INT32, repeated: true },
         { no: 4, name: "message_type", kind: "message", T: () => DescriptorProto, repeated: true },
         { no: 5, name: "enum_type", kind: "message", T: () => EnumDescriptorProto, repeated: true },
         { no: 6, name: "service", kind: "message", T: () => ServiceDescriptorProto, repeated: true },
         { no: 7, name: "extension", kind: "message", T: () => FieldDescriptorProto, repeated: true },
         { no: 8, name: "options", kind: "message", T: () => FileOptions, opt: true },
         { no: 9, name: "source_code_info", kind: "message", T: () => SourceCodeInfo, opt: true },
-        { no: 12, name: "syntax", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
+        { no: 12, name: "syntax", kind: "scalar", T: ScalarType.STRING, opt: true },
         { no: 14, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * The protocol compiler can output a FileDescriptorSet containing the .proto
@@ -2567,15 +2540,14 @@ export type FileDescriptorSet = Message<{
 
 }>;
 
-export const FileDescriptorSet: MessageType<FileDescriptorSet> = createMessageType(
-  {
+// FileDescriptorSet contains the message type declaration for FileDescriptorSet.
+export const FileDescriptorSet: MessageType<FileDescriptorSet> = createMessageType({
     typeName: "google.protobuf.FileDescriptorSet",
     fields: [
         { no: 1, name: "file", kind: "message", T: () => FileDescriptorProto, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * A map from every known edition with a unique set of defaults to its
@@ -2597,16 +2569,15 @@ export type FeatureSetDefaults_FeatureSetEditionDefault = Message<{
 
 }>;
 
-export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSetDefaults_FeatureSetEditionDefault> = createMessageType(
-  {
+// FeatureSetDefaults_FeatureSetEditionDefault contains the message type declaration for FeatureSetDefaults_FeatureSetEditionDefault.
+export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSetDefaults_FeatureSetEditionDefault> = createMessageType({
     typeName: "google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault",
     fields: [
         { no: 3, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
         { no: 2, name: "features", kind: "message", T: () => FeatureSet, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * A compiled specification for the defaults of a set of features.  These
@@ -2638,8 +2609,8 @@ export type FeatureSetDefaults = Message<{
 
 }>;
 
-export const FeatureSetDefaults: MessageType<FeatureSetDefaults> = createMessageType(
-  {
+// FeatureSetDefaults contains the message type declaration for FeatureSetDefaults.
+export const FeatureSetDefaults: MessageType<FeatureSetDefaults> = createMessageType({
     typeName: "google.protobuf.FeatureSetDefaults",
     fields: [
         { no: 1, name: "defaults", kind: "message", T: () => FeatureSetDefaults_FeatureSetEditionDefault, repeated: true },
@@ -2647,8 +2618,7 @@ export const FeatureSetDefaults: MessageType<FeatureSetDefaults> = createMessage
         { no: 5, name: "maximum_edition", kind: "enum", T: Edition_Enum, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * @generated from message google.protobuf.GeneratedCodeInfo.Annotation
@@ -2689,19 +2659,18 @@ export type GeneratedCodeInfo_Annotation = Message<{
 
 }>;
 
-export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotation> = createMessageType(
-  {
+// GeneratedCodeInfo_Annotation contains the message type declaration for GeneratedCodeInfo_Annotation.
+export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotation> = createMessageType({
     typeName: "google.protobuf.GeneratedCodeInfo.Annotation",
     fields: [
-        { no: 1, name: "path", kind: "scalar", T: 5 /* ScalarType.INT32 */, repeated: true, packed: true },
-        { no: 2, name: "source_file", kind: "scalar", T: 9 /* ScalarType.STRING */, opt: true },
-        { no: 3, name: "begin", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
-        { no: 4, name: "end", kind: "scalar", T: 5 /* ScalarType.INT32 */, opt: true },
+        { no: 1, name: "path", kind: "scalar", T: ScalarType.INT32, repeated: true, packed: true },
+        { no: 2, name: "source_file", kind: "scalar", T: ScalarType.STRING, opt: true },
+        { no: 3, name: "begin", kind: "scalar", T: ScalarType.INT32, opt: true },
+        { no: 4, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
         { no: 5, name: "semantic", kind: "enum", T: GeneratedCodeInfo_Annotation_Semantic_Enum, opt: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 
 /**
  * Describes the relationship between generated code and its original source
@@ -2721,13 +2690,12 @@ export type GeneratedCodeInfo = Message<{
 
 }>;
 
-export const GeneratedCodeInfo: MessageType<GeneratedCodeInfo> = createMessageType(
-  {
+// GeneratedCodeInfo contains the message type declaration for GeneratedCodeInfo.
+export const GeneratedCodeInfo: MessageType<GeneratedCodeInfo> = createMessageType({
     typeName: "google.protobuf.GeneratedCodeInfo",
     fields: [
         { no: 1, name: "annotation", kind: "message", T: () => GeneratedCodeInfo_Annotation, repeated: true },
     ] as readonly PartialFieldInfo[],
     packedByDefault: false,
-  },
-);
+});
 

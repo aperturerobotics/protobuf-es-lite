@@ -26,7 +26,15 @@ export {
   OneofInfo,
   fieldJsonName,
 } from "./field.js";
-export { scalarEquals, scalarZeroValue, isScalarZeroValue } from "./scalar.js";
+export { applyPartialMessage } from "./partial.js";
+export {
+  scalarEquals,
+  scalarZeroValue,
+  isScalarZeroValue,
+  ScalarType,
+  ScalarValue,
+  LongType,
+} from "./scalar.js";
 export { createEnumType, normalizeEnumValue } from "./enum.js";
 export {
   localName,
@@ -75,3 +83,43 @@ export {
   DescService,
   DescriptorSet,
 } from "./descriptor-set.js";
+export {
+  jsonReadEnum,
+  jsonReadField,
+  jsonReadMapKey,
+  jsonReadScalar,
+  jsonReadMessage,
+  jsonWriteEnum,
+  jsonWriteField,
+  jsonWriteScalar,
+  jsonWriteMessage,
+  jsonDebugValue,
+  JsonValue,
+  JsonObject,
+  JsonReadOptions,
+  jsonMakeReadOptions,
+  JsonWriteOptions,
+  JsonWriteStringOptions,
+  jsonMakeWriteOptions,
+} from "./json.js";
+export {
+  binaryReadField,
+  binaryReadMapEntry,
+  binaryReadScalar,
+  binaryReadScalarLTString,
+  binaryReadMessage,
+  binaryWriteField,
+  binaryWriteScalar,
+  binaryWritePacked,
+  binaryWriteMapEntry,
+  binaryWriteMessage,
+  binaryMakeReadOptions,
+  binaryMakeWriteOptions,
+  BinaryReadOptions,
+  BinaryWriteOptions,
+} from "./binary.js";
+export type {
+  IMessageTypeRegistry,
+  IServiceTypeRegistry,
+  IEnumTypeRegistry,
+} from "./type-registry.js";

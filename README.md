@@ -1,11 +1,7 @@
 ## protobuf-es-lite
 
-[![GoDoc Widget]][GoDoc] [![Go Report Card Widget]][Go Report Card]
-
-[GoDoc]: https://godoc.org/github.com/aperturerobotics/protobuf-es-lite
-[GoDoc Widget]: https://godoc.org/github.com/aperturerobotics/protobuf-es-lite?status.svg
-[Go Report Card Widget]: https://goreportcard.com/badge/github.com/aperturerobotics/protobuf-es-lite
-[Go Report Card]: https://goreportcard.com/report/github.com/aperturerobotics/protobuf-es-lite
+[![npm version](https://img.shields.io/npm/v/@aptre/protobuf-es-lite.svg)](https://www.npmjs.com/package/@aptre/protobuf-es-lite)
+[![npm downloads](https://img.shields.io/npm/dm/@aptre/protobuf-es-lite.svg)](https://www.npmjs.com/package/@aptre/protobuf-es-lite)
 
 protobuf-es-lite is a TypeScript and JavaScript protobuf implementation.
 
