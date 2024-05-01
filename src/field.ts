@@ -31,10 +31,53 @@ import { localFieldName, localOneofName, protoCamelCase } from "./names.js";
  * - "delimited": Only proto2: Use the tag-delimited group encoding.
  */
 export type FieldInfo =
-  | fiRules<fiScalar>
-  | fiRules<fiEnum>
-  | fiRules<fiMessage>
-  | fiRules<fiMap>;
+  | ScalarFieldInfo
+  | EnumFieldInfo
+  | MessageFieldInfo
+  | MapFieldInfo;
+
+/**
+ * ScalarFieldInfo represents a scalar field.
+ * It includes rules for field presence, repetition, and packing.
+ */
+export type ScalarFieldInfo = fiRules<fiScalar>;
+
+/**
+ * EnumFieldInfo represents an enum field.
+ * It includes rules for field presence, repetition, and packing.
+ */
+export type EnumFieldInfo = fiRules<fiEnum>;
+
+/**
+ * MessageFieldInfo represents a message field.
+ * It includes rules for field presence, repetition, and packing.
+ */
+export type MessageFieldInfo = fiRules<fiMessage>;
+
+/**
+ * MapFieldInfo represents a map field with a scalar key type and
+ * a scalar, enum, or message value type.
+ * It includes rules for field presence, repetition, and packing.
+ */
+export type MapFieldInfo = fiRules<fiMap>;
+
+/**
+ * MapValueInfo represents the value type of a map field.
+ * The value can be a scalar, enum, or message type.
+ */
+export type MapValueInfo =
+  | {
+      readonly kind: "scalar";
+      readonly T: ScalarType;
+    }
+  | {
+      readonly kind: "enum";
+      readonly T: EnumType;
+    }
+  | {
+      readonly kind: "message";
+      readonly T: MessageType<any> | (() => MessageType<any>);
+    };
 
 /**
  * Provides convenient access to field information of a message type.
@@ -483,19 +526,7 @@ interface fiMap extends fiShared {
   /**
    * Map value type. Can be scalar, enum, or message.
    */
-  readonly V:
-    | {
-        readonly kind: "scalar";
-        readonly T: ScalarType;
-      }
-    | {
-        readonly kind: "enum";
-        readonly T: EnumType;
-      }
-    | {
-        readonly kind: "message";
-        readonly T: MessageType<any> | (() => MessageType<any>);
-      };
+  readonly V: MapValueInfo;
   /**
    * Is the field repeated? Never true for maps.
    */

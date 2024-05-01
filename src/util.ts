@@ -156,7 +156,7 @@ export function getFieldDefaultValueExpression(
  *
  * Returns either:
  * - empty array literal for repeated fields
- * - empty object literal for maps
+ * - Object.create(null) for maps
  * - undefined for message fields
  * - an enums first value
  * - scalar zero value
@@ -175,7 +175,7 @@ export function getFieldZeroValueExpression(
     case "message":
       return undefined;
     case "map":
-      return "{}";
+      return "Object.create(null)";
     case "enum": {
       // In proto3, the first enum value must be zero.
       // In proto2, protobuf-go returns the first value as the default.

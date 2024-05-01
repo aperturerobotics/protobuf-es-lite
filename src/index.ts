@@ -19,11 +19,15 @@ export {
 } from "./service-type.js";
 export { isCompleteMessage, isCompleteField } from "./is-message.js";
 export {
-  newFieldList,
   FieldList,
   PartialFieldInfo,
   FieldInfo,
+  ScalarFieldInfo,
+  EnumFieldInfo,
+  MessageFieldInfo,
+  MapFieldInfo,
   OneofInfo,
+  newFieldList,
   fieldJsonName,
 } from "./field.js";
 export { applyPartialMessage } from "./partial.js";
@@ -35,7 +39,15 @@ export {
   ScalarValue,
   LongType,
 } from "./scalar.js";
-export { createEnumType, normalizeEnumValue } from "./enum.js";
+export {
+  EnumType,
+  EnumValueInfo,
+  createEnumType,
+  enumInfoZeroValue,
+  enumZeroValue,
+  enumDescZeroValue,
+  normalizeEnumValue,
+} from "./enum.js";
 export {
   localName,
   localFieldName,
@@ -123,3 +135,8 @@ export type {
   IServiceTypeRegistry,
   IEnumTypeRegistry,
 } from "./type-registry.js";
+export {
+  compareFieldZeroValue,
+  isMessageZeroValue,
+  getFieldZeroValue,
+} from "./zero-value.js";

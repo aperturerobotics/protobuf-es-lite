@@ -197,3 +197,35 @@ export function isScalarZeroValue(type: ScalarType, value: unknown): boolean {
       return value == 0; // Loose comparison matches 0n, 0 and "0"
   }
 }
+
+/**
+ * Returns the normalized version of the scalar value.
+ * Zero or null is cast to the zero value.
+ * Bytes is cast to a Uint8Array.
+ * The BigInt long type is used.
+ */
+export function normalizeScalarValue<T>(
+  type: ScalarType,
+  value: T | null | undefined,
+  longType: LongType = LongType.BIGINT,
+): T {
+  if (value == null) {
+    return scalarZeroValue(type, longType) as T;
+  }
+
+  if (type === ScalarType.BYTES) {
+    return toU8Arr(value as any) as T;
+  }
+
+  if (isScalarZeroValue(type, value)) {
+    return scalarZeroValue(type, longType) as T;
+  }
+
+  // TODO: enforce correct type for other values as well.
+  return value;
+}
+
+// converts any ArrayLike<number> to Uint8Array if necessary.
+export function toU8Arr(input: ArrayLike<number>) {
+  return input instanceof Uint8Array ? input : new Uint8Array(input);
+}
