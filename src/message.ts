@@ -93,9 +93,14 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
   readonly fieldWrapper?: FieldWrapper<T>;
 
   /**
+   * Create a new empty instance of this message applying the partial message.
+   */
+  create(partial?: Message<T>): Message<T>;
+
+  /**
    * Create a new instance of this message with zero values for fields.
    */
-  create(partial?: Message<T>): CompleteMessage<T>;
+  createComplete(partial?: Message<T>): CompleteMessage<T>;
 
   /**
    * Create a deep copy.
@@ -203,8 +208,14 @@ export function createMessageType<
     fields,
     fieldWrapper,
 
-    create(partial?: Message<T>): CompleteMessage<T> {
-      const message = createMessage<T>(fields);
+    create(partial?: Message<T>): Message<T> {
+      const message = Object.create(null) as Message<T>;
+      applyPartialMessage(partial, message, fields);
+      return message;
+    },
+
+    createComplete(partial?: Message<T>): CompleteMessage<T> {
+      const message = createCompleteMessage<T>(fields);
       applyPartialMessage(partial, message as Message<T>, fields);
       return message;
     },
@@ -436,9 +447,9 @@ export function cloneMessage<T extends Message<T>>(
 }
 
 /**
- * createMessage recursively builds a message filled with zero values based on the given FieldList.
+ * createCompleteMessage recursively builds a message filled with zero values based on the given FieldList.
  */
-export function createMessage<T extends Message<T>>(
+export function createCompleteMessage<T extends Message<T>>(
   fields: FieldList,
 ): CompleteMessage<T> {
   const message = {} as T;
@@ -495,7 +506,7 @@ export function createMessage<T extends Message<T>>(
         if (field.repeated) {
           message[field.localName as keyof T] = [] as T[keyof T];
         } else {
-          message[field.localName as keyof T] = createMessage(
+          message[field.localName as keyof T] = createCompleteMessage(
             messageType.fields,
           ) as T[keyof T];
         }

@@ -1174,7 +1174,7 @@ function generateWktFieldWrapper(
       f.print(
         "      return ",
         message,
-        ".create({ value: value ?? undefined });",
+        ".createComplete({ value: value ?? undefined });",
       );
       f.print("    },");
       f.print(

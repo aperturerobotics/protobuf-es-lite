@@ -53,12 +53,7 @@ export function localName(
       const pkg = desc.file.proto.package;
       const offset = pkg === undefined ? 0 : pkg.length + 1;
       const name = desc.typeName.substring(offset).replace(/\./g, "_");
-      // For services, we only care about safe identifiers, not safe object properties,
-      // but we have shipped v1 with a bug that respected object properties, and we
-      // do not want to introduce a breaking change, so we continue to escape for
-      // safe object properties.
-      // See https://github.com/bufbuild/protobuf-es/pull/391
-      return safeObjectProperty(safeIdentifier(name));
+      return safeIdentifier(name);
     }
     case "enum_value": {
       let name = desc.name;
@@ -257,21 +252,7 @@ const reservedObjectProperties = new Set([
  * Names that cannot be used for object properties because they are reserved
  * by the runtime.
  */
-const reservedMessageProperties = new Set([
-  // names reserved by the runtime
-  "getType",
-  "clone",
-  "equals",
-  "fromBinary",
-  "fromJson",
-  "fromJsonString",
-  "toBinary",
-  "toJson",
-  "toJsonString",
-
-  // names reserved by the runtime for the future
-  "toObject",
-]);
+const reservedMessageProperties = new Set(["__proto__"]);
 
 const fallback = <T extends string>(name: T) => `${name}$` as const;
 
@@ -306,3 +287,16 @@ export const safeIdentifier = (name: string): string => {
   }
   return name;
 };
+
+export function checkSanitizeKey(key: string): boolean {
+  return typeof key === "string" && key !== "__proto__";
+}
+
+export function throwSanitizeKey(key: string) {
+  if (typeof key !== "string") {
+    throw new Error("illegal non-string object key: " + typeof key);
+  }
+  if (!checkSanitizeKey(key)) {
+    throw new Error("illegal object key: " + key);
+  }
+}
