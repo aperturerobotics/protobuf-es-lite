@@ -13,22 +13,49 @@ describe("EchoMsg", () => {
     expect(msg).toEqual({ body: "Hello, world!" });
   });
 
-  /*
   it("creates a message with a timestamp", () => {
     const now = new Date();
-    const msg = EchoMsg.create({ ts: now });
-    expect(msg).toEqual({ ts: now });
+    const msg = EchoMsg.create({ ts: { seconds: BigInt(Math.floor(now.getTime() / 1000)), nanos: now.getMilliseconds() * 1000000 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt(Math.floor(now.getTime() / 1000)), nanos: now.getMilliseconds() * 1000000 } });
   });
-  */
 
-  /*
-  it("creates a message with repeated timestamps", () => {
-    const now = new Date();
-    const later = new Date(now.getTime() + 60000);
-    const msg = EchoMsg.create({ timestamps: [now, later] });
-    expect(msg).toEqual({ timestamps: [now, later] });
+  it("creates a message with a future timestamp", () => {
+    const future = new Date(Date.now() + 60000);
+    const msg = EchoMsg.create({ ts: { seconds: BigInt(Math.floor(future.getTime() / 1000)), nanos: future.getMilliseconds() * 1000000 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt(Math.floor(future.getTime() / 1000)), nanos: future.getMilliseconds() * 1000000 } });
   });
-  */
+
+  it("creates a message with a zero timestamp", () => {
+    const msg = EchoMsg.create({ ts: { seconds: BigInt(0), nanos: 0 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt(0), nanos: 0 } });
+  });
+
+  it("creates a message with a negative timestamp", () => {
+    const past = new Date(Date.now() - 60000);
+    const msg = EchoMsg.create({ ts: { seconds: BigInt(Math.floor(past.getTime() / 1000)), nanos: past.getMilliseconds() * 1000000 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt(Math.floor(past.getTime() / 1000)), nanos: past.getMilliseconds() * 1000000 } });
+  });
+
+  it("creates a message with a timestamp with max nanos", () => {
+    const msg = EchoMsg.create({ ts: { seconds: BigInt(1), nanos: 999999999 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt(1), nanos: 999999999 } });
+  });
+
+  it("creates a message with a timestamp with negative nanos", () => {
+    const msg = EchoMsg.create({ ts: { seconds: BigInt(1), nanos: -1 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt(1), nanos: -1 } });
+  });
+
+  it("creates a message with a max timestamp", () => {
+    const msg = EchoMsg.create({ ts: { seconds: BigInt("9223372036854775807"), nanos: 999999999 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt("9223372036854775807"), nanos: 999999999 } });
+  });
+
+  it("creates a message with a min timestamp", () => {
+    const msg = EchoMsg.create({ ts: { seconds: BigInt("-9223372036854775808"), nanos: 0 } });
+    expect(msg).toEqual({ ts: { seconds: BigInt("-9223372036854775808"), nanos: 0 } });
+  });
+
 
   it("creates a message with an example enum", () => {
     const msg = EchoMsg.create({ demo: { case: "exampleEnum", value: ExampleEnum.FIRST } });
