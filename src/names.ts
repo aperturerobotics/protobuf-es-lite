@@ -246,6 +246,8 @@ const reservedObjectProperties = new Set([
   "toString",
   "toJSON",
   "valueOf",
+  "__proto__",
+  "prototype",
 ]);
 
 /**
@@ -289,7 +291,7 @@ export const safeIdentifier = (name: string): string => {
 };
 
 export function checkSanitizeKey(key: string): boolean {
-  return typeof key === "string" && key !== "__proto__";
+  return typeof key === "string" && !!key.length && !reservedObjectProperties.has(key)
 }
 
 export function throwSanitizeKey(key: string) {
