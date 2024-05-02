@@ -291,7 +291,11 @@ export const safeIdentifier = (name: string): string => {
 };
 
 export function checkSanitizeKey(key: string): boolean {
-  return typeof key === "string" && !!key.length && !reservedObjectProperties.has(key)
+  return (
+    typeof key === "string" &&
+    !!key.length &&
+    !reservedObjectProperties.has(key)
+  );
 }
 
 export function throwSanitizeKey(key: string) {

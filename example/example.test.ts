@@ -1,11 +1,54 @@
-import { EchoMsg, ExampleEnum } from "./example.pb.js";
-
 import { describe, it, expect } from 'vitest';
+import { EchoMsg, ExampleEnum } from "./example.pb.js";
+import { Timestamp } from "../src/google/protobuf/timestamp.pb.js";
+
+function dateEquals(a: Date, b: Date): boolean {
+  return a.getTime() === b.getTime();
+}
 
 describe("EchoMsg", () => {
   it("creates an empty message", () => {
     const msg = EchoMsg.create();
     expect(msg).toEqual({});
+  });
+
+  it("creates a message with a custom timestamp", () => {
+    const customDate = new Date(2022, 0, 1);
+    const msg = EchoMsg.create({ ts: customDate });
+    expect(dateEquals(msg.ts!, customDate)).toBe(true);
+  });
+
+  it("creates a message with a custom timestamp using Timestamp", () => {
+    const customDate = new Date(2022, 0, 1);
+    const timestamp = Timestamp.fromDate(customDate);
+    // Although the type definitions don't currently specify it:
+    // We allow specifying the message form of Timestamp as well.
+    const msg = EchoMsg.create({ ts: timestamp as Date });
+    expect(dateEquals(msg.ts!, customDate)).toBe(true);
+  });
+
+  it("serializes and deserializes binary with custom timestamp", () => {
+    const customDate = new Date(2022, 0, 1);
+    const msg = EchoMsg.create({ ts: customDate });
+    const binary = EchoMsg.toBinary(msg);
+    const msg2 = EchoMsg.fromBinary(binary);
+    expect(dateEquals(msg2.ts!, customDate)).toBe(true);
+  });
+
+  it("serializes and deserializes JSON with custom timestamp", () => {
+    const customDate = new Date(2022, 0, 1);
+    const msg = EchoMsg.create({ ts: customDate });
+    const json = EchoMsg.toJson(msg);
+    const msg2 = EchoMsg.fromJson(json);
+    expect(dateEquals(msg2.ts!, customDate)).toBe(true);
+  });
+
+  it("serializes and deserializes JSON string with custom timestamp", () => {
+    const customDate = new Date(2022, 0, 1);
+    const msg = EchoMsg.create({ ts: customDate });
+    const jsonString = EchoMsg.toJsonString(msg);
+    const msg2 = EchoMsg.fromJsonString(jsonString);
+    expect(dateEquals(msg2.ts!, customDate)).toBe(true);
   });
 
   it("creates a message with a body", () => {
@@ -15,46 +58,27 @@ describe("EchoMsg", () => {
 
   it("creates a message with a timestamp", () => {
     const now = new Date();
-    const msg = EchoMsg.create({ ts: { seconds: BigInt(Math.floor(now.getTime() / 1000)), nanos: now.getMilliseconds() * 1000000 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt(Math.floor(now.getTime() / 1000)), nanos: now.getMilliseconds() * 1000000 } });
+    const msg = EchoMsg.create({ ts: now });
+    expect(msg).toEqual({ ts: now });
   });
 
   it("creates a message with a future timestamp", () => {
     const future = new Date(Date.now() + 60000);
-    const msg = EchoMsg.create({ ts: { seconds: BigInt(Math.floor(future.getTime() / 1000)), nanos: future.getMilliseconds() * 1000000 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt(Math.floor(future.getTime() / 1000)), nanos: future.getMilliseconds() * 1000000 } });
+    const msg = EchoMsg.create({ ts: future });
+    expect(msg).toEqual({ ts: future });
   });
 
   it("creates a message with a zero timestamp", () => {
-    const msg = EchoMsg.create({ ts: { seconds: BigInt(0), nanos: 0 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt(0), nanos: 0 } });
+    const msg = EchoMsg.create({ ts: new Date(0) });
+    expect(msg).toEqual({ ts: null });
   });
 
   it("creates a message with a negative timestamp", () => {
     const past = new Date(Date.now() - 60000);
-    const msg = EchoMsg.create({ ts: { seconds: BigInt(Math.floor(past.getTime() / 1000)), nanos: past.getMilliseconds() * 1000000 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt(Math.floor(past.getTime() / 1000)), nanos: past.getMilliseconds() * 1000000 } });
+    const msg = EchoMsg.create({ ts: past });
+    expect(msg).toEqual({ ts: past });
   });
 
-  it("creates a message with a timestamp with max nanos", () => {
-    const msg = EchoMsg.create({ ts: { seconds: BigInt(1), nanos: 999999999 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt(1), nanos: 999999999 } });
-  });
-
-  it("creates a message with a timestamp with negative nanos", () => {
-    const msg = EchoMsg.create({ ts: { seconds: BigInt(1), nanos: -1 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt(1), nanos: -1 } });
-  });
-
-  it("creates a message with a max timestamp", () => {
-    const msg = EchoMsg.create({ ts: { seconds: BigInt("9223372036854775807"), nanos: 999999999 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt("9223372036854775807"), nanos: 999999999 } });
-  });
-
-  it("creates a message with a min timestamp", () => {
-    const msg = EchoMsg.create({ ts: { seconds: BigInt("-9223372036854775808"), nanos: 0 } });
-    expect(msg).toEqual({ ts: { seconds: BigInt("-9223372036854775808"), nanos: 0 } });
-  });
 
 
   it("creates a message with an example enum", () => {
@@ -71,7 +95,7 @@ describe("EchoMsg", () => {
     const msg = EchoMsg.createComplete({ body: "test" });
     expect(msg).toEqual({ 
       body: "test",
-      ts: {nanos: 0, seconds: BigInt(0)},
+      ts: null,
       timestamps: [],
       demo: { case: undefined }
     });
@@ -91,7 +115,6 @@ describe("EchoMsg", () => {
     expect(msg1).toEqual(msg2);
   });
 
-  /*
   it("clones a message with a timestamp", () => {
     const now = new Date();
     const msg1 = EchoMsg.create({ ts: now });
@@ -108,7 +131,6 @@ describe("EchoMsg", () => {
     expect(msg1).not.toBe(msg2);
     expect(msg1).toEqual(msg2);
   });
-  */
 
   it("checks message equality", () => {  
     const msg1 = EchoMsg.create({ body: "test" });
@@ -118,7 +140,6 @@ describe("EchoMsg", () => {
     expect(EchoMsg.equals(msg1, msg3)).toBe(false);
   });
 
-  /*
   it("serializes and deserializes binary", () => {
     const msg = EchoMsg.create({ body: "test", timestamps: [new Date()] });
     const binary = EchoMsg.toBinary(msg);
@@ -139,7 +160,6 @@ describe("EchoMsg", () => {
     const msg2 = EchoMsg.fromJsonString(jsonString);
     expect(msg).toEqual(msg2);
   });
-  **/
 
   it("checks message equality with oneofs", () => {
     const msg1 = EchoMsg.create({ demo: { case: "exampleString", value: "test" } });
@@ -149,7 +169,6 @@ describe("EchoMsg", () => {
     expect(EchoMsg.equals(msg1, msg3)).toBe(false);
   });
 
-  /*
   it("checks message equality with timestamps", () => {
     const now = new Date();  
     const msg1 = EchoMsg.create({ ts: now });
@@ -159,9 +178,7 @@ describe("EchoMsg", () => {
     expect(EchoMsg.equals(msg1, msg2)).toBe(true);
     expect(EchoMsg.equals(msg1, msg3)).toBe(false);
   });
-  */
 
-  /*
   it("checks message equality with repeated timestamps", () => {
     const now = new Date();
     const later = new Date(now.getTime() + 60000);
@@ -172,7 +189,6 @@ describe("EchoMsg", () => {
     expect(EchoMsg.equals(msg1, msg2)).toBe(true);
     expect(EchoMsg.equals(msg1, msg3)).toBe(false);
   });
-  */
 
   it("serializes and deserializes binary with oneofs", () => {
     const msg = EchoMsg.create({ demo: { case: "exampleString", value: "test" } });
@@ -181,14 +197,12 @@ describe("EchoMsg", () => {
     expect(msg).toEqual(msg2);
   });
 
-  /*
   it("serializes and deserializes binary with timestamps", () => {
     const msg = EchoMsg.create({ ts: new Date() });
     const binary = EchoMsg.toBinary(msg);
     const msg2 = EchoMsg.fromBinary(binary);
     expect(msg).toEqual(msg2);
   });
-  */
 
   it("serializes and deserializes JSON with oneofs", () => {
     const msg = EchoMsg.create({ demo: { case: "exampleString", value: "test" } });
@@ -197,14 +211,12 @@ describe("EchoMsg", () => {
     expect(msg2).toEqual(msg);
   });
 
-  /*
   it("serializes and deserializes JSON with timestamps", () => {
     const msg = EchoMsg.create({ ts: new Date() });
     const json = EchoMsg.toJson(msg);
     const msg2 = EchoMsg.fromJson(json);
     expect(msg).toEqual(msg2);
   });
-  */
 
   it("serializes and deserializes JSON string with oneofs", () => {
     const msg = EchoMsg.create({ demo: { case: "exampleString", value: "test" } });
@@ -213,12 +225,10 @@ describe("EchoMsg", () => {
     expect(msg).toEqual(msg2);
   });
 
-  /*
   it("serializes and deserializes JSON string with timestamps", () => {
     const msg = EchoMsg.create({ ts: new Date() });
     const jsonString = EchoMsg.toJsonString(msg);
     const msg2 = EchoMsg.fromJsonString(jsonString);
     expect(msg).toEqual(msg2);
   });
-  */
 });

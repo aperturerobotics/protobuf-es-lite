@@ -14,11 +14,12 @@
 // limitations under the License.
 
 import type { Printable } from "./protoplugin/ecmascript/index.js";
-import { DescEnumValue, DescExtension, DescField } from "./descriptor-set.js";
+import { DescEnumValue, DescExtension, DescField, DescMessage } from "./descriptor-set.js";
 import { FieldDescriptorProto_Label } from "./google/protobuf/descriptor.pb.js";
 import { codegenInfo } from "./codegen-info.js";
 import { LongType, ScalarType, ScalarValue } from "./scalar.js";
 import { localName } from "./names.js";
+import { RefDescMessage } from "./protoplugin/ecmascript/opaque-printables.js";
 
 export function getFieldTypeInfo(field: DescField | DescExtension): {
   typing: Printable;
@@ -37,16 +38,7 @@ export function getFieldTypeInfo(field: DescField | DescExtension): {
       typingInferrableFromZeroValue = true;
       break;
     case "message": {
-      const baseType = codegenInfo.getUnwrappedFieldType(field);
-      if (baseType !== undefined) {
-        typing.push(scalarTypeScriptType(baseType, LongType.BIGINT));
-      } else {
-        typing.push({
-          kind: "es_ref_message",
-          type: field.message,
-          typeOnly: true,
-        });
-      }
+      typing.push(getUnwrappedFieldScriptType(field));
       optional = true;
       typingInferrableFromZeroValue = true;
       break;
@@ -85,11 +77,7 @@ export function getFieldTypeInfo(field: DescField | DescExtension): {
           );
           break;
         case "message":
-          valueType = {
-            kind: "es_ref_message",
-            type: field.mapValue.message,
-            typeOnly: true,
-          };
+          valueType = getUnwrappedMessageScriptType(field.mapValue.message)
           break;
         case "enum":
           valueType = {
@@ -304,7 +292,27 @@ function scalarTypeScriptType(type: ScalarType, longType: LongType): Printable {
       return "bigint";
     case ScalarType.BYTES:
       return "Uint8Array";
+    case ScalarType.DATE:
+      return "Date";
     default:
       return "number";
   }
+}
+
+function getUnwrappedFieldScriptType(field: DescField | DescExtension, longType?: LongType): Printable {
+  const baseType = codegenInfo.getUnwrappedFieldType(field);
+  return !!baseType ? scalarTypeScriptType(baseType, longType ?? field.longType ?? LongType.BIGINT) : ({
+    kind: "es_ref_message",
+    type: field.message,
+    typeOnly: true,
+  } as RefDescMessage);
+}
+
+function getUnwrappedMessageScriptType(msg: DescMessage, longType: LongType = LongType.BIGINT): Printable {
+  const baseType = codegenInfo.getUnwrappedMessageType(msg);
+  return baseType !== undefined ? scalarTypeScriptType(baseType, longType) : ({
+        kind: "es_ref_message",
+        type: msg,
+        typeOnly: true,
+  } as RefDescMessage);
 }

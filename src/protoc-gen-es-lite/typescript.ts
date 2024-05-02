@@ -752,6 +752,17 @@ function generateWktMethods(
         ": nanos };",
       );
       f.print("  },");
+      f.print("  equals(a: ", message, " | Date | undefined | null, b: ", message, " | Date | undefined | null): boolean {");
+      f.print("    const aDate = a instanceof Date ? a : ", message, "_Wkt.toDate(", message, "_Wkt.fromDate(a));");
+      f.print("    const bDate = b instanceof Date ? b : ", message, "_Wkt.toDate(", message, "_Wkt.fromDate(b));");
+      f.print("    if (aDate === bDate) {");
+      f.print("      return true;");
+      f.print("    }");
+      f.print("    if (aDate == null || bDate == null) {");
+      f.print("      return aDate === bDate;");
+      f.print("    }");
+      f.print("    return +aDate === +bDate;");
+      f.print("  },");
       break;
     case "google.protobuf.Duration":
       f.print(
@@ -1175,7 +1186,6 @@ function generateWktFieldWrapper(
   ref: DescWkt,
 ) {
   switch (ref?.typeName) {
-    /* TODO Wrap Timestamp => Date
     case "google.protobuf.Timestamp": {
       f.print("  fieldWrapper: {");
       f.print(
@@ -1198,7 +1208,6 @@ function generateWktFieldWrapper(
       f.print("  } as const,");
       break;
     }
-    */
     case "google.protobuf.DoubleValue":
     case "google.protobuf.FloatValue":
     case "google.protobuf.Int64Value":

@@ -143,13 +143,25 @@ function readField(
         tgtArr.push(
           unwrapField(
             messageType.fieldWrapper,
-            readMessageField(reader, Object.create(null), messageType.fields, options, field),
+            readMessageField(
+              reader,
+              Object.create(null),
+              messageType.fields,
+              options,
+              field,
+            ),
           ),
         );
       } else {
         target[localName] = unwrapField(
           messageType.fieldWrapper,
-          readMessageField(reader, Object.create(null), messageType.fields, options, field),
+          readMessageField(
+            reader,
+            Object.create(null),
+            messageType.fields,
+            options,
+            field,
+          ),
         );
       }
       break;

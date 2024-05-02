@@ -326,7 +326,7 @@ function readField(
         }
         throw new Error(m);
       }
-      throwSanitizeKey(key)
+      throwSanitizeKey(key);
       switch (field.V.kind) {
         case "message":
           const messageType = resolveMessageType(field.V.T);
@@ -748,21 +748,23 @@ function writeField(
   }
   switch (field.kind) {
     case "scalar":
-      const scalarValue = normalizeScalarValue(field.T, value, false)
-      if (!options.emitDefaultValues
-         &&  isScalarZeroValue(field.T, scalarValue)) {
-        return undefined
+      const scalarValue = normalizeScalarValue(field.T, value, false);
+      if (
+        !options.emitDefaultValues &&
+        isScalarZeroValue(field.T, scalarValue)
+      ) {
+        return undefined;
       }
-      return writeScalar(field.T, value)
+      return writeScalar(field.T, value);
     case "enum":
-      const enumValue = normalizeEnumValue(field.T, value as any)
+      const enumValue = normalizeEnumValue(field.T, value as any);
       if (!options.emitDefaultValues && enumZeroValue(field.T) === enumValue) {
-        return undefined
+        return undefined;
       }
       return writeEnum(field.T, value, options.enumAsInteger);
     case "message":
       if (!options.emitDefaultValues && value == null) {
-        return undefined
+        return undefined;
       }
       const messageType = resolveMessageType(field.T);
       return messageType.toJson(wrapField(messageType.fieldWrapper, value));

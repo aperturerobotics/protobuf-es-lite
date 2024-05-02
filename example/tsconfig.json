@@ -2,6 +2,7 @@
   "extends": "../tsconfig.json",
   "files": ["example.pb.ts"],
   "compilerOptions": {
+    "rootDir": "../",
     "paths": {
       "@aptre/protobuf-es-lite": [
         "../src",

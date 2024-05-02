@@ -50,6 +50,9 @@ export enum ScalarType {
   SFIXED64 = 16,
   SINT32 = 17, // Uses ZigZag encoding.
   SINT64 = 18, // Uses ZigZag encoding.
+
+  // DATE is not a Protobuf scalar type but used internally for the Timestamp wkt.
+  DATE = 100,
 }
 
 /**
@@ -102,6 +105,7 @@ export type ScalarValue<T = ScalarType, L extends LongType = LongType.STRING | L
   : T extends ScalarType.FIXED64 ?  (L extends LongType.STRING ? string : bigint)
   : T extends ScalarType.BOOL ? boolean
   : T extends ScalarType.BYTES ? Uint8Array
+  : T extends ScalarType.DATE ? null
   : never;
 
 /**
@@ -109,12 +113,16 @@ export type ScalarValue<T = ScalarType, L extends LongType = LongType.STRING | L
  */
 export function scalarEquals(
   type: ScalarType,
-  a: string | boolean | number | bigint | Uint8Array | undefined,
-  b: string | boolean | number | bigint | Uint8Array | undefined,
+  a: string | boolean | number | bigint | Uint8Array | Date | null | undefined,
+  b: string | boolean | number | bigint | Uint8Array | Date | null | undefined,
 ): boolean {
   if (a === b) {
     // This correctly matches equal values except BYTES and (possibly) 64-bit integers.
     return true;
+  }
+  // Special case null/undefined - only equal if both are null/undefined
+  if (a == null || b == null) {
+    return a === b;
   }
   // Special case BYTES - we need to compare each byte individually
   if (type == ScalarType.BYTES) {
@@ -131,6 +139,16 @@ export function scalarEquals(
     }
     return true;
   }
+  // Special case DATE - we need to compare the numeric value
+  if (type == ScalarType.DATE) {
+    const dateA = toDate(a, false);
+    const dateB = toDate(b, false);
+    if (dateA == null || dateB == null) {
+      return dateA === dateB
+    }
+    return dateA != null && dateB != null && +dateA === +dateB;
+  }
+  
   // Special case 64-bit integers - we support number, string and bigint representation.
   // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (type) {
@@ -171,12 +189,16 @@ export function scalarZeroValue<T extends ScalarType, L extends LongType>(
       return new Uint8Array(0) as ScalarValue<T>;
     case ScalarType.STRING:
       return "" as ScalarValue<T>;
+    case ScalarType.DATE:
+      return null as ScalarValue<T>;
     default:
       // Handles INT32, UINT32, SINT32, FIXED32, SFIXED32.
       // We do not use individual cases to save a few bytes code size.
       return 0 as ScalarValue<T>;
   }
 }
+
+const dateZeroValue = +(new Date(0))
 
 /**
  * Returns true for a zero-value. For example, an integer has the zero-value `0`,
@@ -187,6 +209,8 @@ export function scalarZeroValue<T extends ScalarType, L extends LongType>(
  */
 export function isScalarZeroValue(type: ScalarType, value: unknown): boolean {
   switch (type) {
+    case ScalarType.DATE:
+      return value == null || +value === dateZeroValue
     case ScalarType.BOOL:
       return value === false;
     case ScalarType.STRING:
@@ -223,6 +247,10 @@ export function normalizeScalarValue<T>(
     return scalarZeroValue(type, longType) as T;
   }
 
+  if (type === ScalarType.DATE) {
+    return toDate(value, clone) as T;
+  }
+
   return value;
 }
 
@@ -230,4 +258,15 @@ export function normalizeScalarValue<T>(
 // if clone is set, force clones the array to a copy.
 export function toU8Arr(input: ArrayLike<number>, clone: boolean) {
   return !clone && input instanceof Uint8Array ? input : new Uint8Array(input);
+}
+
+function toDate(input: unknown, clone: boolean): Date | null {
+  if (input instanceof Date) {
+    return clone ? new Date(input.getTime()) : input;
+  }
+  if (typeof input === "string" || typeof input === "number") {
+    const date = new Date(input);
+    return isNaN(date.getTime()) ? null : date;
+  }
+  return null;
 }

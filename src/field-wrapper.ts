@@ -1,4 +1,4 @@
-import { DescExtension, DescField } from "./descriptor-set.js";
+import { DescExtension, DescField, DescMessage } from "./descriptor-set.js";
 import { ScalarType } from "./scalar.js";
 
 /**
@@ -54,16 +54,29 @@ export function getUnwrappedFieldType(
   if (field.fieldKind !== "message") {
     return undefined;
   }
-  if (field.repeated) {
+  if (field.message.typeName !== "google.protobuf.Timestamp") {
+    if (field.repeated || field.oneof != null) {
+      return undefined;
+    }
+  }
+  return getUnwrappedMessageType(field.message)
+}
+
+/**
+ * If the given field uses one of the well-known wrapper types, return
+ * the primitive type it wraps.
+ */
+export function getUnwrappedMessageType(
+  msg: DescMessage,
+): ScalarType | undefined {
+  if (msg.kind !== "message") {
     return undefined;
   }
-  if (field.oneof != undefined) {
-    return undefined;
-  }
-  return wktWrapperToScalarType[field.message.typeName];
+  return wktWrapperToScalarType[msg.typeName];
 }
 
 const wktWrapperToScalarType: Record<string, ScalarType> = {
+  "google.protobuf.Timestamp": ScalarType.DATE,
   "google.protobuf.DoubleValue": ScalarType.DOUBLE,
   "google.protobuf.FloatValue": ScalarType.FLOAT,
   "google.protobuf.Int64Value": ScalarType.INT64,

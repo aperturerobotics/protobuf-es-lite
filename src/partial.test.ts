@@ -5,7 +5,6 @@ import { EchoMsg, ExampleEnum } from "../example/example.pb.js";
 import { Timestamp } from "./google/index.js";
 
 describe("applyPartialMessage", () => {
-
   it("applies partial values to target message", () => {
     const source: Partial<EchoMsg> = {
       body: "Hello",
@@ -62,7 +61,12 @@ describe("applyPartialMap", () => {
     const target = {
       baz: 789,
     };
-    applyPartialMap(source, target, { kind: "scalar", T: ScalarType.INT32 }, false);
+    applyPartialMap(
+      source,
+      target,
+      { kind: "scalar", T: ScalarType.INT32 },
+      false,
+    );
 
     expect(target).toEqual({
       foo: 123,
@@ -79,7 +83,12 @@ describe("applyPartialMap", () => {
       foo: 123,
       bar: 456,
     };
-    applyPartialMap(source, target, { kind: "scalar", T: ScalarType.INT32 }, false);
+    applyPartialMap(
+      source,
+      target,
+      { kind: "scalar", T: ScalarType.INT32 },
+      false,
+    );
 
     expect(target).toEqual({
       bar: 456,

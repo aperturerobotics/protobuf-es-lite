@@ -252,6 +252,22 @@ const Timestamp_Wkt = {
     const nanos = (ms % 1000) * 1000000;
     return { seconds: protoInt64.parse(seconds), nanos: nanos };
   },
+  equals(
+    a: Timestamp | Date | undefined | null,
+    b: Timestamp | Date | undefined | null,
+  ): boolean {
+    const aDate =
+      a instanceof Date ? a : Timestamp_Wkt.toDate(Timestamp_Wkt.fromDate(a));
+    const bDate =
+      b instanceof Date ? b : Timestamp_Wkt.toDate(Timestamp_Wkt.fromDate(b));
+    if (aDate === bDate) {
+      return true;
+    }
+    if (aDate == null || bDate == null) {
+      return aDate === bDate;
+    }
+    return +aDate === +bDate;
+  },
 };
 
 // Timestamp contains the message type declaration for Timestamp.
@@ -264,6 +280,17 @@ export const Timestamp: MessageType<Timestamp> & typeof Timestamp_Wkt =
         { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
       ] as readonly PartialFieldInfo[],
       packedByDefault: true,
+      fieldWrapper: {
+        wrapField(value: Timestamp | Date | null | undefined): Timestamp {
+          if (value == null || value instanceof Date) {
+            return Timestamp_Wkt.fromDate(value);
+          }
+          return Timestamp.createComplete(value);
+        },
+        unwrapField(msg: Timestamp): Date | null {
+          return Timestamp_Wkt.toDate(msg);
+        },
+      } as const,
     },
     Timestamp_Wkt,
   );

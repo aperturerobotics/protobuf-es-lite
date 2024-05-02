@@ -55,11 +55,11 @@ export type EchoMsg = Message<{
   /**
    * @generated from field: google.protobuf.Timestamp ts = 2;
    */
-  ts?: Timestamp;
+  ts?: Date;
   /**
    * @generated from field: repeated google.protobuf.Timestamp timestamps = 5;
    */
-  timestamps?: Timestamp[];
+  timestamps?: Date[];
 
   /**
    * @generated from oneof example.EchoMsg.demo
