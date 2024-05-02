@@ -19,6 +19,7 @@ import { EnumType, enumZeroValue, normalizeEnumValue } from "./enum.js";
 import { protoInt64 } from "./proto-int64.js";
 import { protoBase64 } from "./proto-base64.js";
 import { IMessageTypeRegistry } from "./type-registry.js";
+import { throwSanitizeKey } from "./names.js";
 
 /**
  * Options for parsing JSON data.
@@ -325,6 +326,7 @@ function readField(
         }
         throw new Error(m);
       }
+      throwSanitizeKey(key)
       switch (field.V.kind) {
         case "message":
           const messageType = resolveMessageType(field.V.T);
