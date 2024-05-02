@@ -210,31 +210,37 @@ export function newFieldList(
  */
 export function isFieldSet(
   field: FieldInfo,
-  target: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+  target: Record<string, any> | null | undefined, // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
 ) {
   const localName = field.localName;
+  if (!target) {
+    return false;
+  }
   if (field.repeated) {
-    return (target[localName] as unknown[]).length > 0;
+    return !!(target[localName] as unknown[])?.length;
   }
   if (field.oneof) {
-    return target[field.oneof.localName].case === localName; // eslint-disable-line @typescript-eslint/no-unsafe-member-access
+    return target[field.oneof.localName]?.case === localName; // eslint-disable-line @typescript-eslint/no-unsafe-member-access
   }
   switch (field.kind) {
     case "enum":
     case "scalar":
       if (field.opt || field.req) {
         // explicit presence
-        return target[localName] !== undefined;
+        return target[localName] != null;
       }
       // implicit presence
       if (field.kind == "enum") {
         return target[localName] !== field.T.values[0].no;
       }
+      // not zero value
       return !isScalarZeroValue(field.T, target[localName]);
     case "message":
-      return target[localName] !== undefined;
+      return target[localName] != null;
     case "map":
-      return Object.keys(target[localName]).length > 0; // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      return (
+        target[localName] != null && !!Object.keys(target[localName]).length
+      ); // eslint-disable-line @typescript-eslint/no-unsafe-argument
   }
 }
 

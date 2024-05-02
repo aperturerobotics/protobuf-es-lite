@@ -203,10 +203,12 @@ export function isScalarZeroValue(type: ScalarType, value: unknown): boolean {
  * Zero or null is cast to the zero value.
  * Bytes is cast to a Uint8Array.
  * The BigInt long type is used.
+ * If clone is set, Uint8Array will always be copied to a new value.
  */
 export function normalizeScalarValue<T>(
   type: ScalarType,
   value: T | null | undefined,
+  clone: boolean,
   longType: LongType = LongType.BIGINT,
 ): T {
   if (value == null) {
@@ -214,18 +216,18 @@ export function normalizeScalarValue<T>(
   }
 
   if (type === ScalarType.BYTES) {
-    return toU8Arr(value as any) as T;
+    return toU8Arr(value as any, clone) as T;
   }
 
   if (isScalarZeroValue(type, value)) {
     return scalarZeroValue(type, longType) as T;
   }
 
-  // TODO: enforce correct type for other values as well.
   return value;
 }
 
 // converts any ArrayLike<number> to Uint8Array if necessary.
-export function toU8Arr(input: ArrayLike<number>) {
-  return input instanceof Uint8Array ? input : new Uint8Array(input);
+// if clone is set, force clones the array to a copy.
+export function toU8Arr(input: ArrayLike<number>, clone: boolean) {
+  return !clone && input instanceof Uint8Array ? input : new Uint8Array(input);
 }

@@ -721,13 +721,35 @@ function generateWktMethods(
       f.print("    }");
       f.print(`    return new Date(ms).toISOString().replace(".000Z", z);`);
       f.print("  },");
-      f.print("  toDate(msg: ", message, "): Date {");
+      f.print("  toDate(msg: ", message, " | null | undefined): Date | null {");
+      f.print(
+        "    if (!msg?.",
+        localName(ref.seconds),
+        " && !msg?.",
+        localName(ref.nanos),
+        ") { return null; }",
+      );
       f.print(
         "    return new Date(Number(msg.",
         localName(ref.seconds),
         " ?? 0) * 1000 + Math.ceil((msg.",
         localName(ref.nanos),
         " ?? 0) / 1000000));",
+      );
+      f.print("  },");
+      f.print("  fromDate(value: Date | null | undefined): ", message, " {");
+      f.print("    if (value == null) { return {}; }");
+      f.print("    const ms = value.getTime();");
+      f.print("    const seconds = Math.floor(ms / 1000);");
+      f.print("    const nanos = (ms % 1000) * 1000000;");
+      f.print(
+        "    return { ",
+        localName(ref.seconds),
+        ": ",
+        protoInt64,
+        ".parse(seconds), ",
+        localName(ref.nanos),
+        ": nanos };",
       );
       f.print("  },");
       break;
@@ -1153,6 +1175,30 @@ function generateWktFieldWrapper(
   ref: DescWkt,
 ) {
   switch (ref?.typeName) {
+    /* TODO Wrap Timestamp => Date
+    case "google.protobuf.Timestamp": {
+      f.print("  fieldWrapper: {");
+      f.print(
+        "    wrapField(value: ",
+        message,
+        " | Date | null | undefined): ",
+        message,
+        " {",
+      );
+      f.print(
+        "      if (value == null || value instanceof Date) { return ",
+        message,
+        "_Wkt.fromDate(value); }",
+      );
+      f.print("      return ", message, ".createComplete(value);");
+      f.print("    },");
+      f.print("    unwrapField(msg: ", message, "): Date | null {");
+      f.print("      return ", message, "_Wkt.toDate(msg);");
+      f.print("    }");
+      f.print("  } as const,");
+      break;
+    }
+    */
     case "google.protobuf.DoubleValue":
     case "google.protobuf.FloatValue":
     case "google.protobuf.Int64Value":

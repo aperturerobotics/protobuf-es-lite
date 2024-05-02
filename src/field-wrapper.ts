@@ -6,8 +6,16 @@ import { ScalarType } from "./scalar.js";
  * ergonomic for use as a message field.
  */
 export interface FieldWrapper<T = any, U = any> {
+  /**
+   * Wrap a primitive message field value in its corresponding wrapper
+   * message. This function is idempotent.
+   */
   wrapField(value: U | null | undefined): T;
 
+  /**
+   * If the given field uses one of the well-known wrapper types, return
+   * the primitive type it wraps.
+   */
   unwrapField(value: T): U | null | undefined;
 }
 
@@ -23,6 +31,17 @@ export function wrapField<T>(
     return value as T;
   }
   return fieldWrapper.wrapField(value);
+}
+
+/**
+ * Wrap a primitive message field value in its corresponding wrapper
+ * message. This function is idempotent.
+ */
+export function unwrapField<T, U = T>(
+  fieldWrapper: FieldWrapper<T> | undefined,
+  value: any,
+): U {
+  return !!fieldWrapper ? fieldWrapper.unwrapField(value) : value;
 }
 
 /**

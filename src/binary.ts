@@ -1,11 +1,12 @@
 import {
   FieldInfo,
   FieldList,
+  MessageFieldInfo,
   isFieldSet,
   resolveMessageType,
 } from "./field.js";
 import { handleUnknownField, unknownFieldsSymbol } from "./unknown.js";
-import { wrapField } from "./field-wrapper.js";
+import { unwrapField, wrapField } from "./field-wrapper.js";
 import {
   LongType,
   ScalarType,
@@ -92,7 +93,7 @@ function readField(
   if (field.oneof) {
     var oneofMsg = target[field.oneof.localName];
     if (!oneofMsg) {
-      oneofMsg = target[field.oneof.localName] = {};
+      oneofMsg = target[field.oneof.localName] = Object.create(null);
     }
     target = oneofMsg;
     if (target.case != localName) {
@@ -140,27 +141,22 @@ function readField(
           tgtArr = target[localName] = [];
         }
         tgtArr.push(
-          readMessageField(reader, {}, messageType.fields, options, field),
+          unwrapField(
+            messageType.fieldWrapper,
+            readMessageField(reader, Object.create(null), messageType.fields, options, field),
+          ),
         );
       } else {
-        target[localName] = readMessageField(
-          reader,
-          {},
-          messageType.fields,
-          options,
-          field,
+        target[localName] = unwrapField(
+          messageType.fieldWrapper,
+          readMessageField(reader, Object.create(null), messageType.fields, options, field),
         );
-        if (messageType.fieldWrapper && !field.oneof && !field.repeated) {
-          target[localName] = messageType.fieldWrapper.unwrapField(
-            target[localName],
-          );
-        }
       }
       break;
     case "map":
       let [mapKey, mapVal] = readMapEntry(field, reader, options);
       if (typeof target[localName] !== "object") {
-        target[localName] = {};
+        target[localName] = Object.create(null);
       }
       // safe to assume presence of map object, oneof cannot contain repeated values
       target[localName][mapKey] = mapVal;
@@ -204,7 +200,7 @@ function readMapEntry(
             const messageType = resolveMessageType(field.V.T);
             val = readMessageField(
               reader,
-              {},
+              Object.create(null),
               messageType.fields,
               options,
               undefined,
@@ -230,7 +226,7 @@ function readMapEntry(
         val = field.V.T.values[0].no;
         break;
       case "message":
-        val = {};
+        val = Object.create(null);
         break;
     }
   }
@@ -289,16 +285,15 @@ function readMessageField<T>(
   message: T,
   fields: FieldList,
   options: BinaryReadOptions,
-  field: { kind: "message"; no: number; delimited?: boolean } | undefined,
+  field?: MessageFieldInfo,
 ): T {
-  const delimited = field?.delimited;
   readMessage(
     message,
     fields,
     reader,
-    delimited ? field.no : reader.uint32(), // eslint-disable-line @typescript-eslint/strict-boolean-expressions
+    field?.delimited ? field.no : reader.uint32(),
     options,
-    delimited,
+    field?.delimited ?? false,
   );
   return message;
 }
@@ -309,9 +304,8 @@ function readMessage<T>(
   reader: IBinaryReader,
   lengthOrEndTagFieldNo: number,
   options: BinaryReadOptions,
-  delimitedMessageEncoding?: boolean,
+  delimitedMessageEncoding: boolean,
 ) {
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
   const end =
     delimitedMessageEncoding ? reader.len : reader.pos + lengthOrEndTagFieldNo;
   let fieldNo: number | undefined, wireType: WireType | undefined;
@@ -360,7 +354,9 @@ function writeMessage<T>(
       field.oneof ?
         (message as AnyMessage)[field.oneof.localName].value
       : (message as AnyMessage)[field.localName];
-    writeField(field, value, writer, options);
+    if (value !== undefined) {
+      writeField(field, value, writer, options);
+    }
   }
   if (options.writeUnknownFields) {
     writeUnknownFields(message, writer);

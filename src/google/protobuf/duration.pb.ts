@@ -142,19 +142,25 @@ const Duration_Wkt = {
   ): Duration {
     if (typeof json !== "string") {
       throw new Error(
-        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`,
+        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(
+          json,
+        )}`,
       );
     }
     const match = json.match(/^(-?[0-9]+)(?:\.([0-9]+))?s/);
     if (match === null) {
       throw new Error(
-        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`,
+        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(
+          json,
+        )}`,
       );
     }
     const longSeconds = Number(match[1]);
     if (longSeconds > 315576000000 || longSeconds < -315576000000) {
       throw new Error(
-        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`,
+        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(
+          json,
+        )}`,
       );
     }
     const msg = {} as Duration;

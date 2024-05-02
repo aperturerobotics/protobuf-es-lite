@@ -23,7 +23,7 @@ export function getFieldZeroValue(field: DescField | DescExtension) {
     case "map":
       return Object.create(null);
     case "enum": {
-      return enumDescZeroValue(field.enum)
+      return enumDescZeroValue(field.enum);
     }
     case "scalar": {
       return scalarZeroValue(field.scalar, field.longType);

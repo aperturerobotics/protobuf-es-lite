@@ -10,10 +10,12 @@ import {
   LongType,
   ScalarType,
   ScalarValue,
+  isScalarZeroValue,
+  normalizeScalarValue,
   scalarZeroValue,
 } from "./scalar.js";
-import { wrapField } from "./field-wrapper.js";
-import { EnumType } from "./enum.js";
+import { unwrapField, wrapField } from "./field-wrapper.js";
+import { EnumType, enumZeroValue, normalizeEnumValue } from "./enum.js";
 import { protoInt64 } from "./proto-int64.js";
 import { protoBase64 } from "./proto-base64.js";
 import { IMessageTypeRegistry } from "./type-registry.js";
@@ -184,7 +186,7 @@ function writeMessage<T>(
   fields: FieldList,
   options: JsonWriteOptions,
 ): JsonValue {
-  const json: JsonObject = {};
+  const json: JsonObject = Object.create(null);
   let field: FieldInfo | undefined;
   try {
     for (field of fields.byNumber()) {
@@ -257,7 +259,12 @@ function readField(
       switch (field.kind) {
         case "message":
           const messageType = resolveMessageType(field.T);
-          targetArray.push(messageType.fromJson(jsonItem, options));
+          targetArray.push(
+            unwrapField(
+              messageType.fieldWrapper,
+              messageType.fromJson(jsonItem, options),
+            ),
+          );
           break;
         case "enum":
           const enumValue = readEnum(
@@ -298,7 +305,7 @@ function readField(
     }
     var targetMap = target[localName] as Record<string, unknown>;
     if (typeof targetMap !== "object") {
-      targetMap = target[localName] = {};
+      targetMap = target[localName] = Object.create(null);
     }
     for (const [jsonMapKey, jsonMapValue] of Object.entries(jsonValue)) {
       if (jsonMapValue === null) {
@@ -368,16 +375,10 @@ function readField(
         ) {
           return;
         }
-        let currentValue = target[localName];
-        target[localName] = currentValue = messageType.fromJson(
-          jsonValue,
-          options,
+        target[localName] = unwrapField(
+          messageType.fieldWrapper,
+          messageType.fromJson(jsonValue, options),
         );
-        if (messageType.fieldWrapper && !field.oneof) {
-          target[localName] = messageType.fieldWrapper.unwrapField(
-            currentValue as any,
-          );
-        }
         break;
       case "enum":
         const enumValue = readEnum(
@@ -627,7 +628,7 @@ export function clearField(
   } else {
     switch (field.kind) {
       case "map":
-        target[localName] = {};
+        target[localName] = Object.create(null);
         break;
       case "enum":
         target[localName] = implicitPresence ? field.T.values[0].no : undefined;
@@ -646,7 +647,6 @@ export function clearField(
 // Decide whether an unset field should be emitted with JSON write option `emitDefaultValues`
 function canEmitFieldDefaultValue(field: FieldInfo) {
   if (field.repeated || field.kind == "map") {
-    // maps are {}, repeated fields are []
     return true;
   }
   if (field.oneof) {
@@ -671,9 +671,9 @@ function writeField(
   options: JsonWriteOptions,
 ): JsonValue | undefined {
   if (field.kind == "map") {
-    assert(typeof value == "object" && value != null);
-    const jsonObj: JsonObject = {};
-    const entries = Object.entries(value);
+    const jsonObj: JsonObject = Object.create(null);
+    assert(!value || typeof value === "object");
+    const entries = value ? Object.entries(value) : [];
     switch (field.V.kind) {
       case "scalar":
         for (const [entryKey, entryValue] of entries) {
@@ -707,26 +707,38 @@ function writeField(
       : undefined;
   }
   if (field.repeated) {
-    assert(Array.isArray(value));
+    assert(!value || Array.isArray(value));
     const jsonArr: JsonValue[] = [];
-    switch (field.kind) {
-      case "scalar":
-        for (let i = 0; i < value.length; i++) {
-          jsonArr.push(writeScalar(field.T, value[i]) as JsonValue);
-        }
-        break;
-      case "enum":
-        for (let i = 0; i < value.length; i++) {
-          jsonArr.push(
-            writeEnum(field.T, value[i], options.enumAsInteger) as JsonValue,
-          );
-        }
-        break;
-      case "message":
-        for (let i = 0; i < value.length; i++) {
-          jsonArr.push(value[i].toJson(options));
-        }
-        break;
+    const valueArr = value as Array<any>;
+    if (valueArr && valueArr.length) {
+      switch (field.kind) {
+        case "scalar":
+          for (let i = 0; i < valueArr.length; i++) {
+            jsonArr.push(writeScalar(field.T, valueArr[i]) as JsonValue);
+          }
+          break;
+        case "enum":
+          for (let i = 0; i < valueArr.length; i++) {
+            jsonArr.push(
+              writeEnum(
+                field.T,
+                valueArr[i],
+                options.enumAsInteger,
+              ) as JsonValue,
+            );
+          }
+          break;
+        case "message":
+          const messageType = resolveMessageType(field.T);
+          for (let i = 0; i < valueArr.length; i++) {
+            jsonArr.push(
+              messageType.toJson(
+                wrapField(messageType.fieldWrapper, valueArr[i]),
+              ),
+            );
+          }
+          break;
+      }
     }
     return options.emitDefaultValues || jsonArr.length > 0 ?
         jsonArr
@@ -734,10 +746,22 @@ function writeField(
   }
   switch (field.kind) {
     case "scalar":
-      return writeScalar(field.T, value);
+      const scalarValue = normalizeScalarValue(field.T, value, false)
+      if (!options.emitDefaultValues
+         &&  isScalarZeroValue(field.T, scalarValue)) {
+        return undefined
+      }
+      return writeScalar(field.T, value)
     case "enum":
+      const enumValue = normalizeEnumValue(field.T, value as any)
+      if (!options.emitDefaultValues && enumZeroValue(field.T) === enumValue) {
+        return undefined
+      }
       return writeEnum(field.T, value, options.enumAsInteger);
     case "message":
+      if (!options.emitDefaultValues && value == null) {
+        return undefined
+      }
       const messageType = resolveMessageType(field.T);
       return messageType.toJson(wrapField(messageType.fieldWrapper, value));
   }

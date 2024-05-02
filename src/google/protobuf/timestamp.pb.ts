@@ -235,10 +235,22 @@ const Timestamp_Wkt = {
     }
     return new Date(ms).toISOString().replace(".000Z", z);
   },
-  toDate(msg: Timestamp): Date {
+  toDate(msg: Timestamp | null | undefined): Date | null {
+    if (!msg?.seconds && !msg?.nanos) {
+      return null;
+    }
     return new Date(
       Number(msg.seconds ?? 0) * 1000 + Math.ceil((msg.nanos ?? 0) / 1000000),
     );
+  },
+  fromDate(value: Date | null | undefined): Timestamp {
+    if (value == null) {
+      return {};
+    }
+    const ms = value.getTime();
+    const seconds = Math.floor(ms / 1000);
+    const nanos = (ms % 1000) * 1000000;
+    return { seconds: protoInt64.parse(seconds), nanos: nanos };
   },
 };
 

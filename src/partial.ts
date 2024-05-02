@@ -5,10 +5,13 @@ import { throwSanitizeKey } from "./names.js";
 import { normalizeScalarValue } from "./scalar.js";
 
 // applyPartialMessage applies a partial source message to a target message.
+//
+// if clone is set: values are deep-copied including Uint8Arrays.
 export function applyPartialMessage<T extends Message<T>>(
   source: Message<T> | undefined,
   target: Message<T>,
   fields: FieldList,
+  clone: boolean = false,
 ): void {
   if (source == null || target == null) {
     return;
@@ -23,15 +26,17 @@ export function applyPartialMessage<T extends Message<T>>(
     }
 
     const sourceValue = s[localName];
-      if (sourceValue === null) {
-        delete t[localName];
-        continue;
-      }
+    if (sourceValue === null) {
+      delete t[localName];
+      continue;
+    }
 
     switch (member.kind) {
       case "oneof":
         if (typeof sourceValue !== "object") {
-          throw new Error(`field ${localName}: invalid oneof: must be an object with case and value`);
+          throw new Error(
+            `field ${localName}: invalid oneof: must be an object with case and value`,
+          );
         }
         // sk, sk are the source case and value
         const { case: sk, value: sv } = sourceValue;
@@ -71,7 +76,7 @@ export function applyPartialMessage<T extends Message<T>>(
             applyPartialMessage(sv, dest, sourceFieldMt.fields);
           }
         } else if (sourceField.kind === "scalar") {
-          dv.value = normalizeScalarValue(sourceField.T, sv);
+          dv.value = normalizeScalarValue(sourceField.T, sv, clone);
         } else {
           dv.value = sv;
         }
@@ -85,24 +90,28 @@ export function applyPartialMessage<T extends Message<T>>(
           if (dst == null || !Array.isArray(dst)) {
             dst = t[localName] = [];
           }
-          dst.push(...sourceValue.map((v) => normalizeScalarValue(member.T, v)));
+          dst.push(
+            ...sourceValue.map((v) => normalizeScalarValue(member.T, v, clone)),
+          );
           break;
         }
 
-        t[localName] = normalizeScalarValue(member.T, sourceValue);
+        t[localName] = normalizeScalarValue(member.T, sourceValue, clone);
         break;
       case "enum":
         t[localName] = normalizeEnumValue(member.T, sourceValue);
         break;
       case "map":
         if (typeof sourceValue !== "object") {
-          throw new Error(`field ${member.localName}: invalid value: must be object`);
+          throw new Error(
+            `field ${member.localName}: invalid value: must be object`,
+          );
         }
-        let tMap = t[localName]
+        let tMap = t[localName];
         if (typeof tMap !== "object") {
           tMap = t[localName] = Object.create(null);
         }
-        applyPartialMap(sourceValue, tMap, member.V);
+        applyPartialMap(sourceValue, tMap, member.V, clone);
         break;
       case "message":
         const mt = resolveMessageType(member.T);
@@ -119,7 +128,9 @@ export function applyPartialMessage<T extends Message<T>>(
             // skip null or undefined values
             if (v != null) {
               if (mt.fieldWrapper) {
-                tArr.push(mt.fieldWrapper.unwrapField(mt.fieldWrapper.wrapField(v)))
+                tArr.push(
+                  mt.fieldWrapper.unwrapField(mt.fieldWrapper.wrapField(v)),
+                );
               } else {
                 tArr.push(mt.create(v));
               }
@@ -129,12 +140,16 @@ export function applyPartialMessage<T extends Message<T>>(
         }
 
         if (mt.fieldWrapper) {
-          t[localName] = mt.fieldWrapper.unwrapField(mt.fieldWrapper.wrapField(sourceValue))
+          t[localName] = mt.fieldWrapper.unwrapField(
+            mt.fieldWrapper.wrapField(sourceValue),
+          );
         } else {
           if (typeof sourceValue !== "object") {
-            throw new Error(`field ${member.localName}: invalid value: must be object`);
+            throw new Error(
+              `field ${member.localName}: invalid value: must be object`,
+            );
           }
-          let destMsg = t[localName]
+          let destMsg = t[localName];
           if (typeof destMsg !== "object") {
             destMsg = t[localName] = Object.create(null);
           }
@@ -149,6 +164,7 @@ export function applyPartialMap(
   sourceMap: Record<string, any> | undefined,
   targetMap: Record<string, any>,
   value: MapValueInfo,
+  clone: boolean,
 ): void {
   if (sourceMap == null) {
     return;
@@ -161,7 +177,7 @@ export function applyPartialMap(
       for (const [k, v] of Object.entries(sourceMap)) {
         throwSanitizeKey(k);
         if (v !== undefined) {
-          targetMap[k] = normalizeScalarValue(value.T, v);
+          targetMap[k] = normalizeScalarValue(value.T, v, clone);
         } else {
           delete targetMap[k];
         }
@@ -186,9 +202,7 @@ export function applyPartialMap(
           continue;
         }
         if (typeof v !== "object") {
-          throw new Error(
-            `invalid value: must be object`,
-          );
+          throw new Error(`invalid value: must be object`);
         }
         let val: AnyMessage = targetMap[k];
         if (!!messageType.fieldWrapper) {

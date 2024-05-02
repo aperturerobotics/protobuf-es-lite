@@ -31,3 +31,5 @@ jobs:
       #   run: yarn run deps
       - name: Build Javascript
         run: yarn run build
+      - name: Test Javascript
+        run: yarn run test

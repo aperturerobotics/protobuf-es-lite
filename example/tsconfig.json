@@ -4,10 +4,8 @@
   "compilerOptions": {
     "paths": {
       "@aptre/protobuf-es-lite": [
-        "../",
-        "../dist"
+        "../src",
       ],
-      "@aptre/protobuf-es-lite/google": ["../src/google", "../dist/google"],
     }
   }
 }

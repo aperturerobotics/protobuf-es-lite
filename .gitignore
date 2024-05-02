@@ -24,3 +24,4 @@ debug.test*
 .vscode/
 !.vscode/launch.json
 /vendor/
+*.ts-e

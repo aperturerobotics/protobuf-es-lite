@@ -13,15 +13,18 @@
 // limitations under the License.
 
 import {
-  FieldInfo,
   FieldList,
   FieldListSource,
-  OneofInfo,
   newFieldList,
   resolveMessageType,
 } from "./field.js";
 import { applyPartialMessage } from "./partial.js";
-import { ScalarType, scalarEquals } from "./scalar.js";
+import {
+  LongType,
+  ScalarType,
+  scalarEquals,
+  scalarZeroValue,
+} from "./scalar.js";
 import {
   binaryReadMessage,
   binaryWriteMessage,
@@ -41,6 +44,8 @@ import {
   JsonWriteStringOptions,
 } from "./json.js";
 import { FieldWrapper } from "./field-wrapper.js";
+import { throwSanitizeKey } from "./names.js";
+import { enumZeroValue } from "./enum.js";
 
 export type Field<T> =
   T extends Date | Uint8Array | bigint | boolean | string | number ? T
@@ -244,7 +249,7 @@ export function createMessageType<
           opt.readerFactory(bytes),
           bytes.byteLength,
           opt,
-          delimitedMessageEncoding,
+          delimitedMessageEncoding ?? false,
         );
       }
       return message;
@@ -322,8 +327,11 @@ export function compareMessages<T extends Message<T>>(
     const va = (a as any)[m.localName];
     const vb = (b as any)[m.localName];
     if (m.repeated) {
-      if (va.length !== vb.length) {
+      if ((va?.length ?? 0) !== (vb?.length ?? 0)) {
         return false;
+      }
+      if (!va?.length) {
+        return true;
       }
       // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- repeated fields are never "map"
       switch (m.kind) {
@@ -349,8 +357,11 @@ export function compareMessages<T extends Message<T>>(
       case "scalar":
         return scalarEquals(m.T, va, vb);
       case "oneof":
-        if (va.case !== vb.case) {
+        if (va?.case !== vb?.case) {
           return false;
+        }
+        if (va == null) {
+          return true;
         }
         const s = m.findField(va.case);
         if (s === undefined) {
@@ -385,64 +396,15 @@ export function compareMessages<T extends Message<T>>(
   });
 }
 
-// clone a single field value - i.e. the element type of repeated fields, the value type of maps
-function cloneSingularField(value: any, fieldInfo: FieldInfo | OneofInfo): any {
-  if (value === undefined) {
-    return value;
-  }
-  if (fieldInfo.kind === "message") {
-    return cloneMessage(value, resolveMessageType(fieldInfo.T).fields);
-  }
-  if (fieldInfo.kind === "oneof") {
-    if (value.case === undefined) {
-      return undefined;
-    }
-    const selectedField = fieldInfo.findField(value.case);
-    if (!selectedField) {
-      throw new Error(
-        `Invalid oneof case "${value.case}" for ${fieldInfo.name}`,
-      );
-    }
-    return {
-      case: value.case,
-      value: cloneSingularField(value.value, selectedField),
-    };
-  }
-  if (value instanceof Uint8Array) {
-    const c = new Uint8Array(value.byteLength);
-    c.set(value);
-    return c;
-  }
-  return value;
-}
-
-// TODO use isFieldSet() here to support future field presence
 export function cloneMessage<T extends Message<T>>(
-  message: T,
+  message: T | null | undefined,
   fields: FieldList,
-): T {
-  const clone = {} as T;
-  for (const member of fields.byMember()) {
-    const source = (message as AnyMessage)[member.localName];
-    let copy: any;
-    if (member.repeated) {
-      copy = (source as any[]).map((v) => cloneSingularField(v, member));
-    } else if (member.kind == "map") {
-      copy = {};
-      for (const [key, v] of Object.entries(source)) {
-        copy[key] = cloneSingularField(v, member);
-      }
-    } else if (member.kind == "oneof") {
-      const f = member.findField(source.case);
-      copy =
-        f ?
-          { case: source.case, value: cloneSingularField(source.value, member) }
-        : { case: undefined };
-    } else {
-      copy = cloneSingularField(source, member);
-    }
-    (clone as AnyMessage)[member.localName] = copy;
+): T | null {
+  if (message == null) {
+    return null;
   }
+  const clone = Object.create(null) as T;
+  applyPartialMessage(message, clone, fields, true);
   return clone;
 }
 
@@ -452,67 +414,43 @@ export function cloneMessage<T extends Message<T>>(
 export function createCompleteMessage<T extends Message<T>>(
   fields: FieldList,
 ): CompleteMessage<T> {
-  const message = {} as T;
-  for (const field of fields.list()) {
-    const fieldKind = field.kind;
+  const message = {} as AnyMessage;
+  for (const field of fields.byMember()) {
+    const { localName, kind: fieldKind } = field;
+    throwSanitizeKey(localName);
     switch (fieldKind) {
+      case "oneof":
+        message[localName] = Object.create(null);
+        message[localName].case = undefined;
+        break;
       case "scalar":
         if (field.repeated) {
-          message[field.localName as keyof T] = [] as T[keyof T];
+          message[localName] = [] as T[keyof T];
         } else {
-          switch (field.T) {
-            case ScalarType.DOUBLE:
-            case ScalarType.FLOAT:
-              message[field.localName as keyof T] = 0 as T[keyof T];
-              break;
-            case ScalarType.INT64:
-            case ScalarType.UINT64:
-            case ScalarType.INT32:
-            case ScalarType.FIXED64:
-            case ScalarType.FIXED32:
-            case ScalarType.UINT32:
-            case ScalarType.SFIXED32:
-            case ScalarType.SFIXED64:
-            case ScalarType.SINT32:
-            case ScalarType.SINT64:
-              message[field.localName as keyof T] = 0 as T[keyof T];
-              break;
-            case ScalarType.BOOL:
-              message[field.localName as keyof T] = false as T[keyof T];
-              break;
-            case ScalarType.STRING:
-              message[field.localName as keyof T] = "" as T[keyof T];
-              break;
-            case ScalarType.BYTES:
-              message[field.localName as keyof T] =
-                new Uint8Array() as T[keyof T];
-              break;
-          }
+          message[localName] = scalarZeroValue(field.T, LongType.BIGINT);
         }
         break;
       case "enum":
-        if (field.repeated) {
-          message[field.localName as keyof T] = [] as T[keyof T];
-        } else {
-          message[field.localName as keyof T] = 0 as T[keyof T];
-        }
+        message[localName] = field.repeated ? [] : enumZeroValue(field.T);
         break;
       case "message":
+        // oneofs are handled above
         if (field.oneof) {
-          message[field.localName as keyof T] = undefined as T[keyof T];
-          continue;
+          break;
         }
-        const messageType = resolveMessageType(field.T);
         if (field.repeated) {
-          message[field.localName as keyof T] = [] as T[keyof T];
-        } else {
-          message[field.localName as keyof T] = createCompleteMessage(
-            messageType.fields,
-          ) as T[keyof T];
+          message[localName] = [];
+          break;
         }
+
+        const messageType = resolveMessageType(field.T);
+        message[localName] =
+          !!messageType.fieldWrapper ?
+            messageType.fieldWrapper.unwrapField(null)
+          : createCompleteMessage(messageType.fields);
         break;
       case "map":
-        message[field.localName as keyof T] = {} as T[keyof T];
+        message[localName] = Object.create(null);
         break;
       default:
         field satisfies never;
