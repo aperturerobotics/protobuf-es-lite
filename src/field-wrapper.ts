@@ -41,7 +41,7 @@ export function unwrapField<T, U = T>(
   fieldWrapper: FieldWrapper<T> | undefined,
   value: any,
 ): U {
-  return !!fieldWrapper ? fieldWrapper.unwrapField(value) : value;
+  return fieldWrapper ? fieldWrapper.unwrapField(value) : value;
 }
 
 /**
@@ -59,7 +59,7 @@ export function getUnwrappedFieldType(
       return undefined;
     }
   }
-  return getUnwrappedMessageType(field.message)
+  return getUnwrappedMessageType(field.message);
 }
 
 /**

@@ -54,37 +54,9 @@ export function generateTs(schema: Schema) {
 
     const messageTypes: DescMessage[] = [];
     const dependencies = new Map<DescMessage, Set<DescMessage>>();
-    function collectMessages(message: DescMessage) {
-      if (message.file !== file) {
-        return;
-      }
-
-      for (const nestedEnum of message.nestedEnums) {
-        generateEnum(schema, f, nestedEnum);
-      }
-
-      messageTypes.push(message);
-      const deps = new Set<DescMessage>();
-      for (const field of message.fields) {
-        if (field.fieldKind === "message" && field.message.file === file) {
-          deps.add(field.message);
-        } else if (
-          field.fieldKind === "map" &&
-          field.mapValue.kind === "message" &&
-          field.mapValue.message.file === file
-        ) {
-          deps.add(field.mapValue.message);
-        }
-      }
-      dependencies.set(message, deps);
-
-      for (const nestedMessage of message.nestedMessages) {
-        collectMessages(nestedMessage);
-      }
-    }
 
     for (const message of file.messages) {
-      collectMessages(message);
+      collectMessages(schema, file, message, messageTypes, dependencies, f);
     }
 
     // Topological sort to ensure consts are declared in the right order.
@@ -94,6 +66,43 @@ export function generateTs(schema: Schema) {
     }
 
     // We do not generate anything for services or extensions
+  }
+}
+
+// collectMessages collects a list of all message types and their dependencies.
+function collectMessages(
+  schema: Schema,
+  file: DescFile,
+  message: DescMessage,
+  messageTypes: DescMessage[],
+  dependencies: Map<DescMessage, Set<DescMessage>>,
+  f: GeneratedFile,
+) {
+  if (message.file !== file) {
+    return;
+  }
+
+  for (const nestedEnum of message.nestedEnums) {
+    generateEnum(schema, f, nestedEnum);
+  }
+
+  messageTypes.push(message);
+  const deps = new Set<DescMessage>();
+  for (const field of message.fields) {
+    if (field.fieldKind === "message" && field.message.file === file) {
+      deps.add(field.message);
+    } else if (
+      field.fieldKind === "map" &&
+      field.mapValue.kind === "message" &&
+      field.mapValue.message.file === file
+    ) {
+      deps.add(field.mapValue.message);
+    }
+  }
+  dependencies.set(message, deps);
+
+  for (const nestedMessage of message.nestedMessages) {
+    collectMessages(schema, file, nestedMessage, messageTypes, dependencies, f);
   }
 }
 
@@ -270,7 +279,7 @@ function generateField(f: GeneratedFile, field: DescField) {
 function generateOneof(f: GeneratedFile, oneof: DescOneof) {
   f.print();
   f.print(f.jsDoc(oneof, "  "));
-  var oneOfCases: Printable[] = oneof.fields
+  const oneOfCases: Printable[] = oneof.fields
     .map((field) => {
       const { typing } = getFieldTypeInfo(field);
       const doc = f.jsDoc(field, "    ");
@@ -309,7 +318,7 @@ export function generateFieldInfo(
 export const createTypeImport = (
   desc: DescMessage | DescEnum | DescExtension,
 ): ImportSymbol => {
-  var name = localName(desc);
+  let name = localName(desc);
   if (desc.kind === "enum") {
     name += "_Enum";
   }
@@ -752,9 +761,23 @@ function generateWktMethods(
         ": nanos };",
       );
       f.print("  },");
-      f.print("  equals(a: ", message, " | Date | undefined | null, b: ", message, " | Date | undefined | null): boolean {");
-      f.print("    const aDate = a instanceof Date ? a : ", message, "_Wkt.toDate(", message, "_Wkt.fromDate(a));");
-      f.print("    const bDate = b instanceof Date ? b : ", message, "_Wkt.toDate(", message, "_Wkt.fromDate(b));");
+      f.print(
+        "  equals(a: ",
+        message,
+        " | Date | undefined | null, b: ",
+        message,
+        " | Date | undefined | null): boolean {",
+      );
+      f.print(
+        "    const aDate = a instanceof Date ? a : ",
+        message,
+        "_Wkt.toDate(a);",
+      );
+      f.print(
+        "    const bDate = b instanceof Date ? b : ",
+        message,
+        "_Wkt.toDate(b);",
+      );
       f.print("    if (aDate === bDate) {");
       f.print("      return true;");
       f.print("    }");

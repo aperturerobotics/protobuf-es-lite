@@ -89,9 +89,10 @@ function readField(
   wireType: WireType,
   options: BinaryReadOptions,
 ): void {
-  let { repeated, localName } = field;
+  const { repeated } = field;
+  let { localName } = field;
   if (field.oneof) {
-    var oneofMsg = target[field.oneof.localName];
+    let oneofMsg = target[field.oneof.localName];
     if (!oneofMsg) {
       oneofMsg = target[field.oneof.localName] = Object.create(null);
     }
@@ -104,7 +105,7 @@ function readField(
   }
   switch (field.kind) {
     case "scalar":
-    case "enum":
+    case "enum": {
       const scalarType = field.kind == "enum" ? ScalarType.INT32 : field.T;
       let read = readScalar;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison -- acceptable since it's covered by tests
@@ -112,7 +113,7 @@ function readField(
         read = readScalarLTString;
       }
       if (repeated) {
-        var tgtArr = target[localName];
+        let tgtArr = target[localName];
         if (!Array.isArray(tgtArr)) {
           tgtArr = target[localName] = [];
         }
@@ -121,7 +122,7 @@ function readField(
           scalarType != ScalarType.STRING &&
           scalarType != ScalarType.BYTES;
         if (isPacked) {
-          let e = reader.uint32() + reader.pos;
+          const e = reader.uint32() + reader.pos;
           while (reader.pos < e) {
             tgtArr.push(read(reader, scalarType));
           }
@@ -132,11 +133,12 @@ function readField(
         target[localName] = read(reader, scalarType);
       }
       break;
-    case "message":
+    }
+    case "message": {
       const fieldT = field.T;
       const messageType = fieldT instanceof Function ? fieldT() : fieldT;
       if (repeated) {
-        var tgtArr = target[localName];
+        let tgtArr = target[localName];
         if (!Array.isArray(tgtArr)) {
           tgtArr = target[localName] = [];
         }
@@ -165,14 +167,16 @@ function readField(
         );
       }
       break;
-    case "map":
-      let [mapKey, mapVal] = readMapEntry(field, reader, options);
+    }
+    case "map": {
+      const [mapKey, mapVal] = readMapEntry(field, reader, options);
       if (typeof target[localName] !== "object") {
         target[localName] = Object.create(null);
       }
       // safe to assume presence of map object, oneof cannot contain repeated values
       target[localName][mapKey] = mapVal;
       break;
+    }
   }
 }
 
@@ -208,16 +212,16 @@ function readMapEntry(
           case "enum":
             val = reader.int32();
             break;
-          case "message":
-            const messageType = resolveMessageType(field.V.T);
+          case "message": {
             val = readMessageField(
               reader,
               Object.create(null),
-              messageType.fields,
+             resolveMessageType(field.V.T).fields,
               options,
               undefined,
             );
             break;
+          }
         }
         break;
     }
@@ -225,8 +229,8 @@ function readMapEntry(
   if (key === undefined) {
     key = scalarZeroValue(field.K, LongType.BIGINT);
   }
-  if (typeof key != "string" && typeof key != "number") {
-    key = key.toString();
+  if (typeof key !== "string" && typeof key !== "number") {
+    key = key?.toString() ?? "";
   }
   if (val === undefined) {
     const fieldKind = field.V.kind;
@@ -277,6 +281,10 @@ function readScalar(reader: IBinaryReader, type: ScalarType): ScalarValue {
       return reader.uint32();
     case ScalarType.SINT32:
       return reader.sint32();
+    case ScalarType.DATE:
+      throw new Error("cannot read a date with readScalar");
+    default:
+      throw new Error("unknown scalar type");
   }
 }
 
@@ -385,8 +393,8 @@ function writeField<T>(
   const repeated = field.repeated;
   switch (field.kind) {
     case "scalar":
-    case "enum":
-      let scalarType = field.kind == "enum" ? ScalarType.INT32 : field.T;
+    case "enum": {
+      const scalarType = field.kind == "enum" ? ScalarType.INT32 : field.T;
       if (repeated) {
         assert(Array.isArray(value));
         if (field.packed) {
@@ -400,6 +408,7 @@ function writeField<T>(
         writeScalar(writer, scalarType, field.no, value);
       }
       break;
+    }
     case "message":
       if (repeated) {
         assert(Array.isArray(value));
@@ -457,7 +466,7 @@ function writeScalar(
   value: unknown,
 ): void {
   assert(value !== undefined);
-  let [wireType, method] = scalarTypeInfo(type);
+  const [wireType, method] = scalarTypeInfo(type);
   (writer.tag(fieldNo, wireType)[method] as any)(value);
 }
 
@@ -471,7 +480,7 @@ function writePacked<T>(
     return;
   }
   writer.tag(fieldNo, WireType.LengthDelimited).fork();
-  let [, method] = scalarTypeInfo(type);
+  const [, method] = scalarTypeInfo(type);
   for (let i = 0; i < value.length; i++) {
     (writer[method] as any)(value[i]);
   }
@@ -559,13 +568,14 @@ function writeMapEntry(
     case "enum":
       writeScalar(writer, ScalarType.INT32, 2, value);
       break;
-    case "message":
+    case "message": {
       assert(value !== undefined);
       const messageType = resolveMessageType(field.V.T);
       writer
         .tag(2, WireType.LengthDelimited)
         .bytes(messageType.toBinary(value, options));
       break;
+    }
   }
 
   writer.join();

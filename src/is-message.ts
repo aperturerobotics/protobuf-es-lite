@@ -52,9 +52,10 @@ export function isField<F>(value: any, field: FieldInfo): value is Field<F> {
   switch (fieldKind) {
     case "scalar":
       return true;
-    case "message":
+    case "message": {
       const messageType = resolveMessageType(field.T);
       return isMessage(value as Message<AnyMessage>, messageType.fields.list());
+    }
     case "enum":
       return typeof value === "number";
     case "map":
@@ -66,12 +67,13 @@ export function isField<F>(value: any, field: FieldInfo): value is Field<F> {
               return true;
             case "enum":
               return typeof val === "number";
-            case "message":
+            case "message": {
               const messageType = resolveMessageType(field.V.T);
               return isMessage(
                 val as Message<AnyMessage>,
                 messageType.fields.list(),
               );
+            }
             default:
               return valueKind satisfies never;
           }
@@ -130,12 +132,13 @@ export function isCompleteField<F>(value: Field<F>, field: FieldInfo): boolean {
   switch (fieldKind) {
     case "scalar":
       return true;
-    case "message":
+    case "message": {
       const messageType = resolveMessageType(field.T);
       return isCompleteMessage(
         value as Message<AnyMessage>,
         messageType.fields.list(),
       );
+    }
     case "enum":
       return typeof value === "number";
     case "map":
@@ -147,12 +150,13 @@ export function isCompleteField<F>(value: Field<F>, field: FieldInfo): boolean {
               return true;
             case "enum":
               return typeof val === "number";
-            case "message":
+            case "message": {
               const messageType = resolveMessageType(field.V.T);
               return isCompleteMessage(
                 val as Message<AnyMessage>,
                 messageType.fields.list(),
               );
+            }
             default:
               return valueKind satisfies never;
           }

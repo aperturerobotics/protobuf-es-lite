@@ -3,7 +3,6 @@
     "target": "es2022",
     "module": "Node16",
     "moduleResolution": "Node16",
-    "esModuleInterop": false,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
@@ -17,8 +16,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": false,
-    "declaration": true
+    "declaration": true,
+    "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
   }
 }

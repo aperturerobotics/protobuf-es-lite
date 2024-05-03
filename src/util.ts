@@ -14,7 +14,12 @@
 // limitations under the License.
 
 import type { Printable } from "./protoplugin/ecmascript/index.js";
-import { DescEnumValue, DescExtension, DescField, DescMessage } from "./descriptor-set.js";
+import {
+  DescEnumValue,
+  DescExtension,
+  DescField,
+  DescMessage,
+} from "./descriptor-set.js";
 import { FieldDescriptorProto_Label } from "./google/protobuf/descriptor.pb.js";
 import { codegenInfo } from "./codegen-info.js";
 import { LongType, ScalarType, ScalarValue } from "./scalar.js";
@@ -77,7 +82,7 @@ export function getFieldTypeInfo(field: DescField | DescExtension): {
           );
           break;
         case "message":
-          valueType = getUnwrappedMessageScriptType(field.mapValue.message)
+          valueType = getUnwrappedMessageScriptType(field.mapValue.message);
           break;
         case "enum":
           valueType = {
@@ -136,6 +141,8 @@ export function getFieldDefaultValueExpression(
     }
     case "scalar":
       return literalScalarValue(defaultValue, field);
+    default:
+      return undefined;
   }
 }
 
@@ -238,6 +245,13 @@ function literalScalarValue(
         longType: field.longType,
         value,
       };
+    case ScalarType.DATE:
+      if (value == null) {
+        return `null`;
+      }
+      return `new Date(${(value instanceof Date ? +(value as Date) : value).toString()})`;
+    default:
+      throw new Error("unsupported scalar type for literalScalarValue");
   }
 }
 
@@ -299,20 +313,33 @@ function scalarTypeScriptType(type: ScalarType, longType: LongType): Printable {
   }
 }
 
-function getUnwrappedFieldScriptType(field: DescField | DescExtension, longType?: LongType): Printable {
+function getUnwrappedFieldScriptType(
+  field: DescField | DescExtension,
+  longType?: LongType,
+): Printable {
   const baseType = codegenInfo.getUnwrappedFieldType(field);
-  return !!baseType ? scalarTypeScriptType(baseType, longType ?? field.longType ?? LongType.BIGINT) : ({
-    kind: "es_ref_message",
-    type: field.message,
-    typeOnly: true,
-  } as RefDescMessage);
+  return baseType ?
+      scalarTypeScriptType(
+        baseType,
+        longType ?? field.longType ?? LongType.BIGINT,
+      )
+    : ({
+        kind: "es_ref_message",
+        type: field.message,
+        typeOnly: true,
+      } as RefDescMessage);
 }
 
-function getUnwrappedMessageScriptType(msg: DescMessage, longType: LongType = LongType.BIGINT): Printable {
+function getUnwrappedMessageScriptType(
+  msg: DescMessage,
+  longType: LongType = LongType.BIGINT,
+): Printable {
   const baseType = codegenInfo.getUnwrappedMessageType(msg);
-  return baseType !== undefined ? scalarTypeScriptType(baseType, longType) : ({
+  return baseType !== undefined ?
+      scalarTypeScriptType(baseType, longType)
+    : ({
         kind: "es_ref_message",
         type: msg,
         typeOnly: true,
-  } as RefDescMessage);
+      } as RefDescMessage);
 }

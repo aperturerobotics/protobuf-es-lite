@@ -20,8 +20,6 @@ import {
   createVirtualCompilerHost,
 } from "@typescript/vfs";
 
-/* eslint-disable import/no-named-as-default-member */
-
 // The default options used to auto-transpile if needed.
 const defaultOptions: ts.CompilerOptions = {
   // Type checking

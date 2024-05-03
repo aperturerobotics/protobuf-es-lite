@@ -2,16 +2,15 @@ import { describe, expect, it } from "vitest";
 import { applyPartialMessage, applyPartialMap } from "./partial.js";
 import { ScalarType } from "./scalar.js";
 import { EchoMsg, ExampleEnum } from "../example/example.pb.js";
-import { Timestamp } from "./google/index.js";
 
 describe("applyPartialMessage", () => {
   it("applies partial values to target message", () => {
     const source: Partial<EchoMsg> = {
       body: "Hello",
-      ts: Timestamp.fromDate(new Date()),
+      ts: new Date(),
       timestamps: [
-        Timestamp.fromDate(new Date("2022-01-01")),
-        Timestamp.fromDate(new Date("2022-02-01")),
+        new Date("2022-01-01"),
+        new Date("2022-02-01"),
       ],
       demo: { case: "exampleEnum", value: ExampleEnum.FIRST },
     };
@@ -28,18 +27,18 @@ describe("applyPartialMessage", () => {
   });
 
   it("clears fields set to null", () => {
-    const source: Partial<EchoMsg> = {
+    const source: EchoMsg = {
       body: null,
       ts: null,
       timestamps: null,
       demo: { case: null },
-    };
+    } as any as EchoMsg;
     const target: EchoMsg = {
       body: "Hello",
-      ts: Timestamp.fromDate(new Date()),
+      ts: new Date(),
       timestamps: [
-        Timestamp.fromDate(new Date("2022-01-01")),
-        Timestamp.fromDate(new Date("2022-02-01")),
+        new Date("2022-01-01"),
+        new Date("2022-02-01"),
       ],
       demo: { case: "exampleString", value: "test" },
     };

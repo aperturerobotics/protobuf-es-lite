@@ -2,9 +2,6 @@
   "files": ["src/protoc-gen-es-lite/protoc-gen-es-lite-plugin.ts", "src/index.ts", "src/protoplugin/index.ts", "src/protoplugin/ecmascript/index.ts"],
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "verbatimModuleSyntax": false,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
     "rootDir": "./src"
   }
 }

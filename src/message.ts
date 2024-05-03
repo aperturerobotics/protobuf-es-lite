@@ -197,7 +197,7 @@ export type MessageTypeParams<T extends Message<T>> = Pick<
  */
 export function createMessageType<
   T extends Message<T>,
-  E extends Record<string, Function> = {},
+  E extends Partial<MessageType<T>> = Partial<MessageType<T>>,
 >(params: MessageTypeParams<T>, exts?: E): MessageType<T> & E {
   const {
     fields: fieldsSource,
@@ -335,9 +335,10 @@ export function compareMessages<T extends Message<T>>(
       }
       // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- repeated fields are never "map"
       switch (m.kind) {
-        case "message":
+        case "message": {
           const messageType = resolveMessageType(m.T);
           return (va as any[]).every((a, i) => messageType.equals(a, vb[i]));
+        }
         case "scalar":
           return (va as any[]).every((a: any, i: number) =>
             scalarEquals(m.T, a, vb[i]),
@@ -356,7 +357,7 @@ export function compareMessages<T extends Message<T>>(
         return scalarEquals(ScalarType.INT32, va, vb);
       case "scalar":
         return scalarEquals(m.T, va, vb);
-      case "oneof":
+      case "oneof": {
         if (va?.case !== vb?.case) {
           return false;
         }
@@ -369,29 +370,34 @@ export function compareMessages<T extends Message<T>>(
         }
         // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- oneof fields are never "map"
         switch (s.kind) {
-          case "message":
+          case "message": {
             const messageType = resolveMessageType(s.T);
             return messageType.equals(va.value, vb.value);
+          }
           case "enum":
             return scalarEquals(ScalarType.INT32, va.value, vb.value);
           case "scalar":
             return scalarEquals(s.T, va.value, vb.value);
         }
         throw new Error(`oneof cannot contain ${s.kind}`);
-      case "map":
+      }
+      case "map": {
         const keys = Object.keys(va).concat(Object.keys(vb));
         switch (m.V.kind) {
-          case "message":
+          case "message": {
             const messageType = resolveMessageType(m.V.T);
             return keys.every((k) => messageType.equals(va[k], vb[k]));
+          }
           case "enum":
             return keys.every((k) =>
               scalarEquals(ScalarType.INT32, va[k], vb[k]),
             );
-          case "scalar":
+          case "scalar": {
             const scalarType = m.V.T;
             return keys.every((k) => scalarEquals(scalarType, va[k], vb[k]));
+          }
         }
+      }
     }
   });
 }
@@ -433,7 +439,7 @@ export function createCompleteMessage<T extends Message<T>>(
       case "enum":
         message[localName] = field.repeated ? [] : enumZeroValue(field.T);
         break;
-      case "message":
+      case "message": {
         // oneofs are handled above
         if (field.oneof) {
           break;
@@ -445,10 +451,11 @@ export function createCompleteMessage<T extends Message<T>>(
 
         const messageType = resolveMessageType(field.T);
         message[localName] =
-          !!messageType.fieldWrapper ?
+          messageType.fieldWrapper ?
             messageType.fieldWrapper.unwrapField(null)
           : createCompleteMessage(messageType.fields);
         break;
+      }
       case "map":
         message[localName] = Object.create(null);
         break;

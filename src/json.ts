@@ -171,7 +171,7 @@ function readMessage<T>(
       }
       readField(message as Record<string, unknown>, jsonValue, field, options);
     } else {
-      let found = false;
+      const found = false;
       if (!found && !options.ignoreUnknownFields) {
         throw new Error(
           `cannot decode message ${typeName} from JSON: key "${jsonKey}" is unknown`,
@@ -245,7 +245,7 @@ function readField(
         } from JSON: ${jsonDebugValue(jsonValue)}`,
       );
     }
-    var targetArray = target[localName] as unknown[];
+    let targetArray = target[localName] as unknown[];
     if (!Array.isArray(targetArray)) {
       targetArray = target[localName] = [];
     }
@@ -258,7 +258,7 @@ function readField(
         );
       }
       switch (field.kind) {
-        case "message":
+        case "message": {
           const messageType = resolveMessageType(field.T);
           targetArray.push(
             unwrapField(
@@ -267,7 +267,8 @@ function readField(
             ),
           );
           break;
-        case "enum":
+        }
+        case "enum": {
           const enumValue = readEnum(
             field.T,
             jsonItem,
@@ -278,6 +279,7 @@ function readField(
             targetArray.push(enumValue);
           }
           break;
+        }
         case "scalar":
           try {
             targetArray.push(readScalar(field.T, jsonItem, field.L, true));
@@ -304,7 +306,7 @@ function readField(
         } from JSON: ${jsonDebugValue(jsonValue)}`,
       );
     }
-    var targetMap = target[localName] as Record<string, unknown>;
+    let targetMap = target[localName] as Record<string, unknown>;
     if (typeof targetMap !== "object") {
       targetMap = target[localName] = Object.create(null);
     }
@@ -328,11 +330,12 @@ function readField(
       }
       throwSanitizeKey(key);
       switch (field.V.kind) {
-        case "message":
+        case "message": {
           const messageType = resolveMessageType(field.V.T);
           targetMap[key] = messageType.fromJson(jsonMapValue, options);
           break;
-        case "enum":
+        }
+        case "enum": {
           const enumValue = readEnum(
             field.V.T,
             jsonMapValue,
@@ -343,6 +346,7 @@ function readField(
             targetMap[key] = enumValue;
           }
           break;
+        }
         case "scalar":
           try {
             targetMap[key] = readScalar(
@@ -369,7 +373,7 @@ function readField(
       localName = "value";
     }
     switch (field.kind) {
-      case "message":
+      case "message": {
         const messageType = resolveMessageType(field.T);
         if (
           jsonValue === null &&
@@ -382,7 +386,8 @@ function readField(
           messageType.fromJson(jsonValue, options),
         );
         break;
-      case "enum":
+      }
+      case "enum": {
         const enumValue = readEnum(
           field.T,
           jsonValue,
@@ -400,6 +405,7 @@ function readField(
             break;
         }
         break;
+      }
       case "scalar":
         try {
           const scalarValue = readScalar(field.T, jsonValue, field.L, false);
@@ -457,7 +463,7 @@ function readEnum(
         return json;
       }
       break;
-    case "string":
+    case "string": {
       const value = type.findName(json);
       if (value !== undefined) {
         return value.no;
@@ -466,6 +472,7 @@ function readEnum(
         return tokenIgnoredUnknownEnum;
       }
       break;
+    }
   }
   throw new Error(
     `cannot decode enum ${type.typeName} from JSON: ${jsonDebugValue(json)}`,
@@ -511,7 +518,7 @@ function readScalar(
     // float, double: JSON value will be a number or one of the special string values "NaN", "Infinity", and "-Infinity".
     // Either numbers or strings are accepted. Exponent notation is also accepted.
     case ScalarType.DOUBLE:
-    case ScalarType.FLOAT:
+    case ScalarType.FLOAT: {
       if (json === "NaN") return Number.NaN;
       if (json === "Infinity") return Number.POSITIVE_INFINITY;
       if (json === "-Infinity") return Number.NEGATIVE_INFINITY;
@@ -537,13 +544,14 @@ function readScalar(
       }
       if (type == ScalarType.FLOAT) assertFloat32(float);
       return float;
+    }
 
     // int32, fixed32, uint32: JSON value will be a decimal number. Either numbers or strings are accepted.
     case ScalarType.INT32:
     case ScalarType.FIXED32:
     case ScalarType.SFIXED32:
     case ScalarType.SINT32:
-    case ScalarType.UINT32:
+    case ScalarType.UINT32: {
       let int32: number | undefined;
       if (typeof json == "number") int32 = json;
       else if (typeof json == "string" && json.length > 0) {
@@ -554,21 +562,24 @@ function readScalar(
         assertUInt32(int32);
       else assertInt32(int32);
       return int32;
+    }
 
     // int64, fixed64, uint64: JSON value will be a decimal string. Either numbers or strings are accepted.
     case ScalarType.INT64:
     case ScalarType.SFIXED64:
-    case ScalarType.SINT64:
+    case ScalarType.SINT64: {
       if (typeof json != "number" && typeof json != "string") break;
       const long = protoInt64.parse(json);
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       return longType ? long.toString() : long;
+    }
     case ScalarType.FIXED64:
-    case ScalarType.UINT64:
+    case ScalarType.UINT64: {
       if (typeof json != "number" && typeof json != "string") break;
       const uLong = protoInt64.uParse(json);
       // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       return longType ? uLong.toString() : uLong;
+    }
 
     // bool:
     case ScalarType.BOOL:
@@ -611,7 +622,7 @@ function readMapKey(type: ScalarType, json: JsonValue) {
         break;
     }
   }
-  return readScalar(type, json, LongType.BIGINT, true).toString();
+  return readScalar(type, json, LongType.BIGINT, true)?.toString() ?? "";
 }
 
 /**
@@ -692,7 +703,7 @@ function writeField(
           );
         }
         break;
-      case "enum":
+      case "enum": {
         const enumType = field.V.T;
         for (const [entryKey, entryValue] of entries) {
           // JSON standard allows only (double quoted) string as property key
@@ -703,6 +714,7 @@ function writeField(
           );
         }
         break;
+      }
     }
     return options.emitDefaultValues || entries.length > 0 ?
         jsonObj
@@ -730,7 +742,7 @@ function writeField(
             );
           }
           break;
-        case "message":
+        case "message": {
           const messageType = resolveMessageType(field.T);
           for (let i = 0; i < valueArr.length; i++) {
             jsonArr.push(
@@ -740,6 +752,7 @@ function writeField(
             );
           }
           break;
+        }
       }
     }
     return options.emitDefaultValues || jsonArr.length > 0 ?
@@ -747,7 +760,7 @@ function writeField(
       : undefined;
   }
   switch (field.kind) {
-    case "scalar":
+    case "scalar": {
       const scalarValue = normalizeScalarValue(field.T, value, false);
       if (
         !options.emitDefaultValues &&
@@ -756,18 +769,21 @@ function writeField(
         return undefined;
       }
       return writeScalar(field.T, value);
-    case "enum":
+    }
+    case "enum": {
       const enumValue = normalizeEnumValue(field.T, value as any);
       if (!options.emitDefaultValues && enumZeroValue(field.T) === enumValue) {
         return undefined;
       }
       return writeEnum(field.T, value, options.enumAsInteger);
-    case "message":
+    }
+    case "message": {
       if (!options.emitDefaultValues && value == null) {
         return undefined;
       }
       const messageType = resolveMessageType(field.T);
       return messageType.toJson(wrapField(messageType.fieldWrapper, value));
+    }
   }
 }
 
@@ -824,6 +840,10 @@ function writeScalar(
     case ScalarType.BYTES:
       assert(value instanceof Uint8Array);
       return protoBase64.enc(value);
+    case ScalarType.DATE:
+      throw new Error("cannot write date with writeScalar");
+    default:
+      throw new Error("unknown scalar type");
   }
 }
 

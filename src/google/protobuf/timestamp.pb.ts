@@ -256,10 +256,8 @@ const Timestamp_Wkt = {
     a: Timestamp | Date | undefined | null,
     b: Timestamp | Date | undefined | null,
   ): boolean {
-    const aDate =
-      a instanceof Date ? a : Timestamp_Wkt.toDate(Timestamp_Wkt.fromDate(a));
-    const bDate =
-      b instanceof Date ? b : Timestamp_Wkt.toDate(Timestamp_Wkt.fromDate(b));
+    const aDate = a instanceof Date ? a : Timestamp_Wkt.toDate(a);
+    const bDate = b instanceof Date ? b : Timestamp_Wkt.toDate(b);
     if (aDate === bDate) {
       return true;
     }

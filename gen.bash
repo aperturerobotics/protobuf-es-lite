@@ -25,29 +25,44 @@ esbuild ./bin/dev/protoc-gen-es-lite \
         --banner:js="$ESM_BANNER" \
         --outfile=./dist/dev/protoc-gen-es-lite
 
-prettier_ts() {
+get_ts_files() {
     local PROTO_FILES=$1
-    FMT_TS_FILES=()
+    TS_FILES=()
     for proto_file in ${PROTO_FILES}; do
         proto_dir=$(dirname $proto_file)
         proto_name=${proto_file%".proto"}
-        TS_FILES=$(git ls-files ":(glob)${proto_name}*.pb.ts")
-        if [ -n "$TS_FILES" ]; then FMT_TS_FILES+=($TS_FILES); fi
+        found_files=$(git ls-files ":(glob)${proto_name}*.pb.ts")
+        if [ -n "$found_files" ]; then TS_FILES+=($found_files); fi
     done
-    if [ -n "${FMT_TS_FILES}" ]; then
-        prettier --config .prettierrc.yaml -w ${FMT_TS_FILES[@]}
+    echo "${TS_FILES[@]}"
+}
+
+prettier_ts() {
+    local TS_FILES=$(get_ts_files "$1")
+    if [ -n "${TS_FILES}" ]; then
+        prettier --config .prettierrc.yaml -w ${TS_FILES[@]}
+    fi
+}
+
+replace_import_path() {
+    local TS_FILES=$(get_ts_files "$1")
+    if [ -n "${TS_FILES}" ]; then
+        sed -i -e "s/@aptre\/protobuf-es-lite/..\/src\/index.js/g" ${TS_FILES[@]}
     fi
 }
 
 if [ -z "$SKIP_PROTOC" ]; then
-    PROTO_FILES=$(git ls-files $@)
+    PROTO_FILES=$(git ls-files $@ | grep ".*\\.proto")
     protoc \
         --plugin=./dist/dev/protoc-gen-es-lite \
         --es-lite_out=. \
         --es-lite_opt target=ts \
         --es-lite_opt ts_nocheck=false \
-        $PROTO_FILES
+        ${PROTO_FILES}
 
+    if [ -z "$SKIP_REPLACE_IMPORT_PATH" ]; then
+        replace_import_path "${PROTO_FILES}"
+    fi
     if [ -z "$SKIP_PRETTIER" ]; then
         prettier_ts "${PROTO_FILES}"
     fi

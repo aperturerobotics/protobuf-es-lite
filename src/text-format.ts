@@ -69,6 +69,11 @@ export function parseTextFormatScalarValue(
     case ScalarType.FIXED32:
     case ScalarType.SFIXED32:
       return parseInt(value, 10);
+    case ScalarType.DATE:
+      // TODO
+      throw new Error("unimplemented: parse Date from text format");
+    default:
+      throw new Error(`cannot parse ${ScalarType[type]}`);
   }
 }
 

@@ -144,11 +144,11 @@ export function scalarEquals(
     const dateA = toDate(a, false);
     const dateB = toDate(b, false);
     if (dateA == null || dateB == null) {
-      return dateA === dateB
+      return dateA === dateB;
     }
     return dateA != null && dateB != null && +dateA === +dateB;
   }
-  
+
   // Special case 64-bit integers - we support number, string and bigint representation.
   // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (type) {
@@ -198,7 +198,7 @@ export function scalarZeroValue<T extends ScalarType, L extends LongType>(
   }
 }
 
-const dateZeroValue = +(new Date(0))
+const dateZeroValue = +new Date(0);
 
 /**
  * Returns true for a zero-value. For example, an integer has the zero-value `0`,
@@ -210,7 +210,7 @@ const dateZeroValue = +(new Date(0))
 export function isScalarZeroValue(type: ScalarType, value: unknown): boolean {
   switch (type) {
     case ScalarType.DATE:
-      return value == null || +value === dateZeroValue
+      return value == null || +value === dateZeroValue;
     case ScalarType.BOOL:
       return value === false;
     case ScalarType.STRING:

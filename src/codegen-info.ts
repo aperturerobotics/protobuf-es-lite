@@ -14,7 +14,10 @@
 // limitations under the License.
 
 import { localName, safeIdentifier, safeObjectProperty } from "./names.js";
-import { getUnwrappedFieldType, getUnwrappedMessageType } from "./field-wrapper.js";
+import {
+  getUnwrappedFieldType,
+  getUnwrappedMessageType,
+} from "./field-wrapper.js";
 import { scalarZeroValue } from "./scalar.js";
 
 type RuntimeSymbolInfo = {

@@ -32,7 +32,7 @@ export function applyPartialMessage<T extends Message<T>>(
     }
 
     switch (member.kind) {
-      case "oneof":
+      case "oneof": {
         if (typeof sourceValue !== "object") {
           throw new Error(
             `field ${localName}: invalid oneof: must be an object with case and value`,
@@ -81,7 +81,8 @@ export function applyPartialMessage<T extends Message<T>>(
           dv.value = sv;
         }
         break;
-      case "scalar":
+      }
+      case "scalar": {
         if (member.repeated) {
           if (!Array.isArray(sourceValue)) {
             throw new Error(`field ${localName}: invalid value: must be array`);
@@ -98,10 +99,12 @@ export function applyPartialMessage<T extends Message<T>>(
 
         t[localName] = normalizeScalarValue(member.T, sourceValue, clone);
         break;
-      case "enum":
+      }
+      case "enum": {
         t[localName] = normalizeEnumValue(member.T, sourceValue);
         break;
-      case "map":
+      }
+      case "map": {
         if (typeof sourceValue !== "object") {
           throw new Error(
             `field ${member.localName}: invalid value: must be object`,
@@ -113,7 +116,8 @@ export function applyPartialMessage<T extends Message<T>>(
         }
         applyPartialMap(sourceValue, tMap, member.V, clone);
         break;
-      case "message":
+      }
+      case "message": {
         const mt = resolveMessageType(member.T);
         if (member.repeated) {
           // skip null or undefined values
@@ -156,6 +160,7 @@ export function applyPartialMessage<T extends Message<T>>(
           applyPartialMessage(sourceValue, destMsg, mt.fields);
         }
         break;
+      }
     }
   }
 }
@@ -193,7 +198,7 @@ export function applyPartialMap(
         }
       }
       break;
-    case "message":
+    case "message": {
       const messageType = resolveMessageType(value.T);
       for (const [k, v] of Object.entries(sourceMap)) {
         throwSanitizeKey(k);
@@ -205,7 +210,7 @@ export function applyPartialMap(
           throw new Error(`invalid value: must be object`);
         }
         let val: AnyMessage = targetMap[k];
-        if (!!messageType.fieldWrapper) {
+        if (messageType.fieldWrapper) {
           // For wrapper type messages, call createCompleteMessage.
           val = targetMap[k] = createCompleteMessage(messageType.fields);
         } else if (typeof val !== "object") {
@@ -215,5 +220,6 @@ export function applyPartialMap(
         applyPartialMessage(v, val, messageType.fields);
       }
       break;
+    }
   }
 }

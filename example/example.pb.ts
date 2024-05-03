@@ -2,14 +2,14 @@
 // @generated from file example/example.proto (package example, syntax proto3)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "@aptre/protobuf-es-lite";
+import type { MessageType, PartialFieldInfo } from "../src/index.js";
 import {
   createEnumType,
   createMessageType,
   Message,
   ScalarType,
   Timestamp,
-} from "@aptre/protobuf-es-lite";
+} from "../src/index.js";
 
 export const protobufPackage = "example";
 
