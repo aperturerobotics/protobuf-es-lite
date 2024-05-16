@@ -102,9 +102,7 @@ const ListValue_Wkt = {
     }
     if (!Array.isArray(json)) {
       throw new Error(
-        `cannot decode google.protobuf.ListValue from JSON ${jsonDebugValue(
-          json,
-        )}`,
+        `cannot decode google.protobuf.ListValue from JSON ${jsonDebugValue(json)}`,
       );
     }
     const values: Value[] = json.map((v) => Value.fromJson(v, options));
@@ -265,9 +263,7 @@ const Value_Wkt = {
         break;
       default:
         throw new Error(
-          `cannot decode google.protobuf.Value from JSON ${jsonDebugValue(
-            json,
-          )}`,
+          `cannot decode google.protobuf.Value from JSON ${jsonDebugValue(json)}`,
         );
     }
     return msg;
@@ -369,9 +365,7 @@ const Struct_Wkt = {
   ): Struct {
     if (typeof json != "object" || json == null || Array.isArray(json)) {
       throw new Error(
-        `cannot decode google.protobuf.Struct from JSON ${jsonDebugValue(
-          json,
-        )}`,
+        `cannot decode google.protobuf.Struct from JSON ${jsonDebugValue(json)}`,
       );
     }
     const fields = {} as { [key: string]: Value };

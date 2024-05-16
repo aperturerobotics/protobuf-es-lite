@@ -216,7 +216,7 @@ function readMapEntry(
             val = readMessageField(
               reader,
               Object.create(null),
-             resolveMessageType(field.V.T).fields,
+              resolveMessageType(field.V.T).fields,
               options,
               undefined,
             );

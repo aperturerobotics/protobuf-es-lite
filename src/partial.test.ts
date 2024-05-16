@@ -8,10 +8,7 @@ describe("applyPartialMessage", () => {
     const source: Partial<EchoMsg> = {
       body: "Hello",
       ts: new Date(),
-      timestamps: [
-        new Date("2022-01-01"),
-        new Date("2022-02-01"),
-      ],
+      timestamps: [new Date("2022-01-01"), new Date("2022-02-01")],
       demo: { case: "exampleEnum", value: ExampleEnum.FIRST },
     };
     const target = {} as EchoMsg;
@@ -36,10 +33,7 @@ describe("applyPartialMessage", () => {
     const target: EchoMsg = {
       body: "Hello",
       ts: new Date(),
-      timestamps: [
-        new Date("2022-01-01"),
-        new Date("2022-02-01"),
-      ],
+      timestamps: [new Date("2022-01-01"), new Date("2022-02-01")],
       demo: { case: "exampleString", value: "test" },
     };
     const fieldList = EchoMsg.fields;
