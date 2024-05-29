@@ -54,7 +54,6 @@ import {
   jsonReadScalar,
   jsonWriteScalar,
   LongType,
-  Message,
   ScalarType,
 } from "../../index.js";
 
@@ -69,14 +68,14 @@ export const protobufPackage = "google.protobuf";
  *
  * @generated from message google.protobuf.DoubleValue
  */
-export type DoubleValue = Message<{
+export interface DoubleValue {
   /**
    * The double value.
    *
    * @generated from field: double value = 1;
    */
   value?: number;
-}>;
+}
 
 // DoubleValue_Wkt contains the well-known-type overrides for DoubleValue.
 const DoubleValue_Wkt = {
@@ -131,14 +130,14 @@ export const DoubleValue: MessageType<DoubleValue> & typeof DoubleValue_Wkt =
  *
  * @generated from message google.protobuf.FloatValue
  */
-export type FloatValue = Message<{
+export interface FloatValue {
   /**
    * The float value.
    *
    * @generated from field: float value = 1;
    */
   value?: number;
-}>;
+}
 
 // FloatValue_Wkt contains the well-known-type overrides for FloatValue.
 const FloatValue_Wkt = {
@@ -193,14 +192,14 @@ export const FloatValue: MessageType<FloatValue> & typeof FloatValue_Wkt =
  *
  * @generated from message google.protobuf.Int64Value
  */
-export type Int64Value = Message<{
+export interface Int64Value {
   /**
    * The int64 value.
    *
    * @generated from field: int64 value = 1;
    */
   value?: bigint;
-}>;
+}
 
 // Int64Value_Wkt contains the well-known-type overrides for Int64Value.
 const Int64Value_Wkt = {
@@ -255,14 +254,14 @@ export const Int64Value: MessageType<Int64Value> & typeof Int64Value_Wkt =
  *
  * @generated from message google.protobuf.UInt64Value
  */
-export type UInt64Value = Message<{
+export interface UInt64Value {
   /**
    * The uint64 value.
    *
    * @generated from field: uint64 value = 1;
    */
   value?: bigint;
-}>;
+}
 
 // UInt64Value_Wkt contains the well-known-type overrides for UInt64Value.
 const UInt64Value_Wkt = {
@@ -317,14 +316,14 @@ export const UInt64Value: MessageType<UInt64Value> & typeof UInt64Value_Wkt =
  *
  * @generated from message google.protobuf.Int32Value
  */
-export type Int32Value = Message<{
+export interface Int32Value {
   /**
    * The int32 value.
    *
    * @generated from field: int32 value = 1;
    */
   value?: number;
-}>;
+}
 
 // Int32Value_Wkt contains the well-known-type overrides for Int32Value.
 const Int32Value_Wkt = {
@@ -379,14 +378,14 @@ export const Int32Value: MessageType<Int32Value> & typeof Int32Value_Wkt =
  *
  * @generated from message google.protobuf.UInt32Value
  */
-export type UInt32Value = Message<{
+export interface UInt32Value {
   /**
    * The uint32 value.
    *
    * @generated from field: uint32 value = 1;
    */
   value?: number;
-}>;
+}
 
 // UInt32Value_Wkt contains the well-known-type overrides for UInt32Value.
 const UInt32Value_Wkt = {
@@ -441,14 +440,14 @@ export const UInt32Value: MessageType<UInt32Value> & typeof UInt32Value_Wkt =
  *
  * @generated from message google.protobuf.BoolValue
  */
-export type BoolValue = Message<{
+export interface BoolValue {
   /**
    * The bool value.
    *
    * @generated from field: bool value = 1;
    */
   value?: boolean;
-}>;
+}
 
 // BoolValue_Wkt contains the well-known-type overrides for BoolValue.
 const BoolValue_Wkt = {
@@ -503,14 +502,14 @@ export const BoolValue: MessageType<BoolValue> & typeof BoolValue_Wkt =
  *
  * @generated from message google.protobuf.StringValue
  */
-export type StringValue = Message<{
+export interface StringValue {
   /**
    * The string value.
    *
    * @generated from field: string value = 1;
    */
   value?: string;
-}>;
+}
 
 // StringValue_Wkt contains the well-known-type overrides for StringValue.
 const StringValue_Wkt = {
@@ -565,14 +564,14 @@ export const StringValue: MessageType<StringValue> & typeof StringValue_Wkt =
  *
  * @generated from message google.protobuf.BytesValue
  */
-export type BytesValue = Message<{
+export interface BytesValue {
   /**
    * The bytes value.
    *
    * @generated from field: bytes value = 1;
    */
   value?: Uint8Array;
-}>;
+}
 
 // BytesValue_Wkt contains the well-known-type overrides for BytesValue.
 const BytesValue_Wkt = {

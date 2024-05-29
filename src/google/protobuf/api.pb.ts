@@ -32,10 +32,10 @@
 // @generated from file google/protobuf/api.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, Message, ScalarType } from "../../index.js";
 import type { Syntax } from "./type.pb.js";
 import { Option, Syntax_Enum } from "./type.pb.js";
+import type { MessageType, PartialFieldInfo } from "../../index.js";
+import { createMessageType, ScalarType } from "../../index.js";
 import { SourceContext } from "./source_context.pb.js";
 
 export const protobufPackage = "google.protobuf";
@@ -45,7 +45,7 @@ export const protobufPackage = "google.protobuf";
  *
  * @generated from message google.protobuf.Method
  */
-export type Method = Message<{
+export interface Method {
   /**
    * The simple name of this method.
    *
@@ -88,7 +88,7 @@ export type Method = Message<{
    * @generated from field: google.protobuf.Syntax syntax = 7;
    */
   syntax?: Syntax;
-}>;
+}
 
 // Method contains the message type declaration for Method.
 export const Method: MessageType<Method> = createMessageType({
@@ -193,7 +193,7 @@ export const Method: MessageType<Method> = createMessageType({
  *
  * @generated from message google.protobuf.Mixin
  */
-export type Mixin = Message<{
+export interface Mixin {
   /**
    * The fully qualified name of the interface which is included.
    *
@@ -207,7 +207,7 @@ export type Mixin = Message<{
    * @generated from field: string root = 2;
    */
   root?: string;
-}>;
+}
 
 // Mixin contains the message type declaration for Mixin.
 export const Mixin: MessageType<Mixin> = createMessageType({
@@ -232,7 +232,7 @@ export const Mixin: MessageType<Mixin> = createMessageType({
  *
  * @generated from message google.protobuf.Api
  */
-export type Api = Message<{
+export interface Api {
   /**
    * The fully qualified name of this interface, including package name
    * followed by the interface's simple name.
@@ -296,7 +296,7 @@ export type Api = Message<{
    * @generated from field: google.protobuf.Syntax syntax = 7;
    */
   syntax?: Syntax;
-}>;
+}
 
 // Api contains the message type declaration for Api.
 export const Api: MessageType<Api> = createMessageType({

@@ -41,12 +41,7 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "../../index.js";
-import {
-  createEnumType,
-  createMessageType,
-  Message,
-  ScalarType,
-} from "../../index.js";
+import { createEnumType, createMessageType, ScalarType } from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -844,7 +839,7 @@ export const GeneratedCodeInfo_Annotation_Semantic_Enum = createEnumType(
 /**
  * @generated from message google.protobuf.FieldOptions.EditionDefault
  */
-export type FieldOptions_EditionDefault = Message<{
+export interface FieldOptions_EditionDefault {
   /**
    * @generated from field: optional google.protobuf.Edition edition = 3;
    */
@@ -855,7 +850,7 @@ export type FieldOptions_EditionDefault = Message<{
    * @generated from field: optional string value = 2;
    */
   value?: string;
-}>;
+}
 
 // FieldOptions_EditionDefault contains the message type declaration for FieldOptions_EditionDefault.
 export const FieldOptions_EditionDefault: MessageType<FieldOptions_EditionDefault> =
@@ -878,7 +873,7 @@ export const FieldOptions_EditionDefault: MessageType<FieldOptions_EditionDefaul
  *
  * @generated from message google.protobuf.FeatureSet
  */
-export type FeatureSet = Message<{
+export interface FeatureSet {
   /**
    * @generated from field: optional google.protobuf.FeatureSet.FieldPresence field_presence = 1;
    */
@@ -903,7 +898,7 @@ export type FeatureSet = Message<{
    * @generated from field: optional google.protobuf.FeatureSet.JsonFormat json_format = 6;
    */
   jsonFormat?: FeatureSet_JsonFormat;
-}>;
+}
 
 // FeatureSet contains the message type declaration for FeatureSet.
 export const FeatureSet: MessageType<FeatureSet> = createMessageType({
@@ -964,7 +959,7 @@ export const FeatureSet: MessageType<FeatureSet> = createMessageType({
  *
  * @generated from message google.protobuf.UninterpretedOption.NamePart
  */
-export type UninterpretedOption_NamePart = Message<{
+export interface UninterpretedOption_NamePart {
   /**
    * @generated from field: required string name_part = 1;
    */
@@ -973,7 +968,7 @@ export type UninterpretedOption_NamePart = Message<{
    * @generated from field: required bool is_extension = 2;
    */
   isExtension?: boolean;
-}>;
+}
 
 // UninterpretedOption_NamePart contains the message type declaration for UninterpretedOption_NamePart.
 export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NamePart> =
@@ -1008,7 +1003,7 @@ export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NameP
  *
  * @generated from message google.protobuf.UninterpretedOption
  */
-export type UninterpretedOption = Message<{
+export interface UninterpretedOption {
   /**
    * @generated from field: repeated google.protobuf.UninterpretedOption.NamePart name = 2;
    */
@@ -1040,7 +1035,7 @@ export type UninterpretedOption = Message<{
    * @generated from field: optional string aggregate_value = 8;
    */
   aggregateValue?: string;
-}>;
+}
 
 // UninterpretedOption contains the message type declaration for UninterpretedOption.
 export const UninterpretedOption: MessageType<UninterpretedOption> =
@@ -1103,7 +1098,7 @@ export const UninterpretedOption: MessageType<UninterpretedOption> =
 /**
  * @generated from message google.protobuf.FieldOptions
  */
-export type FieldOptions = Message<{
+export interface FieldOptions {
   /**
    * The ctype option instructs the C++ code generator to use a different
    * representation of the field than it normally would.  See the specific
@@ -1224,7 +1219,7 @@ export type FieldOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // FieldOptions contains the message type declaration for FieldOptions.
 export const FieldOptions: MessageType<FieldOptions> = createMessageType({
@@ -1331,7 +1326,7 @@ export const FieldOptions: MessageType<FieldOptions> = createMessageType({
  *
  * @generated from message google.protobuf.FieldDescriptorProto
  */
-export type FieldDescriptorProto = Message<{
+export interface FieldDescriptorProto {
   /**
    * @generated from field: optional string name = 1;
    */
@@ -1423,7 +1418,7 @@ export type FieldDescriptorProto = Message<{
    * @generated from field: optional bool proto3_optional = 17;
    */
   proto3Optional?: boolean;
-}>;
+}
 
 // FieldDescriptorProto contains the message type declaration for FieldDescriptorProto.
 export const FieldDescriptorProto: MessageType<FieldDescriptorProto> =
@@ -1502,7 +1497,7 @@ export const FieldDescriptorProto: MessageType<FieldDescriptorProto> =
 /**
  * @generated from message google.protobuf.EnumValueOptions
  */
-export type EnumValueOptions = Message<{
+export interface EnumValueOptions {
   /**
    * Is this enum value deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
@@ -1532,7 +1527,7 @@ export type EnumValueOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // EnumValueOptions contains the message type declaration for EnumValueOptions.
 export const EnumValueOptions: MessageType<EnumValueOptions> =
@@ -1578,7 +1573,7 @@ export const EnumValueOptions: MessageType<EnumValueOptions> =
  *
  * @generated from message google.protobuf.EnumValueDescriptorProto
  */
-export type EnumValueDescriptorProto = Message<{
+export interface EnumValueDescriptorProto {
   /**
    * @generated from field: optional string name = 1;
    */
@@ -1591,7 +1586,7 @@ export type EnumValueDescriptorProto = Message<{
    * @generated from field: optional google.protobuf.EnumValueOptions options = 3;
    */
   options?: EnumValueOptions;
-}>;
+}
 
 // EnumValueDescriptorProto contains the message type declaration for EnumValueDescriptorProto.
 export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> =
@@ -1614,7 +1609,7 @@ export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> =
 /**
  * @generated from message google.protobuf.EnumOptions
  */
-export type EnumOptions = Message<{
+export interface EnumOptions {
   /**
    * Set this option to true to allow mapping different tag names to the same
    * value.
@@ -1655,7 +1650,7 @@ export type EnumOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // EnumOptions contains the message type declaration for EnumOptions.
 export const EnumOptions: MessageType<EnumOptions> = createMessageType({
@@ -1711,7 +1706,7 @@ export const EnumOptions: MessageType<EnumOptions> = createMessageType({
  *
  * @generated from message google.protobuf.EnumDescriptorProto.EnumReservedRange
  */
-export type EnumDescriptorProto_EnumReservedRange = Message<{
+export interface EnumDescriptorProto_EnumReservedRange {
   /**
    * Inclusive.
    *
@@ -1724,7 +1719,7 @@ export type EnumDescriptorProto_EnumReservedRange = Message<{
    * @generated from field: optional int32 end = 2;
    */
   end?: number;
-}>;
+}
 
 // EnumDescriptorProto_EnumReservedRange contains the message type declaration for EnumDescriptorProto_EnumReservedRange.
 export const EnumDescriptorProto_EnumReservedRange: MessageType<EnumDescriptorProto_EnumReservedRange> =
@@ -1742,7 +1737,7 @@ export const EnumDescriptorProto_EnumReservedRange: MessageType<EnumDescriptorPr
  *
  * @generated from message google.protobuf.EnumDescriptorProto
  */
-export type EnumDescriptorProto = Message<{
+export interface EnumDescriptorProto {
   /**
    * @generated from field: optional string name = 1;
    */
@@ -1770,7 +1765,7 @@ export type EnumDescriptorProto = Message<{
    * @generated from field: repeated string reserved_name = 5;
    */
   reservedName?: string[];
-}>;
+}
 
 // EnumDescriptorProto contains the message type declaration for EnumDescriptorProto.
 export const EnumDescriptorProto: MessageType<EnumDescriptorProto> =
@@ -1813,7 +1808,7 @@ export const EnumDescriptorProto: MessageType<EnumDescriptorProto> =
 /**
  * @generated from message google.protobuf.ExtensionRangeOptions.Declaration
  */
-export type ExtensionRangeOptions_Declaration = Message<{
+export interface ExtensionRangeOptions_Declaration {
   /**
    * The extension number declared within the extension range.
    *
@@ -1850,7 +1845,7 @@ export type ExtensionRangeOptions_Declaration = Message<{
    * @generated from field: optional bool repeated = 6;
    */
   repeated?: boolean;
-}>;
+}
 
 // ExtensionRangeOptions_Declaration contains the message type declaration for ExtensionRangeOptions_Declaration.
 export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOptions_Declaration> =
@@ -1887,7 +1882,7 @@ export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOption
 /**
  * @generated from message google.protobuf.ExtensionRangeOptions
  */
-export type ExtensionRangeOptions = Message<{
+export interface ExtensionRangeOptions {
   /**
    * The parser stores options it doesn't recognize here. See above.
    *
@@ -1916,7 +1911,7 @@ export type ExtensionRangeOptions = Message<{
    * @generated from field: optional google.protobuf.ExtensionRangeOptions.VerificationState verification = 3 [default = UNVERIFIED];
    */
   verification?: ExtensionRangeOptions_VerificationState;
-}>;
+}
 
 // ExtensionRangeOptions contains the message type declaration for ExtensionRangeOptions.
 export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> =
@@ -1959,7 +1954,7 @@ export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> =
 /**
  * @generated from message google.protobuf.DescriptorProto.ExtensionRange
  */
-export type DescriptorProto_ExtensionRange = Message<{
+export interface DescriptorProto_ExtensionRange {
   /**
    * Inclusive.
    *
@@ -1976,7 +1971,7 @@ export type DescriptorProto_ExtensionRange = Message<{
    * @generated from field: optional google.protobuf.ExtensionRangeOptions options = 3;
    */
   options?: ExtensionRangeOptions;
-}>;
+}
 
 // DescriptorProto_ExtensionRange contains the message type declaration for DescriptorProto_ExtensionRange.
 export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_ExtensionRange> =
@@ -1999,7 +1994,7 @@ export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_Extensi
 /**
  * @generated from message google.protobuf.OneofOptions
  */
-export type OneofOptions = Message<{
+export interface OneofOptions {
   /**
    * Any features defined in the specific edition.
    *
@@ -2012,7 +2007,7 @@ export type OneofOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // OneofOptions contains the message type declaration for OneofOptions.
 export const OneofOptions: MessageType<OneofOptions> = createMessageType({
@@ -2041,7 +2036,7 @@ export const OneofOptions: MessageType<OneofOptions> = createMessageType({
  *
  * @generated from message google.protobuf.OneofDescriptorProto
  */
-export type OneofDescriptorProto = Message<{
+export interface OneofDescriptorProto {
   /**
    * @generated from field: optional string name = 1;
    */
@@ -2050,7 +2045,7 @@ export type OneofDescriptorProto = Message<{
    * @generated from field: optional google.protobuf.OneofOptions options = 2;
    */
   options?: OneofOptions;
-}>;
+}
 
 // OneofDescriptorProto contains the message type declaration for OneofDescriptorProto.
 export const OneofDescriptorProto: MessageType<OneofDescriptorProto> =
@@ -2072,7 +2067,7 @@ export const OneofDescriptorProto: MessageType<OneofDescriptorProto> =
 /**
  * @generated from message google.protobuf.MessageOptions
  */
-export type MessageOptions = Message<{
+export interface MessageOptions {
   /**
    * Set true to use the old proto1 MessageSet wire format for extensions.
    * This is provided for backwards-compatibility with the MessageSet wire
@@ -2167,7 +2162,7 @@ export type MessageOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // MessageOptions contains the message type declaration for MessageOptions.
 export const MessageOptions: MessageType<MessageOptions> = createMessageType({
@@ -2230,7 +2225,7 @@ export const MessageOptions: MessageType<MessageOptions> = createMessageType({
  *
  * @generated from message google.protobuf.DescriptorProto.ReservedRange
  */
-export type DescriptorProto_ReservedRange = Message<{
+export interface DescriptorProto_ReservedRange {
   /**
    * Inclusive.
    *
@@ -2243,7 +2238,7 @@ export type DescriptorProto_ReservedRange = Message<{
    * @generated from field: optional int32 end = 2;
    */
   end?: number;
-}>;
+}
 
 // DescriptorProto_ReservedRange contains the message type declaration for DescriptorProto_ReservedRange.
 export const DescriptorProto_ReservedRange: MessageType<DescriptorProto_ReservedRange> =
@@ -2261,7 +2256,7 @@ export const DescriptorProto_ReservedRange: MessageType<DescriptorProto_Reserved
  *
  * @generated from message google.protobuf.DescriptorProto
  */
-export type DescriptorProto = Message<{
+export interface DescriptorProto {
   /**
    * @generated from field: optional string name = 1;
    */
@@ -2305,7 +2300,7 @@ export type DescriptorProto = Message<{
    * @generated from field: repeated string reserved_name = 10;
    */
   reservedName?: string[];
-}>;
+}
 
 // DescriptorProto contains the message type declaration for DescriptorProto.
 export const DescriptorProto: MessageType<DescriptorProto> = createMessageType({
@@ -2382,7 +2377,7 @@ export const DescriptorProto: MessageType<DescriptorProto> = createMessageType({
 /**
  * @generated from message google.protobuf.MethodOptions
  */
-export type MethodOptions = Message<{
+export interface MethodOptions {
   /**
    * Is this method deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
@@ -2408,7 +2403,7 @@ export type MethodOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // MethodOptions contains the message type declaration for MethodOptions.
 export const MethodOptions: MessageType<MethodOptions> = createMessageType({
@@ -2453,7 +2448,7 @@ export const MethodOptions: MessageType<MethodOptions> = createMessageType({
  *
  * @generated from message google.protobuf.MethodDescriptorProto
  */
-export type MethodDescriptorProto = Message<{
+export interface MethodDescriptorProto {
   /**
    * @generated from field: optional string name = 1;
    */
@@ -2485,7 +2480,7 @@ export type MethodDescriptorProto = Message<{
    * @generated from field: optional bool server_streaming = 6 [default = false];
    */
   serverStreaming?: boolean;
-}>;
+}
 
 // MethodDescriptorProto contains the message type declaration for MethodDescriptorProto.
 export const MethodDescriptorProto: MessageType<MethodDescriptorProto> =
@@ -2537,7 +2532,7 @@ export const MethodDescriptorProto: MessageType<MethodDescriptorProto> =
 /**
  * @generated from message google.protobuf.ServiceOptions
  */
-export type ServiceOptions = Message<{
+export interface ServiceOptions {
   /**
    * Any features defined in the specific edition.
    *
@@ -2559,7 +2554,7 @@ export type ServiceOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // ServiceOptions contains the message type declaration for ServiceOptions.
 export const ServiceOptions: MessageType<ServiceOptions> = createMessageType({
@@ -2596,7 +2591,7 @@ export const ServiceOptions: MessageType<ServiceOptions> = createMessageType({
  *
  * @generated from message google.protobuf.ServiceDescriptorProto
  */
-export type ServiceDescriptorProto = Message<{
+export interface ServiceDescriptorProto {
   /**
    * @generated from field: optional string name = 1;
    */
@@ -2609,7 +2604,7 @@ export type ServiceDescriptorProto = Message<{
    * @generated from field: optional google.protobuf.ServiceOptions options = 3;
    */
   options?: ServiceOptions;
-}>;
+}
 
 // ServiceDescriptorProto contains the message type declaration for ServiceDescriptorProto.
 export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> =
@@ -2638,7 +2633,7 @@ export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> =
 /**
  * @generated from message google.protobuf.FileOptions
  */
-export type FileOptions = Message<{
+export interface FileOptions {
   /**
    * Sets the Java package where classes generated from this .proto will be
    * placed.  By default, the proto package is used, but this is often
@@ -2806,7 +2801,7 @@ export type FileOptions = Message<{
    * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
-}>;
+}
 
 // FileOptions contains the message type declaration for FileOptions.
 export const FileOptions: MessageType<FileOptions> = createMessageType({
@@ -2974,7 +2969,7 @@ export const FileOptions: MessageType<FileOptions> = createMessageType({
 /**
  * @generated from message google.protobuf.SourceCodeInfo.Location
  */
-export type SourceCodeInfo_Location = Message<{
+export interface SourceCodeInfo_Location {
   /**
    * Identifies which part of the FileDescriptorProto was defined at this
    * location.
@@ -3073,7 +3068,7 @@ export type SourceCodeInfo_Location = Message<{
    * @generated from field: repeated string leading_detached_comments = 6;
    */
   leadingDetachedComments?: string[];
-}>;
+}
 
 // SourceCodeInfo_Location contains the message type declaration for SourceCodeInfo_Location.
 export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> =
@@ -3127,7 +3122,7 @@ export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> =
  *
  * @generated from message google.protobuf.SourceCodeInfo
  */
-export type SourceCodeInfo = Message<{
+export interface SourceCodeInfo {
   /**
    * A Location identifies a piece of source code in a .proto file which
    * corresponds to a particular definition.  This information is intended
@@ -3176,7 +3171,7 @@ export type SourceCodeInfo = Message<{
    * @generated from field: repeated google.protobuf.SourceCodeInfo.Location location = 1;
    */
   location?: SourceCodeInfo_Location[];
-}>;
+}
 
 // SourceCodeInfo contains the message type declaration for SourceCodeInfo.
 export const SourceCodeInfo: MessageType<SourceCodeInfo> = createMessageType({
@@ -3198,7 +3193,7 @@ export const SourceCodeInfo: MessageType<SourceCodeInfo> = createMessageType({
  *
  * @generated from message google.protobuf.FileDescriptorProto
  */
-export type FileDescriptorProto = Message<{
+export interface FileDescriptorProto {
   /**
    * file name, relative to root of source tree
    *
@@ -3276,7 +3271,7 @@ export type FileDescriptorProto = Message<{
    * @generated from field: optional google.protobuf.Edition edition = 14;
    */
   edition?: Edition;
-}>;
+}
 
 // FileDescriptorProto contains the message type declaration for FileDescriptorProto.
 export const FileDescriptorProto: MessageType<FileDescriptorProto> =
@@ -3372,12 +3367,12 @@ export const FileDescriptorProto: MessageType<FileDescriptorProto> =
  *
  * @generated from message google.protobuf.FileDescriptorSet
  */
-export type FileDescriptorSet = Message<{
+export interface FileDescriptorSet {
   /**
    * @generated from field: repeated google.protobuf.FileDescriptorProto file = 1;
    */
   file?: FileDescriptorProto[];
-}>;
+}
 
 // FileDescriptorSet contains the message type declaration for FileDescriptorSet.
 export const FileDescriptorSet: MessageType<FileDescriptorSet> =
@@ -3403,7 +3398,7 @@ export const FileDescriptorSet: MessageType<FileDescriptorSet> =
  *
  * @generated from message google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault
  */
-export type FeatureSetDefaults_FeatureSetEditionDefault = Message<{
+export interface FeatureSetDefaults_FeatureSetEditionDefault {
   /**
    * @generated from field: optional google.protobuf.Edition edition = 3;
    */
@@ -3412,7 +3407,7 @@ export type FeatureSetDefaults_FeatureSetEditionDefault = Message<{
    * @generated from field: optional google.protobuf.FeatureSet features = 2;
    */
   features?: FeatureSet;
-}>;
+}
 
 // FeatureSetDefaults_FeatureSetEditionDefault contains the message type declaration for FeatureSetDefaults_FeatureSetEditionDefault.
 export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSetDefaults_FeatureSetEditionDefault> =
@@ -3439,7 +3434,7 @@ export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSet
  *
  * @generated from message google.protobuf.FeatureSetDefaults
  */
-export type FeatureSetDefaults = Message<{
+export interface FeatureSetDefaults {
   /**
    * @generated from field: repeated google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault defaults = 1;
    */
@@ -3458,7 +3453,7 @@ export type FeatureSetDefaults = Message<{
    * @generated from field: optional google.protobuf.Edition maximum_edition = 5;
    */
   maximumEdition?: Edition;
-}>;
+}
 
 // FeatureSetDefaults contains the message type declaration for FeatureSetDefaults.
 export const FeatureSetDefaults: MessageType<FeatureSetDefaults> =
@@ -3493,7 +3488,7 @@ export const FeatureSetDefaults: MessageType<FeatureSetDefaults> =
 /**
  * @generated from message google.protobuf.GeneratedCodeInfo.Annotation
  */
-export type GeneratedCodeInfo_Annotation = Message<{
+export interface GeneratedCodeInfo_Annotation {
   /**
    * Identifies the element in the original source .proto file. This field
    * is formatted the same as SourceCodeInfo.Location.path.
@@ -3526,7 +3521,7 @@ export type GeneratedCodeInfo_Annotation = Message<{
    * @generated from field: optional google.protobuf.GeneratedCodeInfo.Annotation.Semantic semantic = 5;
    */
   semantic?: GeneratedCodeInfo_Annotation_Semantic;
-}>;
+}
 
 // GeneratedCodeInfo_Annotation contains the message type declaration for GeneratedCodeInfo_Annotation.
 export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotation> =
@@ -3568,7 +3563,7 @@ export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotat
  *
  * @generated from message google.protobuf.GeneratedCodeInfo
  */
-export type GeneratedCodeInfo = Message<{
+export interface GeneratedCodeInfo {
   /**
    * An Annotation connects some span of text in generated code to an element
    * of its generating .proto file.
@@ -3576,7 +3571,7 @@ export type GeneratedCodeInfo = Message<{
    * @generated from field: repeated google.protobuf.GeneratedCodeInfo.Annotation annotation = 1;
    */
   annotation?: GeneratedCodeInfo_Annotation[];
-}>;
+}
 
 // GeneratedCodeInfo contains the message type declaration for GeneratedCodeInfo.
 export const GeneratedCodeInfo: MessageType<GeneratedCodeInfo> =

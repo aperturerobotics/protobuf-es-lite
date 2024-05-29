@@ -33,7 +33,7 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, Message } from "../../index.js";
+import { createMessageType } from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -49,7 +49,7 @@ export const protobufPackage = "google.protobuf";
  *
  * @generated from message google.protobuf.Empty
  */
-export type Empty = Message<{}>;
+export interface Empty {}
 
 // Empty contains the message type declaration for Empty.
 export const Empty: MessageType<Empty> = createMessageType({

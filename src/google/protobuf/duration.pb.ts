@@ -41,7 +41,6 @@ import type {
 import {
   createMessageType,
   jsonDebugValue,
-  Message,
   protoInt64,
   ScalarType,
 } from "../../index.js";
@@ -112,7 +111,7 @@ export const protobufPackage = "google.protobuf";
  *
  * @generated from message google.protobuf.Duration
  */
-export type Duration = Message<{
+export interface Duration {
   /**
    * Signed seconds of the span of time. Must be from -315,576,000,000
    * to +315,576,000,000 inclusive. Note: these bounds are computed from:
@@ -132,7 +131,7 @@ export type Duration = Message<{
    * @generated from field: int32 nanos = 2;
    */
   nanos?: number;
-}>;
+}
 
 // Duration_Wkt contains the well-known-type overrides for Duration.
 const Duration_Wkt = {

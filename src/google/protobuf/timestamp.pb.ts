@@ -33,12 +33,7 @@
 /* eslint-disable */
 
 import type { JsonValue, MessageType, PartialFieldInfo } from "../../index.js";
-import {
-  createMessageType,
-  Message,
-  protoInt64,
-  ScalarType,
-} from "../../index.js";
+import { createMessageType, protoInt64, ScalarType } from "../../index.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -137,7 +132,7 @@ export const protobufPackage = "google.protobuf";
  *
  * @generated from message google.protobuf.Timestamp
  */
-export type Timestamp = Message<{
+export interface Timestamp {
   /**
    * Represents seconds of UTC time since Unix epoch
    * 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
@@ -155,7 +150,7 @@ export type Timestamp = Message<{
    * @generated from field: int32 nanos = 2;
    */
   nanos?: number;
-}>;
+}
 
 // Timestamp_Wkt contains the well-known-type overrides for Timestamp.
 const Timestamp_Wkt = {

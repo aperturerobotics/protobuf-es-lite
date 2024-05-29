@@ -44,7 +44,6 @@ import {
   createEnumType,
   createMessageType,
   jsonDebugValue,
-  Message,
   ScalarType,
 } from "../../index.js";
 
@@ -79,14 +78,14 @@ export const NullValue_Enum = createEnumType("google.protobuf.NullValue", [
  *
  * @generated from message google.protobuf.ListValue
  */
-export type ListValue = Message<{
+export interface ListValue {
   /**
    * Repeated field of dynamically typed values.
    *
    * @generated from field: repeated google.protobuf.Value values = 1;
    */
   values?: Value[];
-}>;
+}
 
 // ListValue_Wkt contains the well-known-type overrides for ListValue.
 const ListValue_Wkt = {
@@ -139,7 +138,7 @@ export const ListValue: MessageType<ListValue> & typeof ListValue_Wkt =
  *
  * @generated from message google.protobuf.Value
  */
-export type Value = Message<{
+export interface Value {
   /**
    * The kind of value.
    *
@@ -204,7 +203,7 @@ export type Value = Message<{
         value: ListValue;
         case: "listValue";
       };
-}>;
+}
 
 // Value_Wkt contains the well-known-type overrides for Value.
 const Value_Wkt = {
@@ -338,14 +337,14 @@ export const Value: MessageType<Value> & typeof Value_Wkt = createMessageType<
  *
  * @generated from message google.protobuf.Struct
  */
-export type Struct = Message<{
+export interface Struct {
   /**
    * Unordered map of dynamically typed values.
    *
    * @generated from field: map<string, google.protobuf.Value> fields = 1;
    */
   fields?: { [key: string]: Value };
-}>;
+}
 
 // Struct_Wkt contains the well-known-type overrides for Struct.
 const Struct_Wkt = {

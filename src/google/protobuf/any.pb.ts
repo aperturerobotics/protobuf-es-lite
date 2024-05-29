@@ -139,7 +139,7 @@ export const protobufPackage = "google.protobuf";
  *
  * @generated from message google.protobuf.Any
  */
-export type Any = Message<{
+export interface Any {
   /**
    * A URL/resource name that uniquely identifies the type of the serialized
    * protocol buffer message. This string must contain at least
@@ -180,7 +180,7 @@ export type Any = Message<{
    * @generated from field: bytes value = 2;
    */
   value?: Uint8Array;
-}>;
+}
 
 // Any_Wkt contains the well-known-type overrides for Any.
 const Any_Wkt = {

@@ -33,12 +33,7 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "../../index.js";
-import {
-  createEnumType,
-  createMessageType,
-  Message,
-  ScalarType,
-} from "../../index.js";
+import { createEnumType, createMessageType, ScalarType } from "../../index.js";
 import { Any } from "./any.pb.js";
 import { SourceContext } from "./source_context.pb.js";
 
@@ -294,7 +289,7 @@ export const Field_Cardinality_Enum = createEnumType(
  *
  * @generated from message google.protobuf.Option
  */
-export type Option = Message<{
+export interface Option {
   /**
    * The option's name. For protobuf built-in options (options defined in
    * descriptor.proto), this is the short name. For example, `"map_entry"`.
@@ -313,7 +308,7 @@ export type Option = Message<{
    * @generated from field: google.protobuf.Any value = 2;
    */
   value?: Any;
-}>;
+}
 
 // Option contains the message type declaration for Option.
 export const Option: MessageType<Option> = createMessageType({
@@ -330,7 +325,7 @@ export const Option: MessageType<Option> = createMessageType({
  *
  * @generated from message google.protobuf.Field
  */
-export type Field = Message<{
+export interface Field {
   /**
    * The field type.
    *
@@ -393,7 +388,7 @@ export type Field = Message<{
    * @generated from field: string default_value = 11;
    */
   defaultValue?: string;
-}>;
+}
 
 // Field contains the message type declaration for Field.
 export const Field: MessageType<Field> = createMessageType({
@@ -424,7 +419,7 @@ export const Field: MessageType<Field> = createMessageType({
  *
  * @generated from message google.protobuf.Type
  */
-export type Type = Message<{
+export interface Type {
   /**
    * The fully qualified message name.
    *
@@ -467,7 +462,7 @@ export type Type = Message<{
    * @generated from field: string edition = 7;
    */
   edition?: string;
-}>;
+}
 
 // Type contains the message type declaration for Type.
 export const Type: MessageType<Type> = createMessageType({
@@ -501,7 +496,7 @@ export const Type: MessageType<Type> = createMessageType({
  *
  * @generated from message google.protobuf.EnumValue
  */
-export type EnumValue = Message<{
+export interface EnumValue {
   /**
    * Enum value name.
    *
@@ -520,7 +515,7 @@ export type EnumValue = Message<{
    * @generated from field: repeated google.protobuf.Option options = 3;
    */
   options?: Option[];
-}>;
+}
 
 // EnumValue contains the message type declaration for EnumValue.
 export const EnumValue: MessageType<EnumValue> = createMessageType({
@@ -544,7 +539,7 @@ export const EnumValue: MessageType<EnumValue> = createMessageType({
  *
  * @generated from message google.protobuf.Enum
  */
-export type Enum = Message<{
+export interface Enum {
   /**
    * Enum type name.
    *
@@ -581,7 +576,7 @@ export type Enum = Message<{
    * @generated from field: string edition = 6;
    */
   edition?: string;
-}>;
+}
 
 // Enum contains the message type declaration for Enum.
 export const Enum: MessageType<Enum> = createMessageType({

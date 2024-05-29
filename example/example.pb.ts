@@ -6,7 +6,6 @@ import type { MessageType, PartialFieldInfo } from "../src/index.js";
 import {
   createEnumType,
   createMessageType,
-  Message,
   ScalarType,
   Timestamp,
 } from "../src/index.js";
@@ -47,7 +46,7 @@ export const ExampleEnum_Enum = createEnumType("example.ExampleEnum", [
  *
  * @generated from message example.EchoMsg
  */
-export type EchoMsg = Message<{
+export interface EchoMsg {
   /**
    * @generated from field: string body = 1;
    */
@@ -83,7 +82,7 @@ export type EchoMsg = Message<{
         value: string;
         case: "exampleString";
       };
-}>;
+}
 
 // EchoMsg contains the message type declaration for EchoMsg.
 export const EchoMsg: MessageType<EchoMsg> = createMessageType({

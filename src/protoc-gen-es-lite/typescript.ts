@@ -180,7 +180,7 @@ function generateMessage(
   } = schema.runtime;
 
   f.print(f.jsDoc(message));
-  f.print(f.exportDecl("type", message), " = ", schema.runtime.Message, "<{");
+  f.print(f.exportDecl("interface", message), " {");
   for (const field of message.fields) {
     generateField(f, field);
   }
@@ -190,7 +190,7 @@ function generateMessage(
   }
 
   f.print();
-  f.print("}>;");
+  f.print("};");
   f.print();
 
   // If we need to extend the message type, do that here.
