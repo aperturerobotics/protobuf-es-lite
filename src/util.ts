@@ -26,6 +26,17 @@ import { LongType, ScalarType, ScalarValue } from "./scalar.js";
 import { localName } from "./names.js";
 import { RefDescMessage } from "./protoplugin/ecmascript/opaque-printables.js";
 
+// unixMilliToDate safely converts the unix milliseconds bigint into a Date.
+//
+// Throws an error if unixMilliseconds is too big to fit into a Number.
+export function unixMilliToDate(unixMilliseconds: bigint): Date {
+  const msNum = Number(unixMilliseconds);
+  if (BigInt(msNum) !== unixMilliseconds) {
+    throw new Error("timestamp is too large for int32");
+  }
+  return new Date(msNum);
+}
+
 export function getFieldTypeInfo(field: DescField | DescExtension): {
   typing: Printable;
   optional: boolean;

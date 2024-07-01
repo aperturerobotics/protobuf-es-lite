@@ -140,3 +140,9 @@ export {
   isMessageZeroValue,
   getFieldZeroValue,
 } from "./zero-value.js";
+export {
+  unixMilliToDate,
+  getFieldDefaultValueExpression,
+  getFieldTypeInfo,
+  getFieldZeroValueExpression,
+} from "./util.js";
