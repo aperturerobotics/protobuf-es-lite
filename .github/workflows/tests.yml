@@ -14,10 +14,13 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
-        node: [21.x]
+        node: [22.x]
+
     timeout-minutes: 10
+
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Setup Node.JS ${{ matrix.node }}
