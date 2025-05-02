@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        node: [22.x]
+        node: [23.x]
 
     timeout-minutes: 10
 
