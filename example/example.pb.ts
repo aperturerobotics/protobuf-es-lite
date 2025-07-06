@@ -3,12 +3,8 @@
 /* eslint-disable */
 
 import type { MessageType, PartialFieldInfo } from "../src/index.js";
-import {
-  createEnumType,
-  createMessageType,
-  ScalarType,
-  Timestamp,
-} from "../src/index.js";
+import { createEnumType, createMessageType, ScalarType } from "../src/index.js";
+import { Timestamp } from "../src/google/protobuf/timestamp.pb.js";
 
 export const protobufPackage = "example";
 

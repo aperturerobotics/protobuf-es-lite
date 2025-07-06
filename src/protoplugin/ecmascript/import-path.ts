@@ -152,7 +152,7 @@ export function makeImportPath(
     !filesToGenerate.includes(file) &&
     codegenInfo.wktSourceFiles.includes(file.name + ".proto")
   ) {
-    return codegenInfo.packageName;
+    return codegenInfo.packageName + "/" + file.name;
   }
   return "./" + file.name + ".pb.js";
 }

@@ -23,34 +23,79 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     },
     "./descriptor-set": {
+      "types": "./dist/descriptor-set.d.ts",
       "import": "./dist/descriptor-set.js",
-      "require": "./dist/descriptor-set.js",
-      "types": "./dist/descriptor-set.d.ts"
+      "require": "./dist/descriptor-set.js"
     },
     "./create-descriptor-set": {
+      "types": "./dist/create-descriptor-set.d.ts",
       "import": "./dist/create-descriptor-set.js",
-      "require": "./dist/create-descriptor-set.js",
-      "types": "./dist/create-descriptor-set.d.ts"
+      "require": "./dist/create-descriptor-set.js"
     },
     "./protoplugin": {
+      "types": "./dist/protoplugin/index.d.ts",
       "import": "./dist/protoplugin/index.js",
-      "require": "./dist/protoplugin/index.js",
-      "types": "./dist/protoplugin/index.d.ts"
+      "require": "./dist/protoplugin/index.js"
     },
     "./protoplugin/ecmascript": {
+      "types": "./dist/protoplugin/ecmascript/index.d.ts",
       "import": "./dist/protoplugin/ecmascript/index.js",
-      "require": "./dist/protoplugin/ecmascript/index.js",
-      "types": "./dist/protoplugin/ecmascript/index.d.ts"
+      "require": "./dist/protoplugin/ecmascript/index.js"
     },
     "./google": {
+      "types": "./dist/google/index.d.ts",
       "import": "./dist/google/index.js",
-      "require": "./dist/google/index.js",
-      "types": "./dist/google/index.d.ts"
+      "require": "./dist/google/index.js"
+    },
+    "./google/protobuf/type": {
+      "types": "./dist/google/protobuf/type.pb.d.ts",
+      "import": "./dist/google/protobuf/type.pb.js",
+      "require": "./dist/google/protobuf/type.pb.js"
+    },
+    "./google/protobuf/timestamp": {
+      "types": "./dist/google/protobuf/timestamp.pb.d.ts",
+      "import": "./dist/google/protobuf/timestamp.pb.js",
+      "require": "./dist/google/protobuf/timestamp.pb.js"
+    },
+    "./google/protobuf/duration": {
+      "types": "./dist/google/protobuf/duration.pb.d.ts",
+      "import": "./dist/google/protobuf/duration.pb.js",
+      "require": "./dist/google/protobuf/duration.pb.js"
+    },
+    "./google/protobuf/any": {
+      "types": "./dist/google/protobuf/any.pb.d.ts",
+      "import": "./dist/google/protobuf/any.pb.js",
+      "require": "./dist/google/protobuf/any.pb.js"
+    },
+    "./google/protobuf/empty": {
+      "types": "./dist/google/protobuf/empty.pb.d.ts",
+      "import": "./dist/google/protobuf/empty.pb.js",
+      "require": "./dist/google/protobuf/empty.pb.js"
+    },
+    "./google/protobuf/wrappers": {
+      "types": "./dist/google/protobuf/wrappers.pb.d.ts",
+      "import": "./dist/google/protobuf/wrappers.pb.js",
+      "require": "./dist/google/protobuf/wrappers.pb.js"
+    },
+    "./google/protobuf/struct": {
+      "types": "./dist/google/protobuf/struct.pb.d.ts",
+      "import": "./dist/google/protobuf/struct.pb.js",
+      "require": "./dist/google/protobuf/struct.pb.js"
+    },
+    "./google/protobuf/api": {
+      "types": "./dist/google/protobuf/api.pb.d.ts",
+      "import": "./dist/google/protobuf/api.pb.js",
+      "require": "./dist/google/protobuf/api.pb.js"
+    },
+    "./google/protobuf/source_context": {
+      "types": "./dist/google/protobuf/source_context.pb.d.ts",
+      "import": "./dist/google/protobuf/source_context.pb.js",
+      "require": "./dist/google/protobuf/source_context.pb.js"
     }
   },
   "engines": {

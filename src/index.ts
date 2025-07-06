@@ -63,25 +63,6 @@ export { protoInt64 } from "./proto-int64.js";
 export { protoBase64 } from "./proto-base64.js";
 export { protoDouble } from "./proto-double.js";
 export {
-  Timestamp,
-  Duration,
-  Any,
-  Empty,
-  DoubleValue,
-  FloatValue,
-  Int64Value,
-  UInt64Value,
-  Int32Value,
-  UInt32Value,
-  BoolValue,
-  StringValue,
-  BytesValue,
-  Value,
-  NullValue,
-  ListValue,
-  Struct,
-} from "./google/index.js";
-export {
   DescComments,
   AnyDesc,
   DescEnum,

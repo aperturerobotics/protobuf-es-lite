@@ -7,6 +7,9 @@
       "@aptre/protobuf-es-lite": [
         "../src",
       ],
+      "@aptre/protobuf-es-lite/google/*": [
+        "../src/google/*",
+      ]
     }
   }
 }
