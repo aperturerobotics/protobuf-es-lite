@@ -27,6 +27,16 @@
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
+    "./descriptor-set": {
+      "import": "./dist/descriptor-set.js",
+      "require": "./dist/descriptor-set.js",
+      "types": "./dist/descriptor-set.d.ts"
+    },
+    "./create-descriptor-set": {
+      "import": "./dist/create-descriptor-set.js",
+      "require": "./dist/create-descriptor-set.js",
+      "types": "./dist/create-descriptor-set.d.ts"
+    },
     "./protoplugin": {
       "import": "./dist/protoplugin/index.js",
       "require": "./dist/protoplugin/index.js",

@@ -1,5 +1,12 @@
 {
-  "files": ["src/protoc-gen-es-lite/protoc-gen-es-lite-plugin.ts", "src/index.ts", "src/protoplugin/index.ts", "src/protoplugin/ecmascript/index.ts"],
+  "files": [
+    "src/protoc-gen-es-lite/protoc-gen-es-lite-plugin.ts",
+    "src/index.ts",
+    "src/descriptor-set.ts",
+    "src/create-descriptor-set.ts",
+    "src/protoplugin/index.ts",
+    "src/protoplugin/ecmascript/index.ts"
+  ],
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "./src"

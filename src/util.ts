@@ -20,7 +20,6 @@ import {
   DescField,
   DescMessage,
 } from "./descriptor-set.js";
-import { FieldDescriptorProto_Label } from "./google/protobuf/descriptor.pb.js";
 import { codegenInfo } from "./codegen-info.js";
 import { LongType, ScalarType, ScalarValue } from "./scalar.js";
 import { localName } from "./names.js";
@@ -29,8 +28,13 @@ import { RefDescMessage } from "./protoplugin/ecmascript/opaque-printables.js";
 // unixMilliToDate converts the unix milliseconds bigint into a Date.
 // Throws an error if the bigint is outside the safe range of Number values.
 export function unixMilliToDate(unixMilliseconds: bigint): Date {
-  if (unixMilliseconds < -8640000000000000n || unixMilliseconds > 8640000000000000n) {
-    throw new Error("Timestamp is outside the range that can be safely represented by a JavaScript Date");
+  if (
+    unixMilliseconds < -8640000000000000n ||
+    unixMilliseconds > 8640000000000000n
+  ) {
+    throw new Error(
+      "Timestamp is outside the range that can be safely represented by a JavaScript Date",
+    );
   }
   return new Date(Number(unixMilliseconds));
 }
@@ -46,9 +50,7 @@ export function getFieldTypeInfo(field: DescField | DescExtension): {
   switch (field.fieldKind) {
     case "scalar":
       typing.push(scalarTypeScriptType(field.scalar, field.longType));
-      optional =
-        field.optional ||
-        field.proto.label === FieldDescriptorProto_Label.REQUIRED;
+      optional = field.optional || field.proto.label === 2; // FieldDescriptorProto_Label.REQUIRED; avoid descriptor.pb.js import
       typingInferrableFromZeroValue = true;
       break;
     case "message": {
@@ -63,9 +65,7 @@ export function getFieldTypeInfo(field: DescField | DescExtension): {
         type: field.enum,
         typeOnly: true,
       });
-      optional =
-        field.optional ||
-        field.proto.label === FieldDescriptorProto_Label.REQUIRED;
+      optional = field.optional || field.proto.label === 2; // FieldDescriptorProto_Label.REQUIRED; avoid descriptor.pb.js import
       typingInferrableFromZeroValue = true;
       break;
     case "map": {

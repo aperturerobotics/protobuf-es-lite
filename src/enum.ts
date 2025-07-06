@@ -54,11 +54,6 @@ export interface EnumValueInfo {
 export function createEnumType(
   typeName: string,
   values: (EnumValueInfo | Omit<EnumValueInfo, "localName">)[],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _opt?: {
-    // We do not surface options at this time
-    // options?: { readonly [extensionName: string]: JsonValue };
-  },
 ): EnumType {
   const names = Object.create(null) as Record<string, EnumValueInfo>;
   const numbers = Object.create(null) as Record<number, EnumValueInfo>;

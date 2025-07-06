@@ -595,7 +595,8 @@ function readScalar(
       // We validate with encodeURIComponent, which appears to be the fastest widely available option.
       try {
         encodeURIComponent(json);
-      } catch (e) {
+      } catch (_e) {
+        // eslint-disable-line @typescript-eslint/no-unused-vars
         throw new Error("invalid UTF8");
       }
       return json;

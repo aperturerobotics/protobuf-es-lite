@@ -75,9 +75,10 @@ export function createDescriptorSet(
     mapEntries: new Map<string, DescMessage>(),
   };
   const fileDescriptors: FileDescriptorProto[] =
-    input instanceof Uint8Array ? FileDescriptorSet.fromBinary(input).file ?? []
+    input instanceof Uint8Array ?
+      (FileDescriptorSet.fromBinary(input).file ?? [])
     : Array.isArray(input) ? input
-    : input.file ?? [];
+    : (input.file ?? []);
   const resolverByEdition = new Map<Edition, FeatureResolverFn>();
   for (const proto of fileDescriptors) {
     const edition =

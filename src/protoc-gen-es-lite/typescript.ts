@@ -590,7 +590,7 @@ function generateWktMethods(
         MessageType,
         "<T>} | undefined {",
       );
-      f.print("    const typeUrl = msg.", localName(ref.typeUrl)), ";";
+      f.print("    const typeUrl = msg.", localName(ref.typeUrl), ";");
       f.print(
         "    const messageType = !!typeUrl && registry.findMessage<T>(typeUrl);",
       );
@@ -608,7 +608,7 @@ function generateWktMethods(
         MessageType,
         " | string): boolean {",
       );
-      f.print("    const name = msg.", localName(ref.typeUrl)), ";";
+      f.print("    const name = msg.", localName(ref.typeUrl), ";");
       f.print(
         "    return !!name && (typeof msgType === 'string' ? name === msgType : name === msgType.typeName);",
       );
