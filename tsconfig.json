@@ -5,7 +5,17 @@
     "src/descriptor-set.ts",
     "src/create-descriptor-set.ts",
     "src/protoplugin/index.ts",
-    "src/protoplugin/ecmascript/index.ts"
+    "src/protoplugin/ecmascript/index.ts",
+    "src/google/index.ts",
+    "src/google/protobuf/type.pb.ts",
+    "src/google/protobuf/timestamp.pb.ts",
+    "src/google/protobuf/duration.pb.ts",
+    "src/google/protobuf/any.pb.ts",
+    "src/google/protobuf/empty.pb.ts",
+    "src/google/protobuf/wrappers.pb.ts",
+    "src/google/protobuf/struct.pb.ts",
+    "src/google/protobuf/api.pb.ts",
+    "src/google/protobuf/source_context.pb.ts"
   ],
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
