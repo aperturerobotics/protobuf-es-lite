@@ -231,4 +231,16 @@ describe("EchoMsg", () => {
     const msg2 = EchoMsg.fromJsonString(jsonString);
     expect(msg).toEqual(msg2);
   });
+
+  it("toBinary with null returns empty Uint8Array", () => {
+    const binary = EchoMsg.toBinary(null as any);
+    expect(binary).toBeInstanceOf(Uint8Array);
+    expect(binary.length).toBe(0);
+  });
+
+  it("toBinary with undefined returns empty Uint8Array", () => {
+    const binary = EchoMsg.toBinary(undefined as any);
+    expect(binary).toBeInstanceOf(Uint8Array);
+    expect(binary.length).toBe(0);
+  });
 });

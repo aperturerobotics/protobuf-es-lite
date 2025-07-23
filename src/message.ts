@@ -151,7 +151,10 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
   /**
    * Serialize the message to binary data.
    */
-  toBinary(a: Message<T>, options?: Partial<BinaryWriteOptions>): Uint8Array;
+  toBinary(
+    a: Message<T> | undefined | null,
+    options?: Partial<BinaryWriteOptions>,
+  ): Uint8Array;
 
   /**
    * Serialize the message to a JSON value, a JavaScript value that can be
@@ -286,7 +289,11 @@ export function createMessageType<
       return mt.fromJson(json, options);
     },
 
-    toBinary(a: T, options?: Partial<BinaryWriteOptions>): Uint8Array {
+    toBinary(
+      a: T | undefined | null,
+      options?: Partial<BinaryWriteOptions>,
+    ): Uint8Array {
+      if (a == null) return new Uint8Array(0);
       const opt = binaryMakeWriteOptions(options);
       const writer = opt.writerFactory();
       binaryWriteMessage(a, fields, writer, opt);
