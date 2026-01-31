@@ -191,24 +191,6 @@ annotation shadows an underlying problem, for example an unresolvable import. To
 remove the annotation and to enable type checks, set the plugin option
 `ts_nocheck=false`.
 
-## Developing on MacOS
-
-On MacOS, some homebrew packages are required for `yarn gen`:
-
-```
-brew install bash make coreutils gnu-sed findutils protobuf
-brew link --overwrite protobuf
-```
-
-Add to your .bashrc or .zshrc:
-
-```
-export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
-export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
-export PATH="/opt/homebrew/opt/findutils/libexec/gnubin:$PATH"
-export PATH="/opt/homebrew/opt/make/libexec/gnubin:$PATH"
-```
-
 ## Support
 
 Please open a [GitHub issue] with any questions / issues.
