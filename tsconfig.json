@@ -17,8 +17,27 @@
     "src/google/protobuf/api.pb.ts",
     "src/google/protobuf/source_context.pb.ts"
   ],
-  "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "target": "es2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+    "noUnusedLocals": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "declaration": true,
+    "verbatimModuleSyntax": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "rootDir": "./src"
   }
 }
