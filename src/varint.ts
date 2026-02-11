@@ -31,7 +31,7 @@
 // standalone and requires a support library to be linked with it.  This
 // support library is itself covered by the above license.
 
-/* eslint-disable prefer-const,@typescript-eslint/restrict-plus-operands */
+/* eslint-disable prefer-const */
 
 /**
  * Read a 64 bit varint as two JS numbers.

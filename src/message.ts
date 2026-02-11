@@ -283,6 +283,7 @@ export function createMessageType<
             `cannot decode ${typeName} from JSON: ${
               e instanceof Error ? e.message : String(e)
             }`,
+            { cause: e },
           );
         }
       }
@@ -340,7 +341,7 @@ export function compareMessages<T extends Message<T>>(
       if (!va?.length) {
         return true;
       }
-      // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- repeated fields are never "map"
+
       switch (m.kind) {
         case "message": {
           const messageType = resolveMessageType(m.T);
@@ -375,7 +376,7 @@ export function compareMessages<T extends Message<T>>(
         if (s === undefined) {
           return true;
         }
-        // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- oneof fields are never "map"
+
         switch (s.kind) {
           case "message": {
             const messageType = resolveMessageType(s.T);

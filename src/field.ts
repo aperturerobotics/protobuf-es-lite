@@ -210,7 +210,7 @@ export function newFieldList(
  */
 export function isFieldSet(
   field: FieldInfo,
-  target: Record<string, any> | null | undefined, // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+  target: Record<string, any> | null | undefined,
 ) {
   const localName = field.localName;
   if (!target) {
@@ -220,7 +220,7 @@ export function isFieldSet(
     return !!(target[localName] as unknown[])?.length;
   }
   if (field.oneof) {
-    return target[field.oneof.localName]?.case === localName; // eslint-disable-line @typescript-eslint/no-unsafe-member-access
+    return target[field.oneof.localName]?.case === localName;
   }
   switch (field.kind) {
     case "enum":
@@ -240,7 +240,7 @@ export function isFieldSet(
     case "map":
       return (
         target[localName] != null && !!Object.keys(target[localName]).length
-      ); // eslint-disable-line @typescript-eslint/no-unsafe-argument
+      );
   }
 }
 

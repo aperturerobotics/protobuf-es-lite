@@ -192,7 +192,6 @@ function writeMessage<T>(
   try {
     for (field of fields.byNumber()) {
       if (!isFieldSet(field, message as Record<string, any>)) {
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
         if (field.req) {
           throw `required field not set`;
         }
@@ -219,7 +218,7 @@ function writeMessage<T>(
         `cannot encode field ${field.name} to JSON`
       : `cannot encode message to JSON`;
     const r = e instanceof Error ? e.message : String(e);
-    throw new Error(m + (r.length > 0 ? `: ${r}` : ""));
+    throw new Error(m + (r.length > 0 ? `: ${r}` : ""), { cause: e });
   }
   return json;
 }
@@ -290,7 +289,7 @@ function readField(
             if (e instanceof Error && e.message.length > 0) {
               m += `: ${e.message}`;
             }
-            throw new Error(m);
+            throw new Error(m, { cause: e });
           }
           break;
       }
@@ -326,7 +325,7 @@ function readField(
         if (e instanceof Error && e.message.length > 0) {
           m += `: ${e.message}`;
         }
-        throw new Error(m);
+        throw new Error(m, { cause: e });
       }
       throwSanitizeKey(key);
       switch (field.V.kind) {
@@ -362,7 +361,7 @@ function readField(
             if (e instanceof Error && e.message.length > 0) {
               m += `: ${e.message}`;
             }
-            throw new Error(m);
+            throw new Error(m, { cause: e });
           }
           break;
       }
@@ -422,7 +421,7 @@ function readField(
           if (e instanceof Error && e.message.length > 0) {
             m += `: ${e.message}`;
           }
-          throw new Error(m);
+          throw new Error(m, { cause: e });
         }
         break;
     }
@@ -456,7 +455,7 @@ function readEnum(
     }
     return nullAsZeroValue ? type.values[0].no : tokenNull;
   }
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
+
   switch (typeof json) {
     case "number":
       if (Number.isInteger(json)) {
@@ -570,14 +569,14 @@ function readScalar(
     case ScalarType.SINT64: {
       if (typeof json != "number" && typeof json != "string") break;
       const long = protoInt64.parse(json);
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
       return longType ? long.toString() : long;
     }
     case ScalarType.FIXED64:
     case ScalarType.UINT64: {
       if (typeof json != "number" && typeof json != "string") break;
       const uLong = protoInt64.uParse(json);
-      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
       return longType ? uLong.toString() : uLong;
     }
 
@@ -595,9 +594,8 @@ function readScalar(
       // We validate with encodeURIComponent, which appears to be the fastest widely available option.
       try {
         encodeURIComponent(json);
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_e) {
-        throw new Error("invalid UTF8");
+        throw new Error("invalid UTF8", { cause: _e });
       }
       return json;
 
@@ -613,7 +611,6 @@ function readScalar(
 
 function readMapKey(type: ScalarType, json: JsonValue) {
   if (type === ScalarType.BOOL) {
-    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (json) {
       case "true":
         json = true;
@@ -629,10 +626,7 @@ function readMapKey(type: ScalarType, json: JsonValue) {
 /**
  * Resets the field, so that isFieldSet() will return false.
  */
-export function clearField(
-  field: FieldInfo,
-  target: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
-) {
+export function clearField(field: FieldInfo, target: Record<string, any>) {
   const localName = field.localName;
   const implicitPresence = !field.opt && !field.req;
   if (field.repeated) {
@@ -671,7 +665,7 @@ function canEmitFieldDefaultValue(field: FieldInfo) {
     // singular message field are allowed to emit JSON null, but we do not
     return false;
   }
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
   if (field.opt || field.req) {
     // the field uses explicit presence, so we cannot emit a zero value
     return false;

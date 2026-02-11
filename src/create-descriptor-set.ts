@@ -156,7 +156,6 @@ function addFile(
     extensions: [],
     services: [],
     toString(): string {
-      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- we asserted above
       return `file ${this.proto.name}`;
     },
     getSyntaxComments() {

@@ -235,7 +235,6 @@ export function createGeneratedFile(
       from?: string,
     ) {
       if (typeof typeOrName == "string") {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return createImportSymbol(typeOrName, from!);
       }
       return createTypeImport(typeOrName);

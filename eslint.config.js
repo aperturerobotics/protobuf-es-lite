@@ -1,0 +1,29 @@
+import eslint from '@eslint/js'
+import tseslint from '@typescript-eslint/eslint-plugin'
+import prettier from 'eslint-config-prettier'
+import unusedImports from 'eslint-plugin-unused-imports'
+import globals from 'globals'
+
+export default [
+  {
+    ignores: ['node_modules/**', 'dist/**', 'vitest.config.ts', '**/*.pb.ts'],
+  },
+  eslint.configs.recommended,
+  ...tseslint.configs['flat/recommended'],
+  {
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+    },
+    plugins: {
+      'unused-imports': unusedImports,
+    },
+    rules: {
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  prettier,
+]

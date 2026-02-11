@@ -12,7 +12,6 @@ export function isMessage<T extends Message<T> = AnyMessage>(
     return false;
   }
   return fields.every((fi) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
     const value = (arg as any)[fi.localName];
 
     // if the value is null or undefined this is OK in isMessage.
@@ -97,7 +96,6 @@ export function isCompleteMessage<T extends Message<T> = AnyMessage>(
     return false;
   }
   return fields.every((fi) => {
-    // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
     const value = (arg as any)[fi.localName];
 
     if (fi.repeated) {

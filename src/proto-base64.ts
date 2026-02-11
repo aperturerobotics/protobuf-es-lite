@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-/* eslint-disable @typescript-eslint/ban-ts-comment, @typescript-eslint/no-unnecessary-condition, prefer-const */
+/* eslint-disable @typescript-eslint/ban-ts-comment, prefer-const */
 
 // lookup table from base64 character to byte
 let encTable =

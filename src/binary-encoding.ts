@@ -21,7 +21,7 @@ import {
 import { assertFloat32, assertInt32, assertUInt32 } from "./assert.js";
 import { protoInt64 } from "./proto-int64.js";
 
-/* eslint-disable prefer-const,no-case-declarations,@typescript-eslint/restrict-plus-operands */
+/* eslint-disable prefer-const,no-case-declarations */
 
 /**
  * Protobuf binary format wire types.

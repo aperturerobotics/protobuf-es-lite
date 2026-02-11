@@ -83,7 +83,7 @@ function makeWriteOptions(
 }
 
 function readField(
-  target: Record<string, any>, // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+  target: Record<string, any>,
   reader: IBinaryReader,
   field: FieldInfo,
   wireType: WireType,
@@ -108,7 +108,7 @@ function readField(
     case "enum": {
       const scalarType = field.kind == "enum" ? ScalarType.INT32 : field.T;
       let read = readScalar;
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison -- acceptable since it's covered by tests
+
       if (field.kind == "scalar" && field.L > 0) {
         read = readScalarLTString;
       }
@@ -186,7 +186,7 @@ function readField(
  * index signature to access fields with message["fieldname"].
  */
 type AnyMessage = {
-  [k: string]: any; // eslint-disable-line @typescript-eslint/no-explicit-any -- `any` is the best choice for dynamic access
+  [k: string]: any;
 };
 
 // Read a map field, expecting key field = 1, value field = 2
@@ -345,7 +345,7 @@ function readMessage<T>(
     readField(message as AnyMessage, reader, field, wireType, options);
   }
   if (
-    delimitedMessageEncoding && // eslint-disable-line @typescript-eslint/strict-boolean-expressions
+    delimitedMessageEncoding &&
     (wireType != WireType.EndGroup || fieldNo !== lengthOrEndTagFieldNo)
   ) {
     throw new Error(`invalid end group tag`);
@@ -447,7 +447,7 @@ function writeMessageField<T>(
 ): void {
   const messageType = resolveMessageType(field.T);
   const message = wrapField(messageType.fieldWrapper, value);
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+
   if (field.delimited)
     writer
       .tag(field.no, WireType.StartGroup)
@@ -505,7 +505,7 @@ function scalarTypeInfo(
   Exclude<keyof IBinaryWriter, "tag" | "raw" | "fork" | "join" | "finish">,
 ] {
   let wireType = WireType.Varint;
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- INT32, UINT32, SINT32 are covered by the defaults
+
   switch (type) {
     case ScalarType.BYTES:
     case ScalarType.STRING:
@@ -542,7 +542,7 @@ function writeMapEntry(
   // javascript only allows number or string for object properties
   // we convert from our representation to the protobuf type
   let keyValue: ScalarValue = key;
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check -- we deliberately handle just the special cases for map keys
+
   switch (field.K) {
     case ScalarType.INT32:
     case ScalarType.FIXED32:
