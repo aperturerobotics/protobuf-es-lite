@@ -390,19 +390,21 @@ export function compareMessages<T extends Message<T>>(
         throw new Error(`oneof cannot contain ${s.kind}`);
       }
       case "map": {
-        const keys = Object.keys(va).concat(Object.keys(vb));
+        const ma = va ?? {};
+        const mb = vb ?? {};
+        const keys = Object.keys(ma).concat(Object.keys(mb));
         switch (m.V.kind) {
           case "message": {
             const messageType = resolveMessageType(m.V.T);
-            return keys.every((k) => messageType.equals(va[k], vb[k]));
+            return keys.every((k) => messageType.equals(ma[k], mb[k]));
           }
           case "enum":
             return keys.every((k) =>
-              scalarEquals(ScalarType.INT32, va[k], vb[k]),
+              scalarEquals(ScalarType.INT32, ma[k], mb[k]),
             );
           case "scalar": {
             const scalarType = m.V.T;
-            return keys.every((k) => scalarEquals(scalarType, va[k], vb[k]));
+            return keys.every((k) => scalarEquals(scalarType, ma[k], mb[k]));
           }
         }
       }
