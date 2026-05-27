@@ -108,6 +108,7 @@ function readField(
     case "enum": {
       const scalarType = field.kind == "enum" ? ScalarType.INT32 : field.T;
       let read = readScalar;
+      const verifyUtf8 = field.kind == "scalar" && field.utf8;
 
       if (field.kind == "scalar" && field.L > 0) {
         read = readScalarLTString;
@@ -124,13 +125,13 @@ function readField(
         if (isPacked) {
           const e = reader.uint32() + reader.pos;
           while (reader.pos < e) {
-            tgtArr.push(read(reader, scalarType));
+            tgtArr.push(read(reader, scalarType, verifyUtf8));
           }
         } else {
-          tgtArr.push(read(reader, scalarType));
+          tgtArr.push(read(reader, scalarType, verifyUtf8));
         }
       } else {
-        target[localName] = read(reader, scalarType);
+        target[localName] = read(reader, scalarType, verifyUtf8);
       }
       break;
     }
@@ -202,12 +203,12 @@ function readMapEntry(
     const [fieldNo] = reader.tag();
     switch (fieldNo) {
       case 1:
-        key = readScalar(reader, field.K);
+        key = readScalar(reader, field.K, field.keyUtf8);
         break;
       case 2:
         switch (field.V.kind) {
           case "scalar":
-            val = readScalar(reader, field.V.T);
+            val = readScalar(reader, field.V.T, field.V.utf8 === true);
             break;
           case "enum":
             val = reader.int32();
@@ -249,10 +250,14 @@ function readMapEntry(
   return [key, val];
 }
 
-function readScalar(reader: IBinaryReader, type: ScalarType): ScalarValue {
+function readScalar(
+  reader: IBinaryReader,
+  type: ScalarType,
+  verifyUtf8 = false,
+): ScalarValue {
   switch (type) {
     case ScalarType.STRING:
-      return reader.string();
+      return reader.string(verifyUtf8);
     case ScalarType.BOOL:
       return reader.bool();
     case ScalarType.DOUBLE:
@@ -293,8 +298,9 @@ function readScalar(reader: IBinaryReader, type: ScalarType): ScalarValue {
 function readScalarLTString(
   reader: IBinaryReader,
   type: ScalarType,
+  verifyUtf8 = false,
 ): Exclude<ScalarValue, bigint> {
-  const v = readScalar(reader, type);
+  const v = readScalar(reader, type, verifyUtf8);
   return typeof v == "bigint" ? v.toString() : v;
 }
 

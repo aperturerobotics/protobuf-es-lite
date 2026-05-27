@@ -26,14 +26,20 @@ import {
   DescService,
   DescriptorSet,
 } from "./descriptor-set.js";
-import { FeatureResolverFn, createFeatureResolver } from "./feature-set.js";
+import {
+  FeatureResolverFn,
+  MergedFeatureSet,
+  createFeatureResolver,
+} from "./feature-set.js";
 import { fieldJsonName } from "./field.js";
 import {
   DescriptorProto,
   Edition,
   EnumDescriptorProto,
   FeatureSetDefaults,
+  FeatureSet_FieldPresence,
   FeatureSet_RepeatedFieldEncoding,
+  FeatureSet_Utf8Validation,
   FieldDescriptorProto,
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
@@ -584,6 +590,9 @@ function newField(
   assert(proto.name, `invalid FieldDescriptorProto: missing name`);
   assert(proto.number, `invalid FieldDescriptorProto: missing number`);
   assert(proto.type, `invalid FieldDescriptorProto: missing type`);
+  const repeated = proto.label === FieldDescriptorProto_Label.REPEATED;
+  const parentFeatures =
+    parent == null ? file.getFeatures() : parent.getFeatures();
   const common = {
     proto,
     deprecated: proto.options?.deprecated ?? false,
@@ -592,7 +601,15 @@ function newField(
     parent,
     oneof,
     optional: isOptionalField(proto, file.syntax),
-    packedByDefault: isPackedFieldByDefault(proto, resolveFeatures),
+    explicitPresence: hasExplicitPresence(
+      proto,
+      file.syntax,
+      oneof,
+      repeated,
+      parentFeatures,
+      resolveFeatures,
+    ),
+    packedByDefault: isPackedFieldByDefault(proto, parentFeatures),
     packed: isPackedField(file, parent, proto, resolveFeatures),
     jsonName:
       proto.jsonName === fieldJsonName(proto.name) ? undefined : proto.jsonName,
@@ -619,7 +636,6 @@ function newField(
       return resolveFeatures(parent.getFeatures(), proto.options?.features);
     },
   };
-  const repeated = proto.label === FieldDescriptorProto_Label.REPEATED;
   switch (proto.type) {
     case FieldDescriptorProto_Type.MESSAGE:
     case FieldDescriptorProto_Type.GROUP: {
@@ -872,7 +888,10 @@ function trimLeadingDot(typeName: string): string {
 
 function getMapFieldTypes(
   mapEntry: DescMessage,
-): Pick<DescField & { fieldKind: "map" }, "mapKey" | "mapValue"> {
+): Pick<
+  DescField & { fieldKind: "map" },
+  "mapKey" | "mapKeyUtf8" | "mapValue"
+> {
   assert(
     mapEntry.proto.options?.mapEntry,
     `invalid DescriptorProto: expected ${mapEntry.toString()} to be a map entry`,
@@ -907,14 +926,17 @@ function getMapFieldTypes(
     case "scalar":
       return {
         mapKey,
+        mapKeyUtf8: isUtf8ValidatedString(keyField),
         mapValue: {
           ...valueField,
           kind: "scalar",
+          utf8: isUtf8ValidatedString(valueField),
         },
       };
     case "message":
       return {
         mapKey,
+        mapKeyUtf8: isUtf8ValidatedString(keyField),
         mapValue: {
           ...valueField,
           kind: "message",
@@ -923,6 +945,7 @@ function getMapFieldTypes(
     case "enum":
       return {
         mapKey,
+        mapKeyUtf8: isUtf8ValidatedString(keyField),
         mapValue: {
           ...valueField,
           kind: "enum",
@@ -981,6 +1004,29 @@ function isOptionalField(
   }
 }
 
+function hasExplicitPresence(
+  proto: FieldDescriptorProto,
+  syntax: "proto2" | "proto3" | "editions",
+  oneof: DescOneof | undefined,
+  repeated: boolean,
+  parentFeatures: MergedFeatureSet,
+  resolveFeatures: FeatureResolverFn,
+): boolean {
+  switch (syntax) {
+    case "proto2":
+    case "proto3":
+      return isOptionalField(proto, syntax);
+    case "editions":
+      if (oneof !== undefined || repeated) {
+        return false;
+      }
+      return (
+        resolveFeatures(parentFeatures, proto.options?.features)
+          .fieldPresence == FeatureSet_FieldPresence.EXPLICIT
+      );
+  }
+}
+
 /**
  * Is this field packed by default? Only valid for repeated enum fields, and
  * for repeated scalar fields except BYTES and STRING.
@@ -991,10 +1037,11 @@ function isOptionalField(
  */
 function isPackedFieldByDefault(
   proto: FieldDescriptorProto,
-  resolveFeatures: FeatureResolverFn,
+  features: MergedFeatureSet,
 ) {
-  const { repeatedFieldEncoding } = resolveFeatures();
-  if (repeatedFieldEncoding != FeatureSet_RepeatedFieldEncoding.PACKED) {
+  if (
+    features.repeatedFieldEncoding != FeatureSet_RepeatedFieldEncoding.PACKED
+  ) {
     return false;
   }
   // From the proto3 language guide:
@@ -1011,6 +1058,15 @@ function isPackedFieldByDefault(
     default:
       return true;
   }
+}
+
+function isUtf8ValidatedString(field: DescField): boolean {
+  return (
+    field.parent.file.syntax === "editions" &&
+    field.fieldKind === "scalar" &&
+    field.scalar === ScalarType.STRING &&
+    field.getFeatures().utf8Validation == FeatureSet_Utf8Validation.VERIFY
+  );
 }
 
 /**

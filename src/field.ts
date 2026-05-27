@@ -28,7 +28,8 @@ import { localFieldName, localOneofName, protoCamelCase } from "./names.js";
  *
  * - "oneof": If the field is member of a oneof group.
  * - "default": Only proto2: An explicit default value.
- * - "delimited": Only proto2: Use the tag-delimited group encoding.
+ * - "delimited": Use the tag-delimited group encoding.
+ * - "utf8": Validate string field data as UTF-8 when reading binary data.
  */
 export type FieldInfo =
   | ScalarFieldInfo
@@ -69,6 +70,7 @@ export type MapValueInfo =
   | {
       readonly kind: "scalar";
       readonly T: ScalarType;
+      readonly utf8?: boolean;
     }
   | {
       readonly kind: "enum";
@@ -316,6 +318,10 @@ export function normalizeFieldInfos(
     f.repeated = field.repeated ?? false;
     if (field.kind == "scalar") {
       f.L = field.L ?? LongType.BIGINT;
+      f.utf8 = field.utf8 ?? false;
+    }
+    if (field.kind == "map") {
+      f.keyUtf8 = field.keyUtf8 ?? false;
     }
     f.delimited = field.delimited ?? false;
     f.req = field.req ?? false;
@@ -416,6 +422,10 @@ interface fiScalar extends fiShared {
    * This property is ignored for other scalar types.
    */
   readonly L: LongType;
+  /**
+   * Validate string field data as UTF-8 when reading binary data.
+   */
+  readonly utf8: boolean;
   /**
    * Is the field repeated?
    */
@@ -530,6 +540,10 @@ interface fiMap extends fiShared {
     ScalarType.FLOAT | ScalarType.DOUBLE | ScalarType.BYTES
   >;
   /**
+   * Validate string map keys as UTF-8 when reading binary data.
+   */
+  readonly keyUtf8: boolean;
+  /**
    * Map value type. Can be scalar, enum, or message.
    */
   readonly V: MapValueInfo;
@@ -601,6 +615,8 @@ type fiPartialRules<T extends fiScalar | fiMap | fiEnum | fiMessage> = Omit<
   | "req"
   | "default"
   | "L"
+  | "utf8"
+  | "keyUtf8"
   | "delimited"
 > &
   (
@@ -613,6 +629,8 @@ type fiPartialRules<T extends fiScalar | fiMap | fiEnum | fiMessage> = Omit<
         readonly oneof?: undefined;
         default?: T["default"];
         L?: LongType;
+        utf8?: boolean;
+        keyUtf8?: boolean;
         delimited?: boolean;
       }
     | {
@@ -624,6 +642,8 @@ type fiPartialRules<T extends fiScalar | fiMap | fiEnum | fiMessage> = Omit<
         readonly oneof?: undefined;
         default?: T["default"];
         L?: LongType;
+        utf8?: boolean;
+        keyUtf8?: boolean;
         delimited?: boolean;
       }
     | {
@@ -635,6 +655,8 @@ type fiPartialRules<T extends fiScalar | fiMap | fiEnum | fiMessage> = Omit<
         readonly oneof?: undefined;
         default?: T["default"];
         L?: LongType;
+        utf8?: boolean;
+        keyUtf8?: boolean;
         delimited?: boolean;
       }
     | {
@@ -646,6 +668,8 @@ type fiPartialRules<T extends fiScalar | fiMap | fiEnum | fiMessage> = Omit<
         readonly oneof: string;
         default?: T["default"];
         L?: LongType;
+        utf8?: boolean;
+        keyUtf8?: boolean;
         delimited?: boolean;
       }
   );

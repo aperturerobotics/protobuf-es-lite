@@ -50,7 +50,7 @@ export function getFieldTypeInfo(field: DescField | DescExtension): {
   switch (field.fieldKind) {
     case "scalar":
       typing.push(scalarTypeScriptType(field.scalar, field.longType));
-      optional = field.optional || field.proto.label === 2; // FieldDescriptorProto_Label.REQUIRED; avoid descriptor.pb.js import
+      optional = field.explicitPresence || field.proto.label === 2; // FieldDescriptorProto_Label.REQUIRED; avoid descriptor.pb.js import
       typingInferrableFromZeroValue = true;
       break;
     case "message": {
@@ -65,7 +65,7 @@ export function getFieldTypeInfo(field: DescField | DescExtension): {
         type: field.enum,
         typeOnly: true,
       });
-      optional = field.optional || field.proto.label === 2; // FieldDescriptorProto_Label.REQUIRED; avoid descriptor.pb.js import
+      optional = field.explicitPresence || field.proto.label === 2; // FieldDescriptorProto_Label.REQUIRED; avoid descriptor.pb.js import
       typingInferrableFromZeroValue = true;
       break;
     case "map": {

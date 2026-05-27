@@ -20,5 +20,6 @@ import { generateTs } from "./typescript.js";
 export const protocGenEsLite = createEcmaScriptPlugin({
   name: "protoc-gen-es-lite",
   version: `unknown`,
+  supportsEditions: true,
   generateTs,
 });

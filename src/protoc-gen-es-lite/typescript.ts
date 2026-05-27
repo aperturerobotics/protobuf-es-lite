@@ -36,6 +36,13 @@ import {
 import { localName } from "../names.js";
 import { LongType, ScalarType } from "../scalar.js";
 import {
+  Edition,
+  FeatureSet_EnumType,
+  FeatureSet_FieldPresence,
+  FeatureSet_JsonFormat,
+  FeatureSet_MessageEncoding,
+  FeatureSet_RepeatedFieldEncoding,
+  FeatureSet_Utf8Validation,
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
 } from "../google/protobuf/descriptor.pb.js";
@@ -43,6 +50,7 @@ import { DescWkt } from "../protoplugin/ecmascript/reify-wkt.js";
 
 export function generateTs(schema: Schema) {
   for (const file of schema.files) {
+    checkSupportedFile(file);
     const f = schema.generateFile(file.name + ".pb.ts");
     f.preamble(file);
     f.print(`export const protobufPackage = "${file.proto.package}";`);
@@ -159,10 +167,52 @@ function generateEnum(schema: Schema, f: GeneratedFile, enumeration: DescEnum) {
   f.print();
 }
 
-export function checkSupportedSyntax(file: DescFile) {
-  if (file.syntax === "editions") {
+export function checkSupportedFile(file: DescFile) {
+  if (file.syntax !== "editions") {
+    return;
+  }
+  checkJsonFormat(file, file.getFeatures().jsonFormat);
+  for (const enumeration of file.enums) {
+    checkSupportedEnum(enumeration);
+  }
+  for (const message of file.messages) {
+    checkSupportedMessage(message);
+  }
+}
+
+function checkSupportedMessage(message: DescMessage) {
+  checkJsonFormat(message, message.getFeatures().jsonFormat);
+  for (const enumeration of message.nestedEnums) {
+    checkSupportedEnum(enumeration);
+  }
+  for (const field of message.fields) {
+    checkJsonFormat(field, field.getFeatures().jsonFormat);
+    if (field.fieldKind === "enum") {
+      checkSupportedEnum(field.enum);
+    }
+    if (field.fieldKind === "map" && field.mapValue.kind === "enum") {
+      checkSupportedEnum(field.mapValue.enum);
+    }
+  }
+  for (const child of message.nestedMessages) {
+    checkSupportedMessage(child);
+  }
+}
+
+function checkSupportedEnum(enumeration: DescEnum) {
+  checkJsonFormat(enumeration, enumeration.getFeatures().jsonFormat);
+  if (enumeration.getFeatures().enumType == FeatureSet_EnumType.CLOSED) {
+    throw new Error(`${enumeration}: closed enums are not supported`);
+  }
+}
+
+function checkJsonFormat(
+  desc: DescFile | DescMessage | DescEnum | DescField,
+  value: FeatureSet_JsonFormat,
+) {
+  if (value == FeatureSet_JsonFormat.LEGACY_BEST_EFFORT) {
     throw new Error(
-      `${file.proto.name ?? ""}: syntax "editions" is not supported`,
+      `${desc}: json_format = LEGACY_BEST_EFFORT is not supported`,
     );
   }
 }
@@ -172,7 +222,6 @@ function generateMessage(
   f: GeneratedFile,
   message: DescMessage,
 ) {
-  checkSupportedSyntax(message.file);
   const {
     MessageType: rtMessageType,
     createMessageType,
@@ -257,7 +306,7 @@ function generateMessage(
     generateFieldInfo(f, schema, field);
   }
   f.print("    ] as readonly ", PartialFieldInfo, "[],");
-  f.print("    packedByDefault: ", message.file.proto.syntax === "proto3", ",");
+  f.print("    packedByDefault: ", packedByDefault(message), ",");
   if (reWkt == null) {
     f.print("});");
   } else {
@@ -265,6 +314,20 @@ function generateMessage(
     f.print("}, ", message, "_Wkt);");
   }
   f.print();
+}
+
+function packedByDefault(message: DescMessage): boolean {
+  switch (message.file.edition) {
+    case Edition.EDITION_PROTO2:
+      return false;
+    case Edition.EDITION_PROTO3:
+      return true;
+    default:
+      return (
+        message.getFeatures().repeatedFieldEncoding ==
+        FeatureSet_RepeatedFieldEncoding.PACKED
+      );
+  }
 }
 
 function generateField(f: GeneratedFile, field: DescField) {
@@ -348,6 +411,9 @@ export function getFieldInfoLiteral(
         ScalarType[field.scalar],
         `, `,
       );
+      if (field.scalar == ScalarType.STRING && requiresUtf8Validation(field)) {
+        e.push(`utf8: true, `);
+      }
       if (field.longType != LongType.BIGINT) {
         e.push(`L: `, rtLongType, `.`, LongType[field.longType], `, `);
       }
@@ -360,6 +426,9 @@ export function getFieldInfoLiteral(
         ScalarType[field.mapKey],
         `, `,
       );
+      if (field.mapKeyUtf8) {
+        e.push(`keyUtf8: true, `);
+      }
       switch (field.mapValue.kind) {
         case "scalar":
           e.push(
@@ -367,8 +436,14 @@ export function getFieldInfoLiteral(
             rtScalarType,
             `.`,
             ScalarType[field.mapValue.scalar],
-            `}, `,
           );
+          if (
+            field.mapValue.scalar == ScalarType.STRING &&
+            field.mapValue.utf8
+          ) {
+            e.push(`, utf8: true`);
+          }
+          e.push(`}, `);
           break;
         case "message":
           e.push(
@@ -384,7 +459,11 @@ export function getFieldInfoLiteral(
       break;
     case "message":
       e.push(`kind: "message", T: () => `, field.message, `, `);
-      if (field.proto.type === FieldDescriptorProto_Type.GROUP) {
+      if (
+        field.proto.type === FieldDescriptorProto_Type.GROUP ||
+        field.getFeatures().messageEncoding ==
+          FeatureSet_MessageEncoding.DELIMITED
+      ) {
         e.push(`delimited: true, `);
       }
       break;
@@ -398,9 +477,10 @@ export function getFieldInfoLiteral(
       e.push(`packed: `, field.packed, `, `);
     }
   }
-  if (field.optional) {
+  if (field.explicitPresence) {
     e.push(`opt: true, `);
-  } else if (field.proto.label === FieldDescriptorProto_Label.REQUIRED) {
+  }
+  if (!field.explicitPresence && isRequiredField(field)) {
     e.push(`req: true, `);
   }
   const defaultValue = getFieldDefaultValueExpression(field);
@@ -416,6 +496,25 @@ export function getFieldInfoLiteral(
   }
   e.push(" }");
   return e;
+}
+
+function requiresUtf8Validation(field: DescField | DescExtension): boolean {
+  return (
+    fieldFile(field).syntax === "editions" &&
+    field.getFeatures().utf8Validation == FeatureSet_Utf8Validation.VERIFY
+  );
+}
+
+function isRequiredField(field: DescField | DescExtension): boolean {
+  return (
+    field.proto.label === FieldDescriptorProto_Label.REQUIRED ||
+    field.getFeatures().fieldPresence ==
+      FeatureSet_FieldPresence.LEGACY_REQUIRED
+  );
+}
+
+function fieldFile(field: DescField | DescExtension): DescFile {
+  return field.kind === "extension" ? field.file : field.parent.file;
 }
 
 function generateWktMethods(

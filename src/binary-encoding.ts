@@ -167,7 +167,7 @@ export interface IBinaryReader {
   /**
    * Read a `string` field, length-delimited data converted to UTF-8 text.
    */
-  string(): string;
+  string(verifyUtf8?: boolean): string;
 }
 
 export interface IBinaryWriter {
@@ -558,13 +558,19 @@ export class BinaryReader implements IBinaryReader {
   private readonly buf: Uint8Array;
   private readonly view: DataView;
   private readonly textDecoder: TextDecoderLike;
+  private fatalTextDecoder: TextDecoderLike | undefined;
 
-  constructor(buf: Uint8Array, textDecoder?: TextDecoderLike) {
+  constructor(
+    buf: Uint8Array,
+    textDecoder?: TextDecoderLike,
+    fatalTextDecoder?: TextDecoderLike,
+  ) {
     this.buf = buf;
     this.len = buf.length;
     this.pos = 0;
     this.view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
     this.textDecoder = textDecoder ?? new TextDecoder();
+    this.fatalTextDecoder = fatalTextDecoder;
   }
 
   /**
@@ -740,7 +746,11 @@ export class BinaryReader implements IBinaryReader {
   /**
    * Read a `string` field, length-delimited data converted to UTF-8 text.
    */
-  string(): string {
-    return this.textDecoder.decode(this.bytes());
+  string(verifyUtf8 = false): string {
+    const decoder =
+      verifyUtf8 ?
+        (this.fatalTextDecoder ??= new TextDecoder("utf-8", { fatal: true }))
+      : this.textDecoder;
+    return decoder.decode(this.bytes());
   }
 }

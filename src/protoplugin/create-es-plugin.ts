@@ -18,6 +18,7 @@ import type { FileInfo } from "./ecmascript/generated-file.js";
 import type { Plugin } from "./plugin.js";
 import { transpile } from "./ecmascript/transpile.js";
 import { parseParameter } from "./ecmascript/parameter.js";
+import { getFeatureSetDefaults } from "../feature-set.js";
 import { FeatureSetDefaults } from "../google/protobuf/descriptor.pb.js";
 import {
   CodeGeneratorResponse,
@@ -209,7 +210,11 @@ export function createEcmaScriptPlugin(init: PluginInit): Plugin {
         files.push(...transpiledFiles);
       }
 
-      return toResponse(files, init.supportsEditions ?? false);
+      return toResponse(
+        files,
+        init.supportsEditions ?? false,
+        init.featureSetDefaults,
+      );
     },
   };
 }
@@ -217,13 +222,14 @@ export function createEcmaScriptPlugin(init: PluginInit): Plugin {
 function toResponse(
   files: FileInfo[],
   supportsEditions: boolean,
+  featureSetDefaults: FeatureSetDefaults | undefined,
 ): CodeGeneratorResponse {
   let supportedFeatures: number = CodeGeneratorResponse_Feature.PROTO3_OPTIONAL;
   if (supportsEditions) {
     supportedFeatures =
       supportedFeatures | CodeGeneratorResponse_Feature.SUPPORTS_EDITIONS;
   }
-  return {
+  const response: CodeGeneratorResponse = {
     supportedFeatures: protoInt64.parse(supportedFeatures),
     file: files.map((f) => {
       if (f.preamble !== undefined) {
@@ -232,4 +238,12 @@ function toResponse(
       return f;
     }),
   };
+  if (supportsEditions) {
+    const defaults = FeatureSetDefaults.create(
+      featureSetDefaults ?? getFeatureSetDefaults(),
+    );
+    response.minimumEdition = defaults.minimumEdition;
+    response.maximumEdition = defaults.maximumEdition;
+  }
+  return response;
 }

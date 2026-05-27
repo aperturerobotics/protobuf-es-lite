@@ -25,12 +25,12 @@ import { applyPartialMessage } from "./partial.js";
 /**
  * Return the edition feature defaults supported by @aptre/protobuf-es-lite.
  */
-function getFeatureSetDefaults(
+export function getFeatureSetDefaults(
   options?: Partial<BinaryReadOptions>,
 ): Message<FeatureSetDefaults> {
   return FeatureSetDefaults.fromBinary(
     protoBase64.dec(
-      "ChESDAgBEAIYAiADKAEwAhjmBwoREgwIAhABGAEgAigBMAEY5wcKERIMCAEQARgBIAIoATABGOgHIOYHKOgH",
+      "ChESDAgBEAIYAiADKAEwAhjmBwoREgwIAhABGAEgAigBMAEY5wcKERIMCAEQARgBIAIoATABGOgHIOYHKOkH",
     ),
     options,
   );

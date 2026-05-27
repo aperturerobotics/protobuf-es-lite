@@ -379,6 +379,11 @@ export interface DescFieldCommon {
    */
   readonly optional: boolean;
   /**
+   * Whether generated runtime metadata should track non-required explicit
+   * presence for this field.
+   */
+  readonly explicitPresence: boolean;
+  /**
    * Pack this repeated field?
    */
   readonly packed: boolean;
@@ -581,6 +586,10 @@ export interface DescFieldMap {
     ScalarType.FLOAT | ScalarType.DOUBLE | ScalarType.BYTES
   >;
   /**
+   * Validate map keys as UTF-8 when reading binary data.
+   */
+  readonly mapKeyUtf8: boolean;
+  /**
    * The map value type, if this is a map field.
    */
   readonly mapValue:
@@ -635,6 +644,10 @@ export interface DescFieldMapValueScalar {
    * Scalar type, if this is a map field with scalar values.
    */
   readonly scalar: ScalarType;
+  /**
+   * Validate string values as UTF-8 when reading binary data.
+   */
+  readonly utf8: boolean;
 }
 
 /**
