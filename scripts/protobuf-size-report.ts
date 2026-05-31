@@ -85,6 +85,7 @@ const runtimeModuleSignals = [
 
 const runtimeOwnerImportRE =
   /from\s+["'](?:@aptre\/protobuf-es-lite\/(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)|(?:\.\.\/)+(?:src\/)?(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)\.js)["']/g;
+const createMessageTypeCallRE = /createMessageType(?:<[^>]+>)?\(/g;
 
 function listFiles(dir: string, suffix: string): string[] {
   if (!existsSync(dir)) return [];
@@ -122,7 +123,7 @@ function analyzeGeneratedFile(path: string): GeneratedFileStats {
     runtimeSubpathImports: countMatches(text, runtimeOwnerImportRE),
     wktImports: countMatches(text, /google\/protobuf\/[^"']+/g),
     messageDescriptors:
-      countMatches(text, /createMessageType\(/g) + emptyMessageHelpers,
+      countMatches(text, createMessageTypeCallRE) + emptyMessageHelpers,
     emptyMessageHelpers,
     enumDescriptors: countMatches(text, /createEnumType\(/g),
     zeroFieldDescriptors: inlineZeroFieldDescriptors + emptyMessageHelpers,
