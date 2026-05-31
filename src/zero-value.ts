@@ -1,4 +1,4 @@
-import { DescExtension, DescField } from "./descriptor-set.js";
+import type { DescExtension, DescField } from "./descriptor-set.js";
 import { enumDescZeroValue } from "./enum.js";
 import { localName } from "./names.js";
 import { scalarZeroValue } from "./scalar.js";

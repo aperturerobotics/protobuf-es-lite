@@ -1,5 +1,5 @@
-import { EnumType } from "./enum.js";
-import { Message, MessageType } from "./message.js";
+import type { EnumType } from "./enum.js";
+import type { Message, MessageType } from "./message.js";
 import { assert } from "./assert.js";
 import { LongType, ScalarType, isScalarZeroValue } from "./scalar.js";
 import { localFieldName, localOneofName, protoCamelCase } from "./names.js";

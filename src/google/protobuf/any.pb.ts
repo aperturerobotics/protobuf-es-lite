@@ -37,13 +37,13 @@ import type {
   JsonReadOptions,
   JsonValue,
   JsonWriteOptions,
+  Message,
   MessageType,
   PartialFieldInfo,
 } from "../../index.js";
 import {
   applyPartialMessage,
   createMessageType,
-  Message,
   ScalarType,
 } from "../../index.js";
 

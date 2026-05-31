@@ -18,9 +18,9 @@
     "src/google/protobuf/source_context.pb.ts"
   ],
   "compilerOptions": {
-    "target": "es2022",
-    "module": "Node16",
-    "moduleResolution": "Node16",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,

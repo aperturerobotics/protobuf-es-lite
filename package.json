@@ -13,7 +13,6 @@
     "bin/protoc-gen-es-lite",
     "example/example.proto",
     "example/example.pb.ts",
-    "tsconfig.base.json",
     "tsconfig.json",
     "dist"
   ],

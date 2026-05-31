@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { AnyDesc, DescFile } from "../../descriptor-set.js";
+import type { AnyDesc, DescFile } from "../../descriptor-set.js";
 
 export type JSDocBlock = {
   readonly kind: "es_jsdoc";

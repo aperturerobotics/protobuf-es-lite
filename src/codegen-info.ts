@@ -38,7 +38,7 @@ const symbolInfo = (
 });
 
 const symbols = {
-  Message: symbolInfo(false, "./message.js"),
+  Message: symbolInfo(true, "./message.js"),
   FieldList: symbolInfo(true, "./field-list.js"),
   PartialFieldInfo: symbolInfo(true, "./field.js"),
   MessageType: symbolInfo(true, "./message-type.js"),

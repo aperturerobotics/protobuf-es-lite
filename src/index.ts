@@ -1,25 +1,22 @@
-export {
+export type {
   Message,
   CompleteMessage,
   AnyMessage,
   MessageType,
   Field,
-  compareMessages,
-  createMessageType,
 } from "./message.js";
-export {
+export { compareMessages, createMessageType } from "./message.js";
+export type {
   ServiceType,
   MethodInfo,
   MethodInfoUnary,
   MethodInfoServerStreaming,
   MethodInfoClientStreaming,
   MethodInfoBiDiStreaming,
-  MethodKind,
-  MethodIdempotency,
 } from "./service-type.js";
+export { MethodKind, MethodIdempotency } from "./service-type.js";
 export { isCompleteMessage, isCompleteField } from "./is-message.js";
-export {
-  FieldList,
+export type {
   PartialFieldInfo,
   FieldInfo,
   ScalarFieldInfo,
@@ -27,21 +24,19 @@ export {
   MessageFieldInfo,
   MapFieldInfo,
   OneofInfo,
-  newFieldList,
-  fieldJsonName,
 } from "./field.js";
+export { FieldList, newFieldList, fieldJsonName } from "./field.js";
 export { applyPartialMessage } from "./partial.js";
+export type { ScalarValue } from "./scalar.js";
 export {
   scalarEquals,
   scalarZeroValue,
   isScalarZeroValue,
   ScalarType,
-  ScalarValue,
   LongType,
 } from "./scalar.js";
+export type { EnumType, EnumValueInfo } from "./enum.js";
 export {
-  EnumType,
-  EnumValueInfo,
   createEnumType,
   enumInfoZeroValue,
   enumZeroValue,
@@ -62,7 +57,7 @@ export { int64FromString, int64ToString, uInt64ToString } from "./varint.js";
 export { protoInt64 } from "./proto-int64.js";
 export { protoBase64 } from "./proto-base64.js";
 export { protoDouble } from "./proto-double.js";
-export {
+export type {
   DescComments,
   AnyDesc,
   DescEnum,
@@ -76,6 +71,13 @@ export {
   DescService,
   DescriptorSet,
 } from "./descriptor-set.js";
+export type {
+  JsonValue,
+  JsonObject,
+  JsonReadOptions,
+  JsonWriteOptions,
+  JsonWriteStringOptions,
+} from "./json.js";
 export {
   jsonReadEnum,
   jsonReadField,
@@ -87,14 +89,10 @@ export {
   jsonWriteScalar,
   jsonWriteMessage,
   jsonDebugValue,
-  JsonValue,
-  JsonObject,
-  JsonReadOptions,
   jsonMakeReadOptions,
-  JsonWriteOptions,
-  JsonWriteStringOptions,
   jsonMakeWriteOptions,
 } from "./json.js";
+export type { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
 export {
   binaryReadField,
   binaryReadMapEntry,
@@ -108,8 +106,6 @@ export {
   binaryWriteMessage,
   binaryMakeReadOptions,
   binaryMakeWriteOptions,
-  BinaryReadOptions,
-  BinaryWriteOptions,
 } from "./binary.js";
 export type {
   IMessageTypeRegistry,

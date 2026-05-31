@@ -14,16 +14,17 @@
 // limitations under the License.
 
 import type { Printable } from "./protoplugin/ecmascript/index.js";
-import {
+import type {
   DescEnumValue,
   DescExtension,
   DescField,
   DescMessage,
 } from "./descriptor-set.js";
 import { codegenInfo } from "./codegen-info.js";
-import { LongType, ScalarType, ScalarValue } from "./scalar.js";
+import type { ScalarValue } from "./scalar.js";
+import { LongType, ScalarType } from "./scalar.js";
 import { localName } from "./names.js";
-import { RefDescMessage } from "./protoplugin/ecmascript/opaque-printables.js";
+import type { RefDescMessage } from "./protoplugin/ecmascript/opaque-printables.js";
 
 // unixMilliToDate converts the unix milliseconds bigint into a Date.
 // Throws an error if the bigint is outside the safe range of Number values.

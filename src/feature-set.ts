@@ -19,7 +19,7 @@ import {
 } from "./google/protobuf/descriptor.pb.js";
 import { protoBase64 } from "./proto-base64.js";
 import type { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
-import { Message } from "./message.js";
+import type { Message } from "./message.js";
 import { applyPartialMessage } from "./partial.js";
 
 /**

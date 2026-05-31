@@ -1,5 +1,6 @@
-import { FieldInfo, resolveMessageType } from "./field.js";
-import { AnyMessage, Message, CompleteMessage, Field } from "./message.js";
+import type { FieldInfo } from "./field.js";
+import { resolveMessageType } from "./field.js";
+import type { AnyMessage, CompleteMessage, Field, Message } from "./message.js";
 
 /**
  * Check whether the given partial is a valid message.

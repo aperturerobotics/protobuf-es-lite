@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { assert } from "./assert.js";
-import { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
-import {
+import type { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
+import type {
   DescComments,
   DescEnum,
   DescExtension,
@@ -26,11 +26,8 @@ import {
   DescService,
   DescriptorSet,
 } from "./descriptor-set.js";
-import {
-  FeatureResolverFn,
-  MergedFeatureSet,
-  createFeatureResolver,
-} from "./feature-set.js";
+import type { FeatureResolverFn, MergedFeatureSet } from "./feature-set.js";
+import { createFeatureResolver } from "./feature-set.js";
 import { fieldJsonName } from "./field.js";
 import {
   DescriptorProto,

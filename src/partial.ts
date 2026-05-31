@@ -1,6 +1,8 @@
 import { normalizeEnumValue } from "./enum.js";
-import { FieldList, MapValueInfo, resolveMessageType } from "./field.js";
-import { AnyMessage, Message, createCompleteMessage } from "./message.js";
+import type { MapValueInfo } from "./field.js";
+import { FieldList, resolveMessageType } from "./field.js";
+import type { AnyMessage, Message } from "./message.js";
+import { createCompleteMessage } from "./message.js";
 import { throwSanitizeKey } from "./names.js";
 import { normalizeScalarValue } from "./scalar.js";
 

@@ -1,4 +1,8 @@
-import { DescExtension, DescField, DescMessage } from "./descriptor-set.js";
+import type {
+  DescExtension,
+  DescField,
+  DescMessage,
+} from "./descriptor-set.js";
 import { ScalarType } from "./scalar.js";
 
 /**

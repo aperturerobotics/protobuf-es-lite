@@ -1,26 +1,12 @@
-import {
-  FieldInfo,
-  FieldList,
-  MessageFieldInfo,
-  isFieldSet,
-  resolveMessageType,
-} from "./field.js";
+import type { FieldInfo, MessageFieldInfo } from "./field.js";
+import { FieldList, isFieldSet, resolveMessageType } from "./field.js";
 import { handleUnknownField, unknownFieldsSymbol } from "./unknown.js";
 import { unwrapField, wrapField } from "./field-wrapper.js";
-import {
-  LongType,
-  ScalarType,
-  ScalarValue,
-  scalarZeroValue,
-} from "./scalar.js";
+import type { ScalarValue } from "./scalar.js";
+import { LongType, ScalarType, scalarZeroValue } from "./scalar.js";
 import { assert } from "./assert.js";
-import {
-  BinaryReader,
-  BinaryWriter,
-  IBinaryReader,
-  IBinaryWriter,
-  WireType,
-} from "./binary-encoding.js";
+import type { IBinaryReader, IBinaryWriter } from "./binary-encoding.js";
+import { BinaryReader, BinaryWriter, WireType } from "./binary-encoding.js";
 
 /**
  * Options for parsing binary data.

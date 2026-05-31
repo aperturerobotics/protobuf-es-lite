@@ -1,4 +1,4 @@
-import { DescEnum } from "./index.js";
+import type { DescEnum } from "./index.js";
 
 /**
  * Reflection information for a protobuf enumeration.

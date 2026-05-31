@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DescComments, DescFile } from "../../descriptor-set.js";
+import type { DescComments, DescFile } from "../../descriptor-set.js";
 import { Edition } from "../../google/protobuf/descriptor.pb.js";
 
 export function makeFilePreamble(

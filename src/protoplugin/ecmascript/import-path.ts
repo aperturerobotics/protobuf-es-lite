@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { codegenInfo } from "../../codegen-info.js";
-import { DescFile } from "../../descriptor-set.js";
+import type { DescFile } from "../../descriptor-set.js";
 
 /**
  * A configuration for rewriting import paths, a feature mainly used for

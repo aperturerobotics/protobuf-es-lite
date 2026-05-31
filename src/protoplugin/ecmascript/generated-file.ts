@@ -25,7 +25,7 @@ import type {
   RefDescEnum,
   RefDescMessage,
 } from "./opaque-printables.js";
-import {
+import type {
   AnyDesc,
   DescEnum,
   DescExtension,

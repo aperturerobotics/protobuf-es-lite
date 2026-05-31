@@ -1,24 +1,20 @@
-import {
-  FieldInfo,
-  FieldList,
-  OneofInfo,
-  isFieldSet,
-  resolveMessageType,
-} from "./field.js";
+import type { FieldInfo, OneofInfo } from "./field.js";
+import { FieldList, isFieldSet, resolveMessageType } from "./field.js";
 import { assert, assertFloat32, assertInt32, assertUInt32 } from "./assert.js";
+import type { ScalarValue } from "./scalar.js";
 import {
   LongType,
   ScalarType,
-  ScalarValue,
   isScalarZeroValue,
   normalizeScalarValue,
   scalarZeroValue,
 } from "./scalar.js";
 import { unwrapField, wrapField } from "./field-wrapper.js";
-import { EnumType, enumZeroValue, normalizeEnumValue } from "./enum.js";
+import type { EnumType } from "./enum.js";
+import { enumZeroValue, normalizeEnumValue } from "./enum.js";
 import { protoInt64 } from "./proto-int64.js";
 import { protoBase64 } from "./proto-base64.js";
-import { IMessageTypeRegistry } from "./type-registry.js";
+import type { IMessageTypeRegistry } from "./type-registry.js";
 import { throwSanitizeKey } from "./names.js";
 
 /**

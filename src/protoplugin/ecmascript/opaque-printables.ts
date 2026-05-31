@@ -12,7 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { DescEnum, DescExtension, DescMessage } from "../../descriptor-set.js";
+import type {
+  DescEnum,
+  DescExtension,
+  DescMessage,
+} from "../../descriptor-set.js";
 import { LongType, ScalarType } from "../../scalar.js";
 
 export type LiteralProtoInt64 = {

@@ -12,12 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  FieldList,
-  FieldListSource,
-  newFieldList,
-  resolveMessageType,
-} from "./field.js";
+import type { FieldListSource } from "./field.js";
+import { FieldList, newFieldList, resolveMessageType } from "./field.js";
 import { applyPartialMessage } from "./partial.js";
 import {
   LongType,
@@ -25,25 +21,26 @@ import {
   scalarEquals,
   scalarZeroValue,
 } from "./scalar.js";
+import type { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
 import {
-  binaryReadMessage,
-  binaryWriteMessage,
   binaryMakeReadOptions,
   binaryMakeWriteOptions,
-  BinaryReadOptions,
-  BinaryWriteOptions,
+  binaryReadMessage,
+  binaryWriteMessage,
 } from "./binary.js";
-import {
-  jsonReadMessage,
-  jsonWriteMessage,
-  jsonMakeReadOptions,
-  jsonMakeWriteOptions,
-  JsonValue,
+import type {
   JsonReadOptions,
+  JsonValue,
   JsonWriteOptions,
   JsonWriteStringOptions,
 } from "./json.js";
-import { FieldWrapper } from "./field-wrapper.js";
+import {
+  jsonMakeReadOptions,
+  jsonMakeWriteOptions,
+  jsonReadMessage,
+  jsonWriteMessage,
+} from "./json.js";
+import type { FieldWrapper } from "./field-wrapper.js";
 import { throwSanitizeKey } from "./names.js";
 import { enumZeroValue } from "./enum.js";
 

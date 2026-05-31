@@ -38,8 +38,8 @@ when used in React props/state. This ends up looking like:
 [protobuf-es]: https://github.com/bufbuild/protobuf-es
 
 ```typescript
-const myMessage: PlainMessage<MyMessage> = {body: "Hello world"}
-const myMessageBin = new MyMessage(myMessage).toBinary()
+const myMessage: PlainMessage<MyMessage> = { body: "Hello world" };
+const myMessageBin = new MyMessage(myMessage).toBinary();
 ```
 
 [ts-proto] generates an interface for each protobuf message and a const message
@@ -50,11 +50,11 @@ using interfaces and plain messages everywhere:
 
 ```typescript
 // Create a partial MyMessage with just one field sets.
-const myMessage: MyMessage = {body: "Hello world"}
+const myMessage: MyMessage = { body: "Hello world" };
 // Creates a version of MyMessage filled with zeros.
-const myCompleteMessage: MyMessage = MyMessage.create(myMessage)
+const myCompleteMessage: MyMessage = MyMessage.create(myMessage);
 // Convert MyMessage to binary.
-const myMessageBin = MyMessage.toBinary(myCompleteMessage)
+const myMessageBin = MyMessage.toBinary(myCompleteMessage);
 ```
 
 This fork generates the ts-proto style with the protobuf-es code generator.
@@ -67,12 +67,11 @@ Protocol Buffer schema.
 To install the plugin and the runtime library, run:
 
 ```shell
-npm install @aptre/protoc-gen-es-lite
+npm install @aptre/protobuf-es-lite
 ```
 
-We use peer dependencies to ensure that code generator and runtime library are
-compatible with each other. Note that npm installs them automatically, but yarn
-and pnpm do not.
+The package contains both the runtime library and the
+`protoc-gen-es-lite` plugin binary.
 
 ## Generating code
 
@@ -119,13 +118,6 @@ PATH=$PATH:$(pwd)/node_modules/.bin \
 Note that we are adding `node_modules/.bin` to the `$PATH`, so that the protocol
 buffer compiler can find them. This happens automatically with npm scripts.
 
-Since yarn v2 and above does not use a `node_modules` directory, you need to 
-change the variable a bit:
-
-```bash
-PATH=$(dirname $(yarn bin protoc-gen-es-lite)):$PATH
-```
-
 ## Plugin options
 
 ### `target`
@@ -134,6 +126,7 @@ This option controls whether the plugin generates JavaScript, TypeScript,
 or TypeScript declaration files.
 
 Possible values:
+
 - `target=js` - generates a `.pb.js` file for every `.proto` input file.
 - `target=ts` - generates a `.pb.ts` file for every `.proto` input file.
 - `target=dts` - generates a `.pb.d.ts` file for every `.proto` input file.
@@ -142,7 +135,7 @@ Multiple values can be given by separating them with `+`, for example
 `target=js+dts`.
 
 By default, we generate JavaScript and TypeScript declaration files, which
-produces the smallest code size and is the most compatible with various 
+produces the smallest code size and is the most compatible with various
 bundler configurations. If you prefer to generate TypeScript, use `target=ts`.
 
 ### `import_extension=.js`
@@ -167,7 +160,8 @@ statements. For use cases where CommonJS is difficult to avoid, this option can
 be used to generate CommonJS `require()` calls.
 
 Possible values:
-- `js_import_style=module` generate ECMAScript `import` / `export` statements - 
+
+- `js_import_style=module` generate ECMAScript `import` / `export` statements -
   the default behavior.
 - `js_import_style=legacy_commonjs` generate CommonJS `require()` calls.
 

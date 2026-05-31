@@ -30,7 +30,7 @@ import {
 } from "./import-path.js";
 import type { ParsedParameter } from "./parameter.js";
 import { makeFilePreamble } from "./file-preamble.js";
-import {
+import type {
   DescEnum,
   DescExtension,
   DescFile,

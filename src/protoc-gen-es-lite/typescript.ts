@@ -24,7 +24,7 @@ import {
   reifyWkt,
 } from "../protoplugin/ecmascript/index.js";
 import { getFieldDefaultValueExpression, getFieldTypeInfo } from "../util.js";
-import {
+import type {
   DescEnum,
   DescExtension,
   DescField,
@@ -46,7 +46,7 @@ import {
   FieldDescriptorProto_Label,
   FieldDescriptorProto_Type,
 } from "../google/protobuf/descriptor.pb.js";
-import { DescWkt } from "../protoplugin/ecmascript/reify-wkt.js";
+import type { DescWkt } from "../protoplugin/ecmascript/reify-wkt.js";
 
 export function generateTs(schema: Schema) {
   for (const file of schema.files) {
