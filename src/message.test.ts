@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createMessageType } from "./message.js";
+import { createEmptyMessageType, createMessageType } from "./message.js";
 import { ScalarType } from "./scalar.js";
 import type { PartialFieldInfo } from "./field.js";
 
@@ -19,6 +19,49 @@ const MapScalarMsg = createMessageType<MapScalarMsg>({
     },
   ] as readonly PartialFieldInfo[],
   packedByDefault: true,
+});
+
+type EmptyMsg = Record<string, never>;
+
+const EmptyMsg = createEmptyMessageType<EmptyMsg>("test.EmptyMsg", true);
+const EmptyMsgViaFullConstructor = createMessageType<EmptyMsg>({
+  typeName: "test.EmptyMsg",
+  fields: [] satisfies readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
+
+describe("createEmptyMessageType", () => {
+  it("matches createMessageType behavior for zero-field messages", () => {
+    const empty = EmptyMsg.create();
+    const full = EmptyMsgViaFullConstructor.create();
+
+    expect(EmptyMsg.typeName).toBe(EmptyMsgViaFullConstructor.typeName);
+    expect(EmptyMsg.fields.list()).toEqual(
+      EmptyMsgViaFullConstructor.fields.list(),
+    );
+    expect(EmptyMsg.fields.byMember()).toEqual(
+      EmptyMsgViaFullConstructor.fields.byMember(),
+    );
+    expect(EmptyMsg.equals(empty, full)).toBe(true);
+    expect(EmptyMsg.clone(empty)).toEqual(
+      EmptyMsgViaFullConstructor.clone(full),
+    );
+    expect(EmptyMsg.createComplete()).toEqual(
+      EmptyMsgViaFullConstructor.createComplete(),
+    );
+    expect(Array.from(EmptyMsg.toBinary(empty))).toEqual(
+      Array.from(EmptyMsgViaFullConstructor.toBinary(full)),
+    );
+    expect(EmptyMsg.fromBinary(new Uint8Array(0))).toEqual(
+      EmptyMsgViaFullConstructor.fromBinary(new Uint8Array(0)),
+    );
+    expect(EmptyMsg.toJson(empty)).toEqual(
+      EmptyMsgViaFullConstructor.toJson(full),
+    );
+    expect(EmptyMsg.fromJson({})).toEqual(
+      EmptyMsgViaFullConstructor.fromJson({}),
+    );
+  });
 });
 
 describe("compareMessages with map fields", () => {

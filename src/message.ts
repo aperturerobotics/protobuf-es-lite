@@ -197,6 +197,8 @@ export type MessageTypeParams<T extends Message<T>> = Pick<
   delimitedMessageEncoding?: boolean;
 };
 
+const emptyFieldListSource: FieldListSource = [];
+
 /**
  * createMessageType creates a new message type.
  *
@@ -319,6 +321,17 @@ export function createMessageType<
     ...(exts ?? {}),
   };
   return mt as MessageType<T> & E;
+}
+
+export function createEmptyMessageType<T extends Message<T>>(
+  typeName: string,
+  packedByDefault: boolean,
+): MessageType<T> {
+  return createMessageType<T>({
+    typeName,
+    fields: emptyFieldListSource,
+    packedByDefault,
+  });
 }
 
 // compareMessages compares two messages for equality.

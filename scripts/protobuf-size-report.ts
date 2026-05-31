@@ -79,7 +79,7 @@ const runtimeModuleSignals = [
 ] as const;
 
 const runtimeOwnerImportRE =
-  /from\s+["'](?:@aptre\/protobuf-es-lite\/(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)|(?:\.\.\/src|\.\.\/\.\.)\/(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)\.js)["']/g;
+  /from\s+["'](?:@aptre\/protobuf-es-lite\/(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)|(?:\.\.\/)+(?:src\/)?(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)\.js)["']/g;
 
 function listFiles(dir: string, suffix: string): string[] {
   if (!existsSync(dir)) return [];
@@ -107,7 +107,7 @@ function analyzeGeneratedFile(path: string): GeneratedFileStats {
     rootRuntimeImports:
       countMatches(
         text,
-        /from\s+["'](?:@aptre\/protobuf-es-lite|\.\.\/src\/index\.js|\.\.\/\.\.\/index\.js)["']/g,
+        /from\s+["'](?:@aptre\/protobuf-es-lite|(?:\.\.\/)+(?:src\/)?index\.js)["']/g,
       ) + countMatches(text, /from\s+["']@aptre\/protobuf-es-lite["']/g),
     runtimeSubpathImports: countMatches(text, runtimeOwnerImportRE),
     wktImports: countMatches(text, /google\/protobuf\/[^"']+/g),
@@ -240,6 +240,15 @@ const generatedFilePaths = [
   ...listFiles(join(repoRoot, "src", "google"), ".pb.ts"),
 ].sort();
 const generatedFiles = generatedFilePaths.map(analyzeGeneratedFile);
+const rootImportFiles = generatedFiles.filter(
+  (file) => file.rootRuntimeImports > 0,
+);
+if (rootImportFiles.length > 0) {
+  const files = rootImportFiles
+    .map((file) => `${file.path}: ${file.rootRuntimeImports}`)
+    .join("\n");
+  throw new Error(`generated output has root runtime imports:\n${files}`);
+}
 const fixtureProto = countProtoFixtureShape(
   join(repoRoot, "fixtures", "size", "size_fixture.proto"),
 );

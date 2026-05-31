@@ -2,4 +2,3 @@ node_modules/
 *.pb.go
 *.pb.ts
 go.sum
-dist/

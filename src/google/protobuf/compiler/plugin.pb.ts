@@ -22,12 +22,11 @@
 // @generated from file google/protobuf/compiler/plugin.proto (package google.protobuf.compiler, syntax proto2)
 /* eslint-disable */
 
-import {
-  createEnumType,
-  createMessageType,
-  MessageType,
-  PartialFieldInfo,
-} from "../../../index.js";
+import { createEnumType } from "../../../enum.js";
+import type { MessageType } from "../../../message.js";
+import { createMessageType } from "../../../message.js";
+import { ScalarType } from "../../../scalar.js";
+import type { PartialFieldInfo } from "../../../field.js";
 import { FileDescriptorProto, GeneratedCodeInfo } from "../descriptor.pb.js";
 
 export const protobufPackage = "google.protobuf.compiler";
@@ -54,15 +53,15 @@ export enum CodeGeneratorResponse_Feature {
   SUPPORTS_EDITIONS = 2,
 }
 
-// CodeGeneratorResponse_Feature_Enum is the enum type for CodeGeneratorResponse_Feature.
-export const CodeGeneratorResponse_Feature_Enum = createEnumType(
-  "google.protobuf.compiler.CodeGeneratorResponse.Feature",
-  [
-    { no: 0, name: "FEATURE_NONE" },
-    { no: 1, name: "FEATURE_PROTO3_OPTIONAL" },
-    { no: 2, name: "FEATURE_SUPPORTS_EDITIONS" },
-  ],
-);
+export const CodeGeneratorResponse_Feature_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.compiler.CodeGeneratorResponse.Feature",
+    [
+      [0, "FEATURE_NONE"],
+      [1, "FEATURE_PROTO3_OPTIONAL"],
+      [2, "FEATURE_SUPPORTS_EDITIONS"],
+    ],
+  );
 
 /**
  * The version number of protocol compiler.
@@ -91,38 +90,14 @@ export interface Version {
   suffix?: string;
 }
 
-export const Version: MessageType<Version> = createMessageType({
+export const Version: MessageType<Version> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.compiler.Version",
   fields: [
-    {
-      no: 1,
-      name: "major",
-      kind: "scalar",
-      T: 5 /* ScalarType.INT32 */,
-      opt: true,
-    },
-    {
-      no: 2,
-      name: "minor",
-      kind: "scalar",
-      T: 5 /* ScalarType.INT32 */,
-      opt: true,
-    },
-    {
-      no: 3,
-      name: "patch",
-      kind: "scalar",
-      T: 5 /* ScalarType.INT32 */,
-      opt: true,
-    },
-    {
-      no: 4,
-      name: "suffix",
-      kind: "scalar",
-      T: 9 /* ScalarType.STRING */,
-      opt: true,
-    },
-  ] as readonly PartialFieldInfo[],
+    { no: 1, name: "major", kind: "scalar", T: ScalarType.INT32, opt: true },
+    { no: 2, name: "minor", kind: "scalar", T: ScalarType.INT32, opt: true },
+    { no: 3, name: "patch", kind: "scalar", T: ScalarType.INT32, opt: true },
+    { no: 4, name: "suffix", kind: "scalar", T: ScalarType.STRING, opt: true },
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: false,
 });
 
@@ -187,21 +162,21 @@ export interface CodeGeneratorRequest {
 }
 
 export const CodeGeneratorRequest: MessageType<CodeGeneratorRequest> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.compiler.CodeGeneratorRequest",
     fields: [
       {
         no: 1,
         name: "file_to_generate",
         kind: "scalar",
-        T: 9 /* ScalarType.STRING */,
+        T: ScalarType.STRING,
         repeated: true,
       },
       {
         no: 2,
         name: "parameter",
         kind: "scalar",
-        T: 9 /* ScalarType.STRING */,
+        T: ScalarType.STRING,
         opt: true,
       },
       {
@@ -225,7 +200,7 @@ export const CodeGeneratorRequest: MessageType<CodeGeneratorRequest> =
         T: () => Version,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -310,28 +285,22 @@ export interface CodeGeneratorResponse_File {
 }
 
 export const CodeGeneratorResponse_File: MessageType<CodeGeneratorResponse_File> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.compiler.CodeGeneratorResponse.File",
     fields: [
-      {
-        no: 1,
-        name: "name",
-        kind: "scalar",
-        T: 9 /* ScalarType.STRING */,
-        opt: true,
-      },
+      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
       {
         no: 2,
         name: "insertion_point",
         kind: "scalar",
-        T: 9 /* ScalarType.STRING */,
+        T: ScalarType.STRING,
         opt: true,
       },
       {
         no: 15,
         name: "content",
         kind: "scalar",
-        T: 9 /* ScalarType.STRING */,
+        T: ScalarType.STRING,
         opt: true,
       },
       {
@@ -341,7 +310,7 @@ export const CodeGeneratorResponse_File: MessageType<CodeGeneratorResponse_File>
         T: () => GeneratedCodeInfo,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -396,35 +365,29 @@ export interface CodeGeneratorResponse {
 }
 
 export const CodeGeneratorResponse: MessageType<CodeGeneratorResponse> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.compiler.CodeGeneratorResponse",
     fields: [
-      {
-        no: 1,
-        name: "error",
-        kind: "scalar",
-        T: 9 /* ScalarType.STRING */,
-        opt: true,
-      },
+      { no: 1, name: "error", kind: "scalar", T: ScalarType.STRING, opt: true },
       {
         no: 2,
         name: "supported_features",
         kind: "scalar",
-        T: 4 /* ScalarType.UINT64 */,
+        T: ScalarType.UINT64,
         opt: true,
       },
       {
         no: 3,
         name: "minimum_edition",
         kind: "scalar",
-        T: 5 /* ScalarType.INT32 */,
+        T: ScalarType.INT32,
         opt: true,
       },
       {
         no: 4,
         name: "maximum_edition",
         kind: "scalar",
-        T: 5 /* ScalarType.INT32 */,
+        T: ScalarType.INT32,
         opt: true,
       },
       {
@@ -434,6 +397,6 @@ export const CodeGeneratorResponse: MessageType<CodeGeneratorResponse> =
         T: () => CodeGeneratorResponse_File,
         repeated: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });

@@ -5,7 +5,11 @@ export type {
   MessageType,
   Field,
 } from "./message.js";
-export { compareMessages, createMessageType } from "./message.js";
+export {
+  compareMessages,
+  createEmptyMessageType,
+  createMessageType,
+} from "./message.js";
 export type {
   ServiceType,
   MethodInfo,

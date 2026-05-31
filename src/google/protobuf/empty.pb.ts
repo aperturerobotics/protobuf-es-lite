@@ -33,8 +33,7 @@
 /* eslint-disable */
 
 import type { MessageType } from "../../message.js";
-import { createMessageType } from "../../message.js";
-import type { PartialFieldInfo } from "../../field.js";
+import { createEmptyMessageType } from "../../message.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -52,8 +51,5 @@ export const protobufPackage = "google.protobuf";
  */
 export interface Empty {}
 
-export const Empty: MessageType<Empty> = /* @__PURE__ */ createMessageType({
-  typeName: "google.protobuf.Empty",
-  fields: [] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
-});
+export const Empty: MessageType<Empty> =
+  /* @__PURE__ */ createEmptyMessageType<Empty>("google.protobuf.Empty", true);

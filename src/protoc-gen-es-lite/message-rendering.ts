@@ -105,6 +105,7 @@ export function generateMessage(
 ) {
   const {
     MessageType: rtMessageType,
+    createEmptyMessageType,
     createMessageType,
     PartialFieldInfo,
   } = schema.runtime;
@@ -149,6 +150,28 @@ export function generateMessage(
       "_Wkt>({",
     );
   } else {
+    if (message.fields.length === 0) {
+      f.print(
+        f.exportDecl("const", message),
+        `: `,
+        rtMessageType,
+        `<`,
+        message,
+        `> = `,
+        "/* @__PURE__ */ ",
+        createEmptyMessageType,
+        "<",
+        message,
+        ">(",
+        f.string(message.typeName),
+        ", ",
+        packedByDefault(message),
+        ");",
+      );
+      f.print();
+      return;
+    }
+
     f.print(
       f.exportDecl("const", message),
       `: `,

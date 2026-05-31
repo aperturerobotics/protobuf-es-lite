@@ -87,6 +87,11 @@ const symbols = {
     "./service-type.js",
   ),
   createEnumType: symbolInfo(false, runtimePath("enum"), "./enum.js"),
+  createEmptyMessageType: symbolInfo(
+    false,
+    runtimePath("message"),
+    "./message.js",
+  ),
   createMessageType: symbolInfo(false, runtimePath("message"), "./message.js"),
 } as const;
 

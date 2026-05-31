@@ -47,11 +47,7 @@ prettier_ts() {
 replace_import_path() {
     local TS_FILES=$(get_ts_files "$1")
     if [ -n "${TS_FILES}" ]; then
-        # Replace imports with additional path segments like "@aptre/protobuf-es-lite/google/protobuf/api"
-        sed -i -e "s/@aptre\/protobuf-es-lite\/google\/protobuf\/\([^\"']*\)/..\/src\/google\/protobuf\/\1.pb.js/g" ${TS_FILES[@]}
-        sed -i -e "s/@aptre\/protobuf-es-lite\/\([^\"']*\)/..\/src\/\1.js/g" ${TS_FILES[@]}
-        # Replace simple imports like "@aptre/protobuf-es-lite"
-        sed -i -e "s/@aptre\/protobuf-es-lite/..\/src\/index.js/g" ${TS_FILES[@]}
+        bun run scripts/normalize-generated-imports.ts ${TS_FILES[@]}
     fi
 }
 
