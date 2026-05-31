@@ -36,9 +36,9 @@ export enum ExampleEnum {
 export const ExampleEnum_Enum = /* @__PURE__ */ createEnumType(
   "example.ExampleEnum",
   [
-    { no: 0, name: "UNKNOWN" },
-    { no: 1, name: "FIRST" },
-    { no: 2, name: "SECOND" },
+    [0, "UNKNOWN"],
+    [1, "FIRST"],
+    [2, "SECOND"],
   ],
 );
 

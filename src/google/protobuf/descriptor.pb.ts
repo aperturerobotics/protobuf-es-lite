@@ -131,17 +131,17 @@ export enum Edition {
 export const Edition_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Edition",
   [
-    { no: 0, name: "EDITION_UNKNOWN" },
-    { no: 998, name: "EDITION_PROTO2" },
-    { no: 999, name: "EDITION_PROTO3" },
-    { no: 1000, name: "EDITION_2023" },
-    { no: 1001, name: "EDITION_2024" },
-    { no: 1, name: "EDITION_1_TEST_ONLY" },
-    { no: 2, name: "EDITION_2_TEST_ONLY" },
-    { no: 99997, name: "EDITION_99997_TEST_ONLY" },
-    { no: 99998, name: "EDITION_99998_TEST_ONLY" },
-    { no: 99999, name: "EDITION_99999_TEST_ONLY" },
-    { no: 2147483647, name: "EDITION_MAX" },
+    [0, "EDITION_UNKNOWN"],
+    [998, "EDITION_PROTO2"],
+    [999, "EDITION_PROTO3"],
+    [1000, "EDITION_2023"],
+    [1001, "EDITION_2024"],
+    [1, "EDITION_1_TEST_ONLY"],
+    [2, "EDITION_2_TEST_ONLY"],
+    [99997, "EDITION_99997_TEST_ONLY"],
+    [99998, "EDITION_99998_TEST_ONLY"],
+    [99999, "EDITION_99999_TEST_ONLY"],
+    [2147483647, "EDITION_MAX"],
   ],
 );
 
@@ -168,8 +168,8 @@ export const ExtensionRangeOptions_VerificationState_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.ExtensionRangeOptions.VerificationState",
     [
-      { no: 0, name: "DECLARATION" },
-      { no: 1, name: "UNVERIFIED" },
+      [0, "DECLARATION"],
+      [1, "UNVERIFIED"],
     ],
   );
 
@@ -294,24 +294,24 @@ export enum FieldDescriptorProto_Type {
 export const FieldDescriptorProto_Type_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Type",
   [
-    { no: 1, name: "TYPE_DOUBLE" },
-    { no: 2, name: "TYPE_FLOAT" },
-    { no: 3, name: "TYPE_INT64" },
-    { no: 4, name: "TYPE_UINT64" },
-    { no: 5, name: "TYPE_INT32" },
-    { no: 6, name: "TYPE_FIXED64" },
-    { no: 7, name: "TYPE_FIXED32" },
-    { no: 8, name: "TYPE_BOOL" },
-    { no: 9, name: "TYPE_STRING" },
-    { no: 10, name: "TYPE_GROUP" },
-    { no: 11, name: "TYPE_MESSAGE" },
-    { no: 12, name: "TYPE_BYTES" },
-    { no: 13, name: "TYPE_UINT32" },
-    { no: 14, name: "TYPE_ENUM" },
-    { no: 15, name: "TYPE_SFIXED32" },
-    { no: 16, name: "TYPE_SFIXED64" },
-    { no: 17, name: "TYPE_SINT32" },
-    { no: 18, name: "TYPE_SINT64" },
+    [1, "TYPE_DOUBLE"],
+    [2, "TYPE_FLOAT"],
+    [3, "TYPE_INT64"],
+    [4, "TYPE_UINT64"],
+    [5, "TYPE_INT32"],
+    [6, "TYPE_FIXED64"],
+    [7, "TYPE_FIXED32"],
+    [8, "TYPE_BOOL"],
+    [9, "TYPE_STRING"],
+    [10, "TYPE_GROUP"],
+    [11, "TYPE_MESSAGE"],
+    [12, "TYPE_BYTES"],
+    [13, "TYPE_UINT32"],
+    [14, "TYPE_ENUM"],
+    [15, "TYPE_SFIXED32"],
+    [16, "TYPE_SFIXED64"],
+    [17, "TYPE_SINT32"],
+    [18, "TYPE_SINT64"],
   ],
 );
 
@@ -344,9 +344,9 @@ export enum FieldDescriptorProto_Label {
 export const FieldDescriptorProto_Label_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Label",
   [
-    { no: 1, name: "LABEL_OPTIONAL" },
-    { no: 3, name: "LABEL_REPEATED" },
-    { no: 2, name: "LABEL_REQUIRED" },
+    [1, "LABEL_OPTIONAL"],
+    [3, "LABEL_REPEATED"],
+    [2, "LABEL_REQUIRED"],
   ],
 );
 
@@ -383,9 +383,9 @@ export enum FileOptions_OptimizeMode {
 export const FileOptions_OptimizeMode_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FileOptions.OptimizeMode",
   [
-    { no: 1, name: "SPEED" },
-    { no: 2, name: "CODE_SIZE" },
-    { no: 3, name: "LITE_RUNTIME" },
+    [1, "SPEED"],
+    [2, "CODE_SIZE"],
+    [3, "LITE_RUNTIME"],
   ],
 );
 
@@ -421,9 +421,9 @@ export enum FieldOptions_CType {
 export const FieldOptions_CType_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldOptions.CType",
   [
-    { no: 0, name: "STRING" },
-    { no: 1, name: "CORD" },
-    { no: 2, name: "STRING_PIECE" },
+    [0, "STRING"],
+    [1, "CORD"],
+    [2, "STRING_PIECE"],
   ],
 );
 
@@ -456,9 +456,9 @@ export enum FieldOptions_JSType {
 export const FieldOptions_JSType_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldOptions.JSType",
   [
-    { no: 0, name: "JS_NORMAL" },
-    { no: 1, name: "JS_STRING" },
-    { no: 2, name: "JS_NUMBER" },
+    [0, "JS_NORMAL"],
+    [1, "JS_STRING"],
+    [2, "JS_NUMBER"],
   ],
 );
 
@@ -489,9 +489,9 @@ export enum FieldOptions_OptionRetention {
 export const FieldOptions_OptionRetention_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldOptions.OptionRetention",
   [
-    { no: 0, name: "RETENTION_UNKNOWN" },
-    { no: 1, name: "RETENTION_RUNTIME" },
-    { no: 2, name: "RETENTION_SOURCE" },
+    [0, "RETENTION_UNKNOWN"],
+    [1, "RETENTION_RUNTIME"],
+    [2, "RETENTION_SOURCE"],
   ],
 );
 
@@ -559,16 +559,16 @@ export const FieldOptions_OptionTargetType_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.FieldOptions.OptionTargetType",
     [
-      { no: 0, name: "TARGET_TYPE_UNKNOWN" },
-      { no: 1, name: "TARGET_TYPE_FILE" },
-      { no: 2, name: "TARGET_TYPE_EXTENSION_RANGE" },
-      { no: 3, name: "TARGET_TYPE_MESSAGE" },
-      { no: 4, name: "TARGET_TYPE_FIELD" },
-      { no: 5, name: "TARGET_TYPE_ONEOF" },
-      { no: 6, name: "TARGET_TYPE_ENUM" },
-      { no: 7, name: "TARGET_TYPE_ENUM_ENTRY" },
-      { no: 8, name: "TARGET_TYPE_SERVICE" },
-      { no: 9, name: "TARGET_TYPE_METHOD" },
+      [0, "TARGET_TYPE_UNKNOWN"],
+      [1, "TARGET_TYPE_FILE"],
+      [2, "TARGET_TYPE_EXTENSION_RANGE"],
+      [3, "TARGET_TYPE_MESSAGE"],
+      [4, "TARGET_TYPE_FIELD"],
+      [5, "TARGET_TYPE_ONEOF"],
+      [6, "TARGET_TYPE_ENUM"],
+      [7, "TARGET_TYPE_ENUM_ENTRY"],
+      [8, "TARGET_TYPE_SERVICE"],
+      [9, "TARGET_TYPE_METHOD"],
     ],
   );
 
@@ -604,9 +604,9 @@ export const MethodOptions_IdempotencyLevel_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.MethodOptions.IdempotencyLevel",
     [
-      { no: 0, name: "IDEMPOTENCY_UNKNOWN" },
-      { no: 1, name: "NO_SIDE_EFFECTS" },
-      { no: 2, name: "IDEMPOTENT" },
+      [0, "IDEMPOTENCY_UNKNOWN"],
+      [1, "NO_SIDE_EFFECTS"],
+      [2, "IDEMPOTENT"],
     ],
   );
 
@@ -638,10 +638,10 @@ export enum FeatureSet_FieldPresence {
 export const FeatureSet_FieldPresence_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.FieldPresence",
   [
-    { no: 0, name: "FIELD_PRESENCE_UNKNOWN" },
-    { no: 1, name: "EXPLICIT" },
-    { no: 2, name: "IMPLICIT" },
-    { no: 3, name: "LEGACY_REQUIRED" },
+    [0, "FIELD_PRESENCE_UNKNOWN"],
+    [1, "EXPLICIT"],
+    [2, "IMPLICIT"],
+    [3, "LEGACY_REQUIRED"],
   ],
 );
 
@@ -668,9 +668,9 @@ export enum FeatureSet_EnumType {
 export const FeatureSet_EnumType_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.EnumType",
   [
-    { no: 0, name: "ENUM_TYPE_UNKNOWN" },
-    { no: 1, name: "OPEN" },
-    { no: 2, name: "CLOSED" },
+    [0, "ENUM_TYPE_UNKNOWN"],
+    [1, "OPEN"],
+    [2, "CLOSED"],
   ],
 );
 
@@ -698,9 +698,9 @@ export const FeatureSet_RepeatedFieldEncoding_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.FeatureSet.RepeatedFieldEncoding",
     [
-      { no: 0, name: "REPEATED_FIELD_ENCODING_UNKNOWN" },
-      { no: 1, name: "PACKED" },
-      { no: 2, name: "EXPANDED" },
+      [0, "REPEATED_FIELD_ENCODING_UNKNOWN"],
+      [1, "PACKED"],
+      [2, "EXPANDED"],
     ],
   );
 
@@ -727,9 +727,9 @@ export enum FeatureSet_Utf8Validation {
 export const FeatureSet_Utf8Validation_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.Utf8Validation",
   [
-    { no: 0, name: "UTF8_VALIDATION_UNKNOWN" },
-    { no: 2, name: "VERIFY" },
-    { no: 3, name: "NONE" },
+    [0, "UTF8_VALIDATION_UNKNOWN"],
+    [2, "VERIFY"],
+    [3, "NONE"],
   ],
 );
 
@@ -756,9 +756,9 @@ export enum FeatureSet_MessageEncoding {
 export const FeatureSet_MessageEncoding_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.MessageEncoding",
   [
-    { no: 0, name: "MESSAGE_ENCODING_UNKNOWN" },
-    { no: 1, name: "LENGTH_PREFIXED" },
-    { no: 2, name: "DELIMITED" },
+    [0, "MESSAGE_ENCODING_UNKNOWN"],
+    [1, "LENGTH_PREFIXED"],
+    [2, "DELIMITED"],
   ],
 );
 
@@ -785,9 +785,9 @@ export enum FeatureSet_JsonFormat {
 export const FeatureSet_JsonFormat_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.JsonFormat",
   [
-    { no: 0, name: "JSON_FORMAT_UNKNOWN" },
-    { no: 1, name: "ALLOW" },
-    { no: 2, name: "LEGACY_BEST_EFFORT" },
+    [0, "JSON_FORMAT_UNKNOWN"],
+    [1, "ALLOW"],
+    [2, "LEGACY_BEST_EFFORT"],
   ],
 );
 
@@ -824,9 +824,9 @@ export const GeneratedCodeInfo_Annotation_Semantic_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.GeneratedCodeInfo.Annotation.Semantic",
     [
-      { no: 0, name: "NONE" },
-      { no: 1, name: "SET" },
-      { no: 2, name: "ALIAS" },
+      [0, "NONE"],
+      [1, "SET"],
+      [2, "ALIAS"],
     ],
   );
 

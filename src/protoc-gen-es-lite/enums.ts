@@ -44,7 +44,7 @@ export function generateEnum(
     ", [",
   );
   for (const value of enumeration.values) {
-    f.print("  { no: ", value.number, ', name: "', value.name, '" },');
+    f.print("  [", value.number, ', "', value.name, '"],');
   }
   f.print("]);");
   f.print();

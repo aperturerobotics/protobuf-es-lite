@@ -73,9 +73,9 @@ export enum Syntax {
 export const Syntax_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Syntax",
   [
-    { no: 0, name: "SYNTAX_PROTO2" },
-    { no: 1, name: "SYNTAX_PROTO3" },
-    { no: 2, name: "SYNTAX_EDITIONS" },
+    [0, "SYNTAX_PROTO2"],
+    [1, "SYNTAX_PROTO3"],
+    [2, "SYNTAX_EDITIONS"],
   ],
 );
 
@@ -222,25 +222,25 @@ export enum Field_Kind {
 export const Field_Kind_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Field.Kind",
   [
-    { no: 0, name: "TYPE_UNKNOWN" },
-    { no: 1, name: "TYPE_DOUBLE" },
-    { no: 2, name: "TYPE_FLOAT" },
-    { no: 3, name: "TYPE_INT64" },
-    { no: 4, name: "TYPE_UINT64" },
-    { no: 5, name: "TYPE_INT32" },
-    { no: 6, name: "TYPE_FIXED64" },
-    { no: 7, name: "TYPE_FIXED32" },
-    { no: 8, name: "TYPE_BOOL" },
-    { no: 9, name: "TYPE_STRING" },
-    { no: 10, name: "TYPE_GROUP" },
-    { no: 11, name: "TYPE_MESSAGE" },
-    { no: 12, name: "TYPE_BYTES" },
-    { no: 13, name: "TYPE_UINT32" },
-    { no: 14, name: "TYPE_ENUM" },
-    { no: 15, name: "TYPE_SFIXED32" },
-    { no: 16, name: "TYPE_SFIXED64" },
-    { no: 17, name: "TYPE_SINT32" },
-    { no: 18, name: "TYPE_SINT64" },
+    [0, "TYPE_UNKNOWN"],
+    [1, "TYPE_DOUBLE"],
+    [2, "TYPE_FLOAT"],
+    [3, "TYPE_INT64"],
+    [4, "TYPE_UINT64"],
+    [5, "TYPE_INT32"],
+    [6, "TYPE_FIXED64"],
+    [7, "TYPE_FIXED32"],
+    [8, "TYPE_BOOL"],
+    [9, "TYPE_STRING"],
+    [10, "TYPE_GROUP"],
+    [11, "TYPE_MESSAGE"],
+    [12, "TYPE_BYTES"],
+    [13, "TYPE_UINT32"],
+    [14, "TYPE_ENUM"],
+    [15, "TYPE_SFIXED32"],
+    [16, "TYPE_SFIXED64"],
+    [17, "TYPE_SINT32"],
+    [18, "TYPE_SINT64"],
   ],
 );
 
@@ -282,10 +282,10 @@ export enum Field_Cardinality {
 export const Field_Cardinality_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Field.Cardinality",
   [
-    { no: 0, name: "CARDINALITY_UNKNOWN" },
-    { no: 1, name: "CARDINALITY_OPTIONAL" },
-    { no: 2, name: "CARDINALITY_REQUIRED" },
-    { no: 3, name: "CARDINALITY_REPEATED" },
+    [0, "CARDINALITY_UNKNOWN"],
+    [1, "CARDINALITY_OPTIONAL"],
+    [2, "CARDINALITY_REQUIRED"],
+    [3, "CARDINALITY_REPEATED"],
   ],
 );
 

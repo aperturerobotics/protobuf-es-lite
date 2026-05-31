@@ -48,12 +48,23 @@ export interface EnumValueInfo {
   // readonly options: OptionsMap;
 }
 
+export type EnumValueSource =
+  | EnumValueInfo
+  | Omit<EnumValueInfo, "localName">
+  | readonly [no: number, name: string];
+
+function isEnumValueTuple(
+  value: EnumValueSource,
+): value is readonly [no: number, name: string] {
+  return Array.isArray(value);
+}
+
 /**
  * Create a new EnumType with the given values.
  */
 export function createEnumType(
   typeName: string,
-  values: (EnumValueInfo | Omit<EnumValueInfo, "localName">)[],
+  values: EnumValueSource[],
 ): EnumType {
   const names = Object.create(null) as Record<string, EnumValueInfo>;
   const numbers = Object.create(null) as Record<number, EnumValueInfo>;
@@ -62,10 +73,13 @@ export function createEnumType(
     // We do not surface options at this time
     // const value: EnumValueInfo = {...v, options: v.options ?? emptyReadonlyObject};
     const n =
-      "localName" in value ? value : { ...value, localName: value.name };
+      isEnumValueTuple(value) ?
+        { no: value[0], name: value[1], localName: value[1] }
+      : "localName" in value ? value
+      : { ...value, localName: value.name };
     normalValues.push(n);
-    names[value.name] = n;
-    numbers[value.no] = n;
+    names[n.name] = n;
+    numbers[n.no] = n;
   }
   return {
     typeName,
@@ -82,16 +96,14 @@ export function createEnumType(
 }
 
 // enumInfoZeroValue returns the zero value for an enum info.
-export function enumInfoZeroValue(
-  values: (EnumValueInfo | Omit<EnumValueInfo, "localName">)[],
-): number {
+export function enumInfoZeroValue(values: EnumValueSource[]): number {
   if (!values?.length) {
     return 0;
   }
   // In proto3, the first enum value must be zero.
   // In proto2, protobuf-go returns the first value as the default.
   const zeroValue = values[0];
-  return zeroValue.no;
+  return isEnumValueTuple(zeroValue) ? zeroValue[0] : zeroValue.no;
 }
 
 // enumDescZeroValue returns the zero value for an enum description.

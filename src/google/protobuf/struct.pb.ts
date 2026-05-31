@@ -66,7 +66,7 @@ export enum NullValue {
 
 export const NullValue_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.NullValue",
-  [{ no: 0, name: "NULL_VALUE" }],
+  [[0, "NULL_VALUE"]],
 );
 
 /**
