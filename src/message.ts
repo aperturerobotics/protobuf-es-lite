@@ -49,7 +49,7 @@ import { enumZeroValue } from "./enum.js";
 type ScalarComparable = Parameters<typeof scalarEquals>[1];
 type OneofRuntimeValue = {
   case?: string;
-  value?: any;
+  value?: unknown;
 };
 
 export type Field<T> =
@@ -351,7 +351,7 @@ export function compareMessages<T extends Message<T>>(
 
       switch (m.kind) {
         case "message": {
-          const messageType = resolveMessageType(m.T) as MessageType<any>;
+          const messageType = resolveMessageType(m.T) as MessageType;
           const values = vaArray as Message<AnyMessage>[];
           const otherValues = vbArray as Message<AnyMessage>[];
           return values.every((a, i) => messageType.equals(a, otherValues[i]));
@@ -377,7 +377,10 @@ export function compareMessages<T extends Message<T>>(
     }
     switch (m.kind) {
       case "message":
-        return (resolveMessageType(m.T) as MessageType<any>).equals(va, vb);
+        return (resolveMessageType(m.T) as MessageType).equals(
+          va as Message<AnyMessage>,
+          vb as Message<AnyMessage>,
+        );
       case "enum":
         return scalarEquals(
           ScalarType.INT32,
@@ -410,8 +413,11 @@ export function compareMessages<T extends Message<T>>(
 
         switch (s.kind) {
           case "message": {
-            const messageType = resolveMessageType(s.T) as MessageType<any>;
-            return messageType.equals(oneofA.value, oneofB?.value);
+            const messageType = resolveMessageType(s.T) as MessageType;
+            return messageType.equals(
+              oneofA.value as Message<AnyMessage>,
+              oneofB?.value as Message<AnyMessage>,
+            );
           }
           case "enum":
             return scalarEquals(

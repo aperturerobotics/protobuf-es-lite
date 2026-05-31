@@ -13,8 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export type MessageRecord = Record<string | symbol, any>;
-export type MessageMap = Record<string, any>;
+export type MessageRecord = Record<string | symbol, unknown>;
+export type MessageMap = Record<string, unknown>;
 
 export function createMessageRecord(): MessageRecord {
   return Object.create(null) as MessageRecord;
