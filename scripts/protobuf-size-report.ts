@@ -49,8 +49,10 @@ type GeneratedFileStats = {
   runtimeSubpathImports: number;
   wktImports: number;
   messageDescriptors: number;
+  emptyMessageHelpers: number;
   enumDescriptors: number;
   zeroFieldDescriptors: number;
+  inlineZeroFieldDescriptors: number;
   serviceMentions: number;
   pureAnnotations: number;
 };
@@ -69,7 +71,10 @@ const runtimeModuleSignals = [
   ["binary", /\b(BinaryReader|BinaryWriter|readMessageField|writeField)\b/g],
   ["enum", /\b(createEnumType|normalizeEnumValue)\b/g],
   ["json", /\b(jsonReadScalar|jsonWriteScalar|jsonReadEnum|jsonWriteEnum)\b/g],
-  ["message", /\b(createMessageType|compareMessages|cloneMessage)\b/g],
+  [
+    "message",
+    /\b(createEmptyMessageType|createMessageType|compareMessages|cloneMessage)\b/g,
+  ],
   ["partial", /\bapplyPartialMessage\b/g],
   ["proto-base64", /\b(protoBase64|base64Decode|base64Encode)\b/g],
   ["proto-int64", /\bprotoInt64\b/g],
@@ -101,6 +106,11 @@ function countMatches(value: string, expression: RegExp): number {
 
 function analyzeGeneratedFile(path: string): GeneratedFileStats {
   const text = readFileSync(path, "utf8");
+  const emptyMessageHelpers = countMatches(text, /createEmptyMessageType[<(]/g);
+  const inlineZeroFieldDescriptors = countMatches(
+    text,
+    /createMessageType\(\{[\s\S]*?fields:\s*\[\s*\]/g,
+  );
   return {
     path: relative(repoRoot, path),
     bytes: Buffer.byteLength(text),
@@ -111,12 +121,12 @@ function analyzeGeneratedFile(path: string): GeneratedFileStats {
       ) + countMatches(text, /from\s+["']@aptre\/protobuf-es-lite["']/g),
     runtimeSubpathImports: countMatches(text, runtimeOwnerImportRE),
     wktImports: countMatches(text, /google\/protobuf\/[^"']+/g),
-    messageDescriptors: countMatches(text, /createMessageType\(/g),
+    messageDescriptors:
+      countMatches(text, /createMessageType\(/g) + emptyMessageHelpers,
+    emptyMessageHelpers,
     enumDescriptors: countMatches(text, /createEnumType\(/g),
-    zeroFieldDescriptors: countMatches(
-      text,
-      /createMessageType\(\{[\s\S]*?fields:\s*\[\s*\]/g,
-    ),
+    zeroFieldDescriptors: inlineZeroFieldDescriptors + emptyMessageHelpers,
+    inlineZeroFieldDescriptors,
     serviceMentions: countMatches(text, /MethodKind|ServiceType|MethodInfo/g),
     pureAnnotations: countMatches(text, /\/\*\s*[#@]?__PURE__\s*\*\//g),
   };
@@ -326,8 +336,13 @@ const report = {
     runtimeSubpathImports: sum(generatedFiles, "runtimeSubpathImports"),
     wktImports: sum(generatedFiles, "wktImports"),
     messageDescriptors: sum(generatedFiles, "messageDescriptors"),
+    emptyMessageHelpers: sum(generatedFiles, "emptyMessageHelpers"),
     enumDescriptors: sum(generatedFiles, "enumDescriptors"),
     zeroFieldDescriptors: sum(generatedFiles, "zeroFieldDescriptors"),
+    inlineZeroFieldDescriptors: sum(
+      generatedFiles,
+      "inlineZeroFieldDescriptors",
+    ),
     serviceMentions: sum(generatedFiles, "serviceMentions"),
     pureAnnotations: sum(generatedFiles, "pureAnnotations"),
     largestFiles: largestGeneratedFiles,
@@ -384,8 +399,10 @@ ${markdownTable([
     "subpath imports",
     "wkt imports",
     "messages",
+    "empty helpers",
     "enums",
     "zero-field",
+    "inline zero-field",
     "service refs",
     "pure",
   ],
@@ -396,8 +413,10 @@ ${markdownTable([
     report.generated.runtimeSubpathImports,
     report.generated.wktImports,
     report.generated.messageDescriptors,
+    report.generated.emptyMessageHelpers,
     report.generated.enumDescriptors,
     report.generated.zeroFieldDescriptors,
+    report.generated.inlineZeroFieldDescriptors,
     report.generated.serviceMentions,
     report.generated.pureAnnotations,
   ],

@@ -6,10 +6,13 @@ type ImportCase = {
 };
 
 const esmCases: ImportCase[] = [
-  { specifier: "@aptre/protobuf-es-lite", exports: ["createMessageType"] },
+  {
+    specifier: "@aptre/protobuf-es-lite",
+    exports: ["createEmptyMessageType", "createMessageType"],
+  },
   {
     specifier: "@aptre/protobuf-es-lite/message",
-    exports: ["createMessageType"],
+    exports: ["createEmptyMessageType", "createMessageType"],
   },
   { specifier: "@aptre/protobuf-es-lite/field", exports: ["newFieldList"] },
   { specifier: "@aptre/protobuf-es-lite/scalar", exports: ["ScalarType"] },
@@ -47,10 +50,13 @@ const esmCases: ImportCase[] = [
 ];
 
 const cjsCases: ImportCase[] = [
-  { specifier: "@aptre/protobuf-es-lite", exports: ["createMessageType"] },
+  {
+    specifier: "@aptre/protobuf-es-lite",
+    exports: ["createEmptyMessageType", "createMessageType"],
+  },
   {
     specifier: "@aptre/protobuf-es-lite/message",
-    exports: ["createMessageType"],
+    exports: ["createEmptyMessageType", "createMessageType"],
   },
   { specifier: "@aptre/protobuf-es-lite/scalar", exports: ["ScalarType"] },
   {
