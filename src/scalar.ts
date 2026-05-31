@@ -207,9 +207,12 @@ const dateZeroValue = +new Date(0);
  * optional or repeated.
  */
 export function isScalarZeroValue(type: ScalarType, value: unknown): boolean {
+  if (value == null) {
+    return true;
+  }
   switch (type) {
     case ScalarType.DATE:
-      return value == null || +value === dateZeroValue;
+      return +value === dateZeroValue;
     case ScalarType.BOOL:
       return value === false;
     case ScalarType.STRING:

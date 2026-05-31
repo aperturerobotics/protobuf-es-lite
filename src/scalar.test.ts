@@ -59,6 +59,8 @@ describe("scalarZeroValue", () => {
 
 describe("isScalarZeroValue", () => {
   it("returns true for zero values", () => {
+    expect(isScalarZeroValue(ScalarType.UINT32, undefined)).toBe(true);
+    expect(isScalarZeroValue(ScalarType.STRING, null)).toBe(true);
     expect(isScalarZeroValue(ScalarType.BOOL, false)).toBe(true);
     expect(isScalarZeroValue(ScalarType.INT32, 0)).toBe(true);
     expect(isScalarZeroValue(ScalarType.STRING, "")).toBe(true);
