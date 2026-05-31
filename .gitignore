@@ -1,6 +1,7 @@
 /node_modules
 /coverage
 /build
+/.tmp
 /.log
 /.tools
 /.aider*

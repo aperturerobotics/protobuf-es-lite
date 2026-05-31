@@ -1,0 +1,85 @@
+import { execFileSync } from "node:child_process";
+
+type ImportCase = {
+  specifier: string;
+  exports: string[];
+};
+
+const esmCases: ImportCase[] = [
+  { specifier: "@aptre/protobuf-es-lite", exports: ["createMessageType"] },
+  {
+    specifier: "@aptre/protobuf-es-lite/message",
+    exports: ["createMessageType"],
+  },
+  { specifier: "@aptre/protobuf-es-lite/field", exports: ["newFieldList"] },
+  { specifier: "@aptre/protobuf-es-lite/scalar", exports: ["ScalarType"] },
+  { specifier: "@aptre/protobuf-es-lite/enum", exports: ["createEnumType"] },
+  {
+    specifier: "@aptre/protobuf-es-lite/binary",
+    exports: ["binaryMakeReadOptions"],
+  },
+  {
+    specifier: "@aptre/protobuf-es-lite/json",
+    exports: ["jsonMakeReadOptions"],
+  },
+  {
+    specifier: "@aptre/protobuf-es-lite/partial",
+    exports: ["applyPartialMessage"],
+  },
+  { specifier: "@aptre/protobuf-es-lite/type-registry", exports: [] },
+  {
+    specifier: "@aptre/protobuf-es-lite/service-type",
+    exports: ["MethodKind"],
+  },
+  {
+    specifier: "@aptre/protobuf-es-lite/google/protobuf/timestamp",
+    exports: ["Timestamp"],
+  },
+  { specifier: "@aptre/protobuf-es-lite/protoplugin", exports: [] },
+];
+
+const cjsCases: ImportCase[] = [
+  { specifier: "@aptre/protobuf-es-lite", exports: ["createMessageType"] },
+  {
+    specifier: "@aptre/protobuf-es-lite/message",
+    exports: ["createMessageType"],
+  },
+  { specifier: "@aptre/protobuf-es-lite/scalar", exports: ["ScalarType"] },
+  {
+    specifier: "@aptre/protobuf-es-lite/google/protobuf/timestamp",
+    exports: ["Timestamp"],
+  },
+];
+
+async function checkEsm({ specifier, exports }: ImportCase) {
+  const module = await import(specifier);
+  for (const exportName of exports) {
+    if (!(exportName in module)) {
+      throw new Error(`${specifier} missing ESM export ${exportName}`);
+    }
+  }
+}
+
+function checkCjs({ specifier, exports }: ImportCase) {
+  const code = `
+    const mod = require(${JSON.stringify(specifier)});
+    for (const name of ${JSON.stringify(exports)}) {
+      if (!(name in mod)) {
+        throw new Error(${JSON.stringify(specifier)} + " missing CJS export " + name);
+      }
+    }
+  `;
+  execFileSync("node", ["--eval", code], { stdio: "inherit" });
+}
+
+for (const testCase of esmCases) {
+  await checkEsm(testCase);
+}
+
+for (const testCase of cjsCases) {
+  checkCjs(testCase);
+}
+
+console.log(
+  `checked ${esmCases.length} ESM imports and ${cjsCases.length} CJS imports`,
+);

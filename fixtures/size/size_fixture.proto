@@ -1,0 +1,61 @@
+syntax = "proto3";
+package sizefixture;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+message EmptyMessage {}
+
+enum Status {
+  STATUS_UNKNOWN = 0;
+  STATUS_READY = 1;
+  STATUS_PAUSED = 2;
+}
+
+message Leaf {
+  string id = 1;
+  bytes payload = 2;
+}
+
+message Branch {
+  string name = 1;
+  repeated Leaf leaves = 2;
+  map<string, Leaf> indexed_leaves = 3;
+  oneof selected {
+    Leaf selected_leaf = 4;
+    Status selected_status = 5;
+    string selected_note = 6;
+  }
+  repeated google.protobuf.Timestamp checkpoints = 7;
+}
+
+message LargeShape {
+  EmptyMessage empty = 1;
+  Status status = 2;
+  repeated Branch branches = 3;
+  map<string, Branch> branch_map = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Empty marker = 6;
+  string field_7 = 7;
+  string field_8 = 8;
+  string field_9 = 9;
+  string field_10 = 10;
+  string field_11 = 11;
+  string field_12 = 12;
+  string field_13 = 13;
+  string field_14 = 14;
+  string field_15 = 15;
+  string field_16 = 16;
+  string field_17 = 17;
+  string field_18 = 18;
+  string field_19 = 19;
+  string field_20 = 20;
+}
+
+service FixtureService {
+  rpc Ping(google.protobuf.Empty) returns (EmptyMessage);
+  rpc Fetch(Leaf) returns (LargeShape);
+  rpc Watch(Branch) returns (stream LargeShape);
+  rpc Upload(stream Leaf) returns (google.protobuf.Empty);
+  rpc Sync(stream Branch) returns (stream LargeShape);
+}

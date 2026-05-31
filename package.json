@@ -21,6 +21,7 @@
     "protoc-gen-es-lite": "bin/protoc-gen-es-lite"
   },
   "type": "module",
+  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -36,6 +37,51 @@
       "types": "./dist/create-descriptor-set.d.ts",
       "import": "./dist/create-descriptor-set.js",
       "require": "./dist/create-descriptor-set.js"
+    },
+    "./message": {
+      "types": "./dist/message.d.ts",
+      "import": "./dist/message.js",
+      "require": "./dist/message.js"
+    },
+    "./field": {
+      "types": "./dist/field.d.ts",
+      "import": "./dist/field.js",
+      "require": "./dist/field.js"
+    },
+    "./scalar": {
+      "types": "./dist/scalar.d.ts",
+      "import": "./dist/scalar.js",
+      "require": "./dist/scalar.js"
+    },
+    "./enum": {
+      "types": "./dist/enum.d.ts",
+      "import": "./dist/enum.js",
+      "require": "./dist/enum.js"
+    },
+    "./binary": {
+      "types": "./dist/binary.d.ts",
+      "import": "./dist/binary.js",
+      "require": "./dist/binary.js"
+    },
+    "./json": {
+      "types": "./dist/json.d.ts",
+      "import": "./dist/json.js",
+      "require": "./dist/json.js"
+    },
+    "./partial": {
+      "types": "./dist/partial.d.ts",
+      "import": "./dist/partial.js",
+      "require": "./dist/partial.js"
+    },
+    "./type-registry": {
+      "types": "./dist/type-registry.d.ts",
+      "import": "./dist/type-registry.js",
+      "require": "./dist/type-registry.js"
+    },
+    "./service-type": {
+      "types": "./dist/service-type.d.ts",
+      "import": "./dist/service-type.js",
+      "require": "./dist/service-type.js"
     },
     "./protoplugin": {
       "types": "./dist/protoplugin/index.d.ts",
@@ -110,6 +156,8 @@
     "gen:example": "bash gen.bash ./example/example.proto",
     "format": "prettier --write './src/**/(*.ts|*.tsx|*.html|*.css|*.scss)'",
     "precommit": "lint-staged",
+    "test:imports": "bun run build && bun run scripts/package-import-matrix.ts",
+    "size:protobuf": "bun run scripts/protobuf-size-report.ts",
     "test": "vitest run",
     "lint": "eslint ./",
     "release:version": "npm version patch -m \"release: v%s\" --no-git-tag-version",
