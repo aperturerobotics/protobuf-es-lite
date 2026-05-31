@@ -1,4 +1,5 @@
 import type { EnumType } from "./enum.js";
+import type { MessageRecord } from "./message-access.js";
 import type { Message, MessageType } from "./message.js";
 import { assert } from "./assert.js";
 import { LongType, ScalarType, isScalarZeroValue } from "./scalar.js";
@@ -212,7 +213,7 @@ export function newFieldList(
  */
 export function isFieldSet(
   field: FieldInfo,
-  target: Record<string, any> | null | undefined,
+  target: MessageRecord | null | undefined,
 ) {
   const localName = field.localName;
   if (!target) {
@@ -222,7 +223,10 @@ export function isFieldSet(
     return !!(target[localName] as unknown[])?.length;
   }
   if (field.oneof) {
-    return target[field.oneof.localName]?.case === localName;
+    return (
+      (target[field.oneof.localName] as { case?: string } | undefined)?.case ===
+      localName
+    );
   }
   switch (field.kind) {
     case "enum":

@@ -32,8 +32,10 @@
 // @generated from file google/protobuf/source_context.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, ScalarType } from "../../index.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import { ScalarType } from "../../scalar.js";
+import type { PartialFieldInfo } from "../../field.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -53,11 +55,11 @@ export interface SourceContext {
   fileName?: string;
 }
 
-// SourceContext contains the message type declaration for SourceContext.
-export const SourceContext: MessageType<SourceContext> = createMessageType({
-  typeName: "google.protobuf.SourceContext",
-  fields: [
-    { no: 1, name: "file_name", kind: "scalar", T: ScalarType.STRING },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: true,
-});
+export const SourceContext: MessageType<SourceContext> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.SourceContext",
+    fields: [
+      { no: 1, name: "file_name", kind: "scalar", T: ScalarType.STRING },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: true,
+  });

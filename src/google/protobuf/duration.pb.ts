@@ -32,18 +32,13 @@
 // @generated from file google/protobuf/duration.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type {
-  JsonReadOptions,
-  JsonValue,
-  MessageType,
-  PartialFieldInfo,
-} from "../../index.js";
-import {
-  createMessageType,
-  jsonDebugValue,
-  protoInt64,
-  ScalarType,
-} from "../../index.js";
+import type { JsonReadOptions, JsonValue } from "../../json.js";
+import { jsonDebugValue } from "../../json.js";
+import { protoInt64 } from "../../proto-int64.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import { ScalarType } from "../../scalar.js";
+import type { PartialFieldInfo } from "../../field.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -133,7 +128,6 @@ export interface Duration {
   nanos?: number;
 }
 
-// Duration_Wkt contains the well-known-type overrides for Duration.
 const Duration_Wkt = {
   fromJson(
     json: JsonValue | null | undefined,
@@ -193,15 +187,14 @@ const Duration_Wkt = {
   },
 };
 
-// Duration contains the message type declaration for Duration.
 export const Duration: MessageType<Duration> & typeof Duration_Wkt =
-  createMessageType<Duration, typeof Duration_Wkt>(
+  /* @__PURE__ */ createMessageType<Duration, typeof Duration_Wkt>(
     {
       typeName: "google.protobuf.Duration",
       fields: [
         { no: 1, name: "seconds", kind: "scalar", T: ScalarType.INT64 },
         { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
-      ] as readonly PartialFieldInfo[],
+      ] satisfies readonly PartialFieldInfo[],
       packedByDefault: true,
     },
     Duration_Wkt,

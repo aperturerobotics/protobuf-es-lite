@@ -32,9 +32,12 @@
 // @generated from file google/protobuf/type.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createEnumType, createMessageType, ScalarType } from "../../index.js";
+import { createEnumType } from "../../enum.js";
 import { Any } from "./any.pb.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import { ScalarType } from "../../scalar.js";
+import type { PartialFieldInfo } from "../../field.js";
 import { SourceContext } from "./source_context.pb.js";
 
 export const protobufPackage = "google.protobuf";
@@ -67,12 +70,14 @@ export enum Syntax {
   EDITIONS = 2,
 }
 
-// Syntax_Enum is the enum type for Syntax.
-export const Syntax_Enum = createEnumType("google.protobuf.Syntax", [
-  { no: 0, name: "SYNTAX_PROTO2" },
-  { no: 1, name: "SYNTAX_PROTO3" },
-  { no: 2, name: "SYNTAX_EDITIONS" },
-]);
+export const Syntax_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.Syntax",
+  [
+    { no: 0, name: "SYNTAX_PROTO2" },
+    { no: 1, name: "SYNTAX_PROTO3" },
+    { no: 2, name: "SYNTAX_EDITIONS" },
+  ],
+);
 
 /**
  * Basic field types.
@@ -214,28 +219,30 @@ export enum Field_Kind {
   TYPE_SINT64 = 18,
 }
 
-// Field_Kind_Enum is the enum type for Field_Kind.
-export const Field_Kind_Enum = createEnumType("google.protobuf.Field.Kind", [
-  { no: 0, name: "TYPE_UNKNOWN" },
-  { no: 1, name: "TYPE_DOUBLE" },
-  { no: 2, name: "TYPE_FLOAT" },
-  { no: 3, name: "TYPE_INT64" },
-  { no: 4, name: "TYPE_UINT64" },
-  { no: 5, name: "TYPE_INT32" },
-  { no: 6, name: "TYPE_FIXED64" },
-  { no: 7, name: "TYPE_FIXED32" },
-  { no: 8, name: "TYPE_BOOL" },
-  { no: 9, name: "TYPE_STRING" },
-  { no: 10, name: "TYPE_GROUP" },
-  { no: 11, name: "TYPE_MESSAGE" },
-  { no: 12, name: "TYPE_BYTES" },
-  { no: 13, name: "TYPE_UINT32" },
-  { no: 14, name: "TYPE_ENUM" },
-  { no: 15, name: "TYPE_SFIXED32" },
-  { no: 16, name: "TYPE_SFIXED64" },
-  { no: 17, name: "TYPE_SINT32" },
-  { no: 18, name: "TYPE_SINT64" },
-]);
+export const Field_Kind_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.Field.Kind",
+  [
+    { no: 0, name: "TYPE_UNKNOWN" },
+    { no: 1, name: "TYPE_DOUBLE" },
+    { no: 2, name: "TYPE_FLOAT" },
+    { no: 3, name: "TYPE_INT64" },
+    { no: 4, name: "TYPE_UINT64" },
+    { no: 5, name: "TYPE_INT32" },
+    { no: 6, name: "TYPE_FIXED64" },
+    { no: 7, name: "TYPE_FIXED32" },
+    { no: 8, name: "TYPE_BOOL" },
+    { no: 9, name: "TYPE_STRING" },
+    { no: 10, name: "TYPE_GROUP" },
+    { no: 11, name: "TYPE_MESSAGE" },
+    { no: 12, name: "TYPE_BYTES" },
+    { no: 13, name: "TYPE_UINT32" },
+    { no: 14, name: "TYPE_ENUM" },
+    { no: 15, name: "TYPE_SFIXED32" },
+    { no: 16, name: "TYPE_SFIXED64" },
+    { no: 17, name: "TYPE_SINT32" },
+    { no: 18, name: "TYPE_SINT64" },
+  ],
+);
 
 /**
  * Whether a field is optional, required, or repeated.
@@ -272,8 +279,7 @@ export enum Field_Cardinality {
   REPEATED = 3,
 }
 
-// Field_Cardinality_Enum is the enum type for Field_Cardinality.
-export const Field_Cardinality_Enum = createEnumType(
+export const Field_Cardinality_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Field.Cardinality",
   [
     { no: 0, name: "CARDINALITY_UNKNOWN" },
@@ -310,13 +316,12 @@ export interface Option {
   value?: Any;
 }
 
-// Option contains the message type declaration for Option.
-export const Option: MessageType<Option> = createMessageType({
+export const Option: MessageType<Option> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Option",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
     { no: 2, name: "value", kind: "message", T: () => Any },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });
 
@@ -390,8 +395,7 @@ export interface Field {
   defaultValue?: string;
 }
 
-// Field contains the message type declaration for Field.
-export const Field: MessageType<Field> = createMessageType({
+export const Field: MessageType<Field> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Field",
   fields: [
     { no: 1, name: "kind", kind: "enum", T: Field_Kind_Enum },
@@ -410,7 +414,7 @@ export const Field: MessageType<Field> = createMessageType({
     },
     { no: 10, name: "json_name", kind: "scalar", T: ScalarType.STRING },
     { no: 11, name: "default_value", kind: "scalar", T: ScalarType.STRING },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });
 
@@ -464,8 +468,7 @@ export interface Type {
   edition?: string;
 }
 
-// Type contains the message type declaration for Type.
-export const Type: MessageType<Type> = createMessageType({
+export const Type: MessageType<Type> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Type",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
@@ -487,7 +490,7 @@ export const Type: MessageType<Type> = createMessageType({
     { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
     { no: 6, name: "syntax", kind: "enum", T: Syntax_Enum },
     { no: 7, name: "edition", kind: "scalar", T: ScalarType.STRING },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });
 
@@ -517,22 +520,22 @@ export interface EnumValue {
   options?: Option[];
 }
 
-// EnumValue contains the message type declaration for EnumValue.
-export const EnumValue: MessageType<EnumValue> = createMessageType({
-  typeName: "google.protobuf.EnumValue",
-  fields: [
-    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-    { no: 2, name: "number", kind: "scalar", T: ScalarType.INT32 },
-    {
-      no: 3,
-      name: "options",
-      kind: "message",
-      T: () => Option,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: true,
-});
+export const EnumValue: MessageType<EnumValue> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.EnumValue",
+    fields: [
+      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
+      { no: 2, name: "number", kind: "scalar", T: ScalarType.INT32 },
+      {
+        no: 3,
+        name: "options",
+        kind: "message",
+        T: () => Option,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: true,
+  });
 
 /**
  * Enum type definition.
@@ -578,8 +581,7 @@ export interface Enum {
   edition?: string;
 }
 
-// Enum contains the message type declaration for Enum.
-export const Enum: MessageType<Enum> = createMessageType({
+export const Enum: MessageType<Enum> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Enum",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
@@ -600,6 +602,6 @@ export const Enum: MessageType<Enum> = createMessageType({
     { no: 4, name: "source_context", kind: "message", T: () => SourceContext },
     { no: 5, name: "syntax", kind: "enum", T: Syntax_Enum },
     { no: 6, name: "edition", kind: "scalar", T: ScalarType.STRING },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });

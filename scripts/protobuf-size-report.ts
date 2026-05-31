@@ -78,6 +78,9 @@ const runtimeModuleSignals = [
   ["type-registry", /\b(createTypeRegistry|IMessageTypeRegistry)\b/g],
 ] as const;
 
+const runtimeOwnerImportRE =
+  /from\s+["'](?:@aptre\/protobuf-es-lite\/(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)|(?:\.\.\/src|\.\.\/\.\.)\/(?:message|field|scalar|enum|binary|json|partial|proto-int64|proto-double|type-registry|service-type)\.js)["']/g;
+
 function listFiles(dir: string, suffix: string): string[] {
   if (!existsSync(dir)) return [];
   const files: string[] = [];
@@ -106,10 +109,7 @@ function analyzeGeneratedFile(path: string): GeneratedFileStats {
         text,
         /from\s+["'](?:@aptre\/protobuf-es-lite|\.\.\/src\/index\.js|\.\.\/\.\.\/index\.js)["']/g,
       ) + countMatches(text, /from\s+["']@aptre\/protobuf-es-lite["']/g),
-    runtimeSubpathImports: countMatches(
-      text,
-      /from\s+["']@aptre\/protobuf-es-lite\/[^"']+["']/g,
-    ),
+    runtimeSubpathImports: countMatches(text, runtimeOwnerImportRE),
     wktImports: countMatches(text, /google\/protobuf\/[^"']+/g),
     messageDescriptors: countMatches(text, /createMessageType\(/g),
     enumDescriptors: countMatches(text, /createEnumType\(/g),
@@ -118,7 +118,7 @@ function analyzeGeneratedFile(path: string): GeneratedFileStats {
       /createMessageType\(\{[\s\S]*?fields:\s*\[\s*\]/g,
     ),
     serviceMentions: countMatches(text, /MethodKind|ServiceType|MethodInfo/g),
-    pureAnnotations: countMatches(text, /\/\s*#?__PURE__\s*\//g),
+    pureAnnotations: countMatches(text, /\/\*\s*[#@]?__PURE__\s*\*\//g),
   };
 }
 

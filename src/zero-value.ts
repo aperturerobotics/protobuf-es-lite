@@ -1,5 +1,6 @@
 import type { DescExtension, DescField } from "./descriptor-set.js";
 import { enumDescZeroValue } from "./enum.js";
+import type { MessageRecord } from "./message-access.js";
 import { localName } from "./names.js";
 import { scalarZeroValue } from "./scalar.js";
 
@@ -37,7 +38,7 @@ export function getFieldZeroValue(field: DescField | DescExtension) {
  * In proto3, zero-values are not written to the wire, unless the field is
  * optional or repeated.
  */
-export function isMessageZeroValue<T extends Record<string, any>>(
+export function isMessageZeroValue<T extends MessageRecord>(
   value: T | null | undefined,
   fields: (DescField | DescExtension)[],
 ): boolean {
@@ -81,7 +82,7 @@ export function compareFieldZeroValue<T>(
         throw new Error("invalid message: must be an object");
       }
       // We need to check if all the fields are empty.
-      return isMessageZeroValue(value, field.message.fields);
+      return isMessageZeroValue(value as MessageRecord, field.message.fields);
     case "map":
       return Object.create(null);
     case "enum": {

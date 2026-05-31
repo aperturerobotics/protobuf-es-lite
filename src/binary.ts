@@ -2,6 +2,8 @@ import type { FieldInfo, MessageFieldInfo } from "./field.js";
 import { FieldList, isFieldSet, resolveMessageType } from "./field.js";
 import { handleUnknownField, unknownFieldsSymbol } from "./unknown.js";
 import { unwrapField, wrapField } from "./field-wrapper.js";
+import type { MessageMap, MessageRecord } from "./message-access.js";
+import { createMessageRecord } from "./message-access.js";
 import type { ScalarValue } from "./scalar.js";
 import { LongType, ScalarType, scalarZeroValue } from "./scalar.js";
 import { assert } from "./assert.js";
@@ -69,7 +71,7 @@ function makeWriteOptions(
 }
 
 function readField(
-  target: Record<string, any>,
+  target: MessageRecord,
   reader: IBinaryReader,
   field: FieldInfo,
   wireType: WireType,
@@ -80,9 +82,9 @@ function readField(
   if (field.oneof) {
     let oneofMsg = target[field.oneof.localName];
     if (!oneofMsg) {
-      oneofMsg = target[field.oneof.localName] = Object.create(null);
+      oneofMsg = target[field.oneof.localName] = createMessageRecord();
     }
-    target = oneofMsg;
+    target = oneofMsg as MessageRecord;
     if (target.case != localName) {
       delete target.value;
     }
@@ -111,10 +113,10 @@ function readField(
         if (isPacked) {
           const e = reader.uint32() + reader.pos;
           while (reader.pos < e) {
-            tgtArr.push(read(reader, scalarType, verifyUtf8));
+            (tgtArr as unknown[]).push(read(reader, scalarType, verifyUtf8));
           }
         } else {
-          tgtArr.push(read(reader, scalarType, verifyUtf8));
+          (tgtArr as unknown[]).push(read(reader, scalarType, verifyUtf8));
         }
       } else {
         target[localName] = read(reader, scalarType, verifyUtf8);
@@ -129,12 +131,12 @@ function readField(
         if (!Array.isArray(tgtArr)) {
           tgtArr = target[localName] = [];
         }
-        tgtArr.push(
+        (tgtArr as unknown[]).push(
           unwrapField(
             messageType.fieldWrapper,
             readMessageField(
               reader,
-              Object.create(null),
+              createMessageRecord(),
               messageType.fields,
               options,
               field,
@@ -146,7 +148,7 @@ function readField(
           messageType.fieldWrapper,
           readMessageField(
             reader,
-            Object.create(null),
+            createMessageRecord(),
             messageType.fields,
             options,
             field,
@@ -158,33 +160,25 @@ function readField(
     case "map": {
       const [mapKey, mapVal] = readMapEntry(field, reader, options);
       if (typeof target[localName] !== "object") {
-        target[localName] = Object.create(null);
+        target[localName] = createMessageRecord();
       }
       // safe to assume presence of map object, oneof cannot contain repeated values
-      target[localName][mapKey] = mapVal;
+      (target[localName] as MessageMap)[mapKey] = mapVal;
       break;
     }
   }
 }
 
-/**
- * AnyMessage is an interface implemented by all messages. If you need to
- * handle messages of unknown type, this interface provides a convenient
- * index signature to access fields with message["fieldname"].
- */
-type AnyMessage = {
-  [k: string]: any;
-};
-
-// Read a map field, expecting key field = 1, value field = 2
+// Read a map field, expecting key field = 1, value field = 2.
 function readMapEntry(
   field: FieldInfo & { kind: "map" },
   reader: IBinaryReader,
   options: BinaryReadOptions,
-): [string | number, ScalarValue | AnyMessage | undefined] {
+): [string | number, ScalarValue | MessageRecord | undefined] {
   const length = reader.uint32(),
     end = reader.pos + length;
-  let key: ScalarValue | undefined, val: ScalarValue | AnyMessage | undefined;
+  let key: ScalarValue | undefined,
+    val: ScalarValue | MessageRecord | undefined;
   while (reader.pos < end) {
     const [fieldNo] = reader.tag();
     switch (fieldNo) {
@@ -202,7 +196,7 @@ function readMapEntry(
           case "message": {
             val = readMessageField(
               reader,
-              Object.create(null),
+              createMessageRecord(),
               resolveMessageType(field.V.T).fields,
               options,
               undefined,
@@ -229,7 +223,7 @@ function readMapEntry(
         val = field.V.T.values[0].no;
         break;
       case "message":
-        val = Object.create(null);
+        val = createMessageRecord();
         break;
     }
   }
@@ -330,11 +324,11 @@ function readMessage<T>(
     if (!field) {
       const data = reader.skip(wireType);
       if (options.readUnknownFields) {
-        handleUnknownField(message as AnyMessage, fieldNo, wireType, data);
+        handleUnknownField(message as MessageRecord, fieldNo, wireType, data);
       }
       continue;
     }
-    readField(message as AnyMessage, reader, field, wireType, options);
+    readField(message as MessageRecord, reader, field, wireType, options);
   }
   if (
     delimitedMessageEncoding &&
@@ -354,7 +348,8 @@ function writeMessage<T>(
   options: BinaryWriteOptions,
 ) {
   for (const field of fields.byNumber()) {
-    if (!isFieldSet(field, message as Record<string, any>)) {
+    const record = message as MessageRecord;
+    if (!isFieldSet(field, record)) {
       if (field.req) {
         throw new Error(
           `cannot encode field ${field.name} to binary: required field not set`,
@@ -364,8 +359,8 @@ function writeMessage<T>(
     }
     const value =
       field.oneof ?
-        (message as AnyMessage)[field.oneof.localName].value
-      : (message as AnyMessage)[field.localName];
+        (record[field.oneof.localName] as MessageRecord).value
+      : record[field.localName];
     if (value !== undefined) {
       writeField(field, value, writer, options);
     }
@@ -421,8 +416,12 @@ function writeField<T>(
 }
 
 function writeUnknownFields<T>(message: T, writer: IBinaryWriter): void {
-  const m = message as any;
-  const c = m[unknownFieldsSymbol] as any[] | undefined;
+  const m = message as {
+    [unknownFieldsSymbol]?:
+      | { no: number; wireType: WireType; data: Uint8Array }[]
+      | undefined;
+  };
+  const c = m[unknownFieldsSymbol];
   if (c) {
     for (const f of c) {
       writer.tag(f.no, f.wireType).raw(f.data);
@@ -443,12 +442,12 @@ function writeMessageField<T>(
   if (field.delimited)
     writer
       .tag(field.no, WireType.StartGroup)
-      .raw(messageType.toBinary(message as AnyMessage, options))
+      .raw(messageType.toBinary(message as MessageRecord, options))
       .tag(field.no, WireType.EndGroup);
   else
     writer
       .tag(field.no, WireType.LengthDelimited)
-      .bytes(messageType.toBinary(message as AnyMessage, options));
+      .bytes(messageType.toBinary(message as MessageRecord, options));
 }
 
 function writeScalar(

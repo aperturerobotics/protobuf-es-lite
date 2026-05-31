@@ -32,20 +32,18 @@
 // @generated from file google/protobuf/struct.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
+import { createEnumType } from "../../enum.js";
 import type {
   JsonObject,
   JsonReadOptions,
   JsonValue,
   JsonWriteOptions,
-  MessageType,
-  PartialFieldInfo,
-} from "../../index.js";
-import {
-  createEnumType,
-  createMessageType,
-  jsonDebugValue,
-  ScalarType,
-} from "../../index.js";
+} from "../../json.js";
+import { jsonDebugValue } from "../../json.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import type { PartialFieldInfo } from "../../field.js";
+import { ScalarType } from "../../scalar.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -66,10 +64,10 @@ export enum NullValue {
   NULL_VALUE = 0,
 }
 
-// NullValue_Enum is the enum type for NullValue.
-export const NullValue_Enum = createEnumType("google.protobuf.NullValue", [
-  { no: 0, name: "NULL_VALUE" },
-]);
+export const NullValue_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.NullValue",
+  [{ no: 0, name: "NULL_VALUE" }],
+);
 
 /**
  * `ListValue` is a wrapper around a repeated field of values.
@@ -87,7 +85,6 @@ export interface ListValue {
   values?: Value[];
 }
 
-// ListValue_Wkt contains the well-known-type overrides for ListValue.
 const ListValue_Wkt = {
   toJson(msg: ListValue, options?: Partial<JsonWriteOptions>): JsonValue {
     return msg.values?.map((v) => Value.toJson(v, options)) ?? [];
@@ -109,9 +106,8 @@ const ListValue_Wkt = {
   },
 };
 
-// ListValue contains the message type declaration for ListValue.
 export const ListValue: MessageType<ListValue> & typeof ListValue_Wkt =
-  createMessageType<ListValue, typeof ListValue_Wkt>(
+  /* @__PURE__ */ createMessageType<ListValue, typeof ListValue_Wkt>(
     {
       typeName: "google.protobuf.ListValue",
       fields: [
@@ -122,7 +118,7 @@ export const ListValue: MessageType<ListValue> & typeof ListValue_Wkt =
           T: () => Value,
           repeated: true,
         },
-      ] as readonly PartialFieldInfo[],
+      ] satisfies readonly PartialFieldInfo[],
       packedByDefault: true,
     },
     ListValue_Wkt,
@@ -205,7 +201,6 @@ export interface Value {
       };
 }
 
-// Value_Wkt contains the well-known-type overrides for Value.
 const Value_Wkt = {
   toJson(msg: Value, options?: Partial<JsonWriteOptions>): JsonValue {
     switch (msg.kind?.case) {
@@ -269,61 +264,58 @@ const Value_Wkt = {
   },
 };
 
-// Value contains the message type declaration for Value.
-export const Value: MessageType<Value> & typeof Value_Wkt = createMessageType<
-  Value,
-  typeof Value_Wkt
->(
-  {
-    typeName: "google.protobuf.Value",
-    fields: [
-      {
-        no: 1,
-        name: "null_value",
-        kind: "enum",
-        T: NullValue_Enum,
-        oneof: "kind",
-      },
-      {
-        no: 2,
-        name: "number_value",
-        kind: "scalar",
-        T: ScalarType.DOUBLE,
-        oneof: "kind",
-      },
-      {
-        no: 3,
-        name: "string_value",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        oneof: "kind",
-      },
-      {
-        no: 4,
-        name: "bool_value",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        oneof: "kind",
-      },
-      {
-        no: 5,
-        name: "struct_value",
-        kind: "message",
-        T: () => Struct,
-        oneof: "kind",
-      },
-      {
-        no: 6,
-        name: "list_value",
-        kind: "message",
-        T: () => ListValue,
-        oneof: "kind",
-      },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-  Value_Wkt,
-);
+export const Value: MessageType<Value> & typeof Value_Wkt =
+  /* @__PURE__ */ createMessageType<Value, typeof Value_Wkt>(
+    {
+      typeName: "google.protobuf.Value",
+      fields: [
+        {
+          no: 1,
+          name: "null_value",
+          kind: "enum",
+          T: NullValue_Enum,
+          oneof: "kind",
+        },
+        {
+          no: 2,
+          name: "number_value",
+          kind: "scalar",
+          T: ScalarType.DOUBLE,
+          oneof: "kind",
+        },
+        {
+          no: 3,
+          name: "string_value",
+          kind: "scalar",
+          T: ScalarType.STRING,
+          oneof: "kind",
+        },
+        {
+          no: 4,
+          name: "bool_value",
+          kind: "scalar",
+          T: ScalarType.BOOL,
+          oneof: "kind",
+        },
+        {
+          no: 5,
+          name: "struct_value",
+          kind: "message",
+          T: () => Struct,
+          oneof: "kind",
+        },
+        {
+          no: 6,
+          name: "list_value",
+          kind: "message",
+          T: () => ListValue,
+          oneof: "kind",
+        },
+      ] satisfies readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    Value_Wkt,
+  );
 
 /**
  * `Struct` represents a structured data value, consisting of fields
@@ -346,7 +338,6 @@ export interface Struct {
   fields?: { [key: string]: Value };
 }
 
-// Struct_Wkt contains the well-known-type overrides for Struct.
 const Struct_Wkt = {
   toJson(msg: Struct, options?: Partial<JsonWriteOptions>): JsonValue {
     const json: JsonObject = {};
@@ -375,9 +366,8 @@ const Struct_Wkt = {
   },
 };
 
-// Struct contains the message type declaration for Struct.
 export const Struct: MessageType<Struct> & typeof Struct_Wkt =
-  createMessageType<Struct, typeof Struct_Wkt>(
+  /* @__PURE__ */ createMessageType<Struct, typeof Struct_Wkt>(
     {
       typeName: "google.protobuf.Struct",
       fields: [
@@ -388,7 +378,7 @@ export const Struct: MessageType<Struct> & typeof Struct_Wkt =
           K: ScalarType.STRING,
           V: { kind: "message", T: () => Value },
         },
-      ] as readonly PartialFieldInfo[],
+      ] satisfies readonly PartialFieldInfo[],
       packedByDefault: true,
     },
     Struct_Wkt,

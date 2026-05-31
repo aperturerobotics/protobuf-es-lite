@@ -14,6 +14,8 @@ protoc \
     --es-lite_opt ts_nocheck=false \
     --proto_path ./src \
     $PROTO_FILES
+sed -i -e "s/@aptre\/protobuf-es-lite\/google\/protobuf\/\([^\"']*\)/.\/\1.pb.js/g" ./src/google/protobuf/*.pb.ts
+sed -i -e "s/@aptre\/protobuf-es-lite\/\([^\"']*\)/..\/..\/\1.js/g" ./src/google/protobuf/*.pb.ts
 sed -i -e "s/@aptre\/protobuf-es-lite/..\/..\/index.js/g" ./src/google/protobuf/*.pb.ts
 prettier_ts "$PROTO_FILES"
 popd

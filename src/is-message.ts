@@ -1,19 +1,22 @@
 import type { FieldInfo } from "./field.js";
 import { resolveMessageType } from "./field.js";
 import type { AnyMessage, CompleteMessage, Field, Message } from "./message.js";
+import type { MessageRecord } from "./message-access.js";
+import { asMessageRecord } from "./message-access.js";
 
 /**
  * Check whether the given partial is a valid message.
  */
 export function isMessage<T extends Message<T> = AnyMessage>(
-  arg: any,
+  arg: unknown,
   fields: readonly FieldInfo[],
 ): arg is T {
   if (arg == null || typeof arg !== "object") {
     return false;
   }
+  const record = asMessageRecord(arg);
   return fields.every((fi) => {
-    const value = (arg as any)[fi.localName];
+    const value = record[fi.localName];
 
     // if the value is null or undefined this is OK in isMessage.
     if (value == null) {
@@ -31,16 +34,18 @@ export function isMessage<T extends Message<T> = AnyMessage>(
 /**
  * Check whether the given partial field is a valid field value.
  */
-export function isField<F>(value: any, field: FieldInfo): value is Field<F> {
+export function isField<F>(
+  value: unknown,
+  field: FieldInfo,
+): value is Field<F> {
   if (value == null) {
     return false;
   }
   if (field.oneof) {
     // For oneof fields, only one field should be set
     const oneofFields = field.oneof.fields;
-    const setField = oneofFields.find(
-      (f) => (value as any)[f.localName] !== undefined,
-    );
+    const record = asMessageRecord(value as object);
+    const setField = oneofFields.find((f) => record[f.localName] !== undefined);
     return setField === field;
   }
 
@@ -59,26 +64,24 @@ export function isField<F>(value: any, field: FieldInfo): value is Field<F> {
     case "enum":
       return typeof value === "number";
     case "map":
-      return Object.values(value as Record<string, Field<unknown>>).every(
-        (val) => {
-          const valueKind = field.V.kind;
-          switch (valueKind) {
-            case "scalar":
-              return true;
-            case "enum":
-              return typeof val === "number";
-            case "message": {
-              const messageType = resolveMessageType(field.V.T);
-              return isMessage(
-                val as Message<AnyMessage>,
-                messageType.fields.list(),
-              );
-            }
-            default:
-              return valueKind satisfies never;
+      return Object.values(value as MessageRecord).every((val) => {
+        const valueKind = field.V.kind;
+        switch (valueKind) {
+          case "scalar":
+            return true;
+          case "enum":
+            return typeof val === "number";
+          case "message": {
+            const messageType = resolveMessageType(field.V.T);
+            return isMessage(
+              val as Message<AnyMessage>,
+              messageType.fields.list(),
+            );
           }
-        },
-      );
+          default:
+            return valueKind satisfies never;
+        }
+      });
 
     default:
       return fieldKind satisfies never;
@@ -96,15 +99,17 @@ export function isCompleteMessage<T extends Message<T> = AnyMessage>(
   if (arg == null || typeof arg !== "object") {
     return false;
   }
+  const record = asMessageRecord(arg);
   return fields.every((fi) => {
-    const value = (arg as any)[fi.localName];
+    const value = record[fi.localName];
 
     if (fi.repeated) {
       return (
-        Array.isArray(value) && value.every((item) => isCompleteField(item, fi))
+        Array.isArray(value) &&
+        value.every((item) => isCompleteField(item as Field<unknown>, fi))
       );
     } else {
-      return isCompleteField(value, fi);
+      return isCompleteField(value as Field<unknown>, fi);
     }
   });
 }
@@ -117,9 +122,8 @@ export function isCompleteField<F>(value: Field<F>, field: FieldInfo): boolean {
   if (field.oneof) {
     // For oneof fields, only one field should be set
     const oneofFields = field.oneof.fields;
-    const setField = oneofFields.find(
-      (f) => (value as any)[f.localName] !== undefined,
-    );
+    const record = asMessageRecord(value as object);
+    const setField = oneofFields.find((f) => record[f.localName] !== undefined);
     return setField === field;
   }
 
@@ -141,26 +145,24 @@ export function isCompleteField<F>(value: Field<F>, field: FieldInfo): boolean {
     case "enum":
       return typeof value === "number";
     case "map":
-      return Object.values(value as Record<string, Field<unknown>>).every(
-        (val) => {
-          const valueKind = field.V.kind;
-          switch (valueKind) {
-            case "scalar":
-              return true;
-            case "enum":
-              return typeof val === "number";
-            case "message": {
-              const messageType = resolveMessageType(field.V.T);
-              return isCompleteMessage(
-                val as Message<AnyMessage>,
-                messageType.fields.list(),
-              );
-            }
-            default:
-              return valueKind satisfies never;
+      return Object.values(value as MessageRecord).every((val) => {
+        const valueKind = field.V.kind;
+        switch (valueKind) {
+          case "scalar":
+            return true;
+          case "enum":
+            return typeof val === "number";
+          case "message": {
+            const messageType = resolveMessageType(field.V.T);
+            return isCompleteMessage(
+              val as Message<AnyMessage>,
+              messageType.fields.list(),
+            );
           }
-        },
-      );
+          default:
+            return valueKind satisfies never;
+        }
+      });
 
     default:
       return fieldKind satisfies never;

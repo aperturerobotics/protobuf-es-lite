@@ -34,8 +34,10 @@
 
 import type { Syntax } from "./type.pb.js";
 import { Option, Syntax_Enum } from "./type.pb.js";
-import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, ScalarType } from "../../index.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import { ScalarType } from "../../scalar.js";
+import type { PartialFieldInfo } from "../../field.js";
 import { SourceContext } from "./source_context.pb.js";
 
 export const protobufPackage = "google.protobuf";
@@ -90,8 +92,7 @@ export interface Method {
   syntax?: Syntax;
 }
 
-// Method contains the message type declaration for Method.
-export const Method: MessageType<Method> = createMessageType({
+export const Method: MessageType<Method> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Method",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
@@ -107,7 +108,7 @@ export const Method: MessageType<Method> = createMessageType({
       repeated: true,
     },
     { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });
 
@@ -209,13 +210,12 @@ export interface Mixin {
   root?: string;
 }
 
-// Mixin contains the message type declaration for Mixin.
-export const Mixin: MessageType<Mixin> = createMessageType({
+export const Mixin: MessageType<Mixin> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Mixin",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
     { no: 2, name: "root", kind: "scalar", T: ScalarType.STRING },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });
 
@@ -298,8 +298,7 @@ export interface Api {
   syntax?: Syntax;
 }
 
-// Api contains the message type declaration for Api.
-export const Api: MessageType<Api> = createMessageType({
+export const Api: MessageType<Api> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Api",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
@@ -321,6 +320,6 @@ export const Api: MessageType<Api> = createMessageType({
     { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
     { no: 6, name: "mixins", kind: "message", T: () => Mixin, repeated: true },
     { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });

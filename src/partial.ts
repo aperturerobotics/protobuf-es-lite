@@ -3,6 +3,8 @@ import type { MapValueInfo } from "./field.js";
 import { FieldList, resolveMessageType } from "./field.js";
 import type { AnyMessage, Message } from "./message.js";
 import { createCompleteMessage } from "./message.js";
+import type { MessageMap, MessageRecord } from "./message-access.js";
+import { asMessageRecord, createMessageRecord } from "./message-access.js";
 import { throwSanitizeKey } from "./names.js";
 import { normalizeScalarValue } from "./scalar.js";
 
@@ -18,8 +20,8 @@ export function applyPartialMessage<T extends Message<T>>(
   if (source == null || target == null) {
     return;
   }
-  const t = target as AnyMessage,
-    s = source as Message<AnyMessage>;
+  const t = asMessageRecord(target),
+    s = asMessageRecord(source);
   for (const member of fields.byMember()) {
     const localName = member.localName;
     throwSanitizeKey(localName);
@@ -41,13 +43,18 @@ export function applyPartialMessage<T extends Message<T>>(
           );
         }
         // sk, sk are the source case and value
-        const { case: sk, value: sv } = sourceValue;
+        const { case: sk, value: sv } = sourceValue as {
+          case?: string;
+          value?: unknown;
+        };
         // sourceField is the field set by the source case, if any.
         const sourceField = sk != null ? member.findField(sk) : null;
         // dv is the destination oneof object
-        let dv = localName in t ? t[localName] : undefined;
+        let dv = (localName in t ? t[localName] : undefined) as
+          | MessageRecord
+          | undefined;
         if (typeof dv !== "object") {
-          dv = Object.create(null);
+          dv = createMessageRecord();
         }
         // check the case is valid and throw if not
         if (sk != null && sourceField == null) {
@@ -70,12 +77,16 @@ export function applyPartialMessage<T extends Message<T>>(
           // apply the partial to the value
           let dest = dv.value;
           if (typeof dest !== "object") {
-            dest = dv.value = Object.create(null);
+            dest = dv.value = createMessageRecord();
           }
           // skip zero or null value
           if (sv != null) {
             const sourceFieldMt = resolveMessageType(sourceField.T);
-            applyPartialMessage(sv, dest, sourceFieldMt.fields);
+            applyPartialMessage(
+              sv as Message<AnyMessage>,
+              dest as Message<AnyMessage>,
+              sourceFieldMt.fields,
+            );
           }
         } else if (sourceField.kind === "scalar") {
           dv.value = normalizeScalarValue(sourceField.T, sv, clone);
@@ -93,7 +104,7 @@ export function applyPartialMessage<T extends Message<T>>(
           if (dst == null || !Array.isArray(dst)) {
             dst = t[localName] = [];
           }
-          dst.push(
+          (dst as unknown[]).push(
             ...sourceValue.map((v) => normalizeScalarValue(member.T, v, clone)),
           );
           break;
@@ -103,7 +114,10 @@ export function applyPartialMessage<T extends Message<T>>(
         break;
       }
       case "enum": {
-        t[localName] = normalizeEnumValue(member.T, sourceValue);
+        t[localName] = normalizeEnumValue(
+          member.T,
+          sourceValue as string | number | null | undefined,
+        );
         break;
       }
       case "map": {
@@ -114,9 +128,14 @@ export function applyPartialMessage<T extends Message<T>>(
         }
         let tMap = t[localName];
         if (typeof tMap !== "object") {
-          tMap = t[localName] = Object.create(null);
+          tMap = t[localName] = createMessageRecord();
         }
-        applyPartialMap(sourceValue, tMap, member.V, clone);
+        applyPartialMap(
+          sourceValue as MessageMap,
+          tMap as MessageMap,
+          member.V,
+          clone,
+        );
         break;
       }
       case "message": {
@@ -134,11 +153,11 @@ export function applyPartialMessage<T extends Message<T>>(
             // skip null or undefined values
             if (v != null) {
               if (mt.fieldWrapper) {
-                tArr.push(
+                (tArr as unknown[]).push(
                   mt.fieldWrapper.unwrapField(mt.fieldWrapper.wrapField(v)),
                 );
               } else {
-                tArr.push(mt.create(v));
+                (tArr as unknown[]).push(mt.create(v));
               }
             }
           }
@@ -157,9 +176,13 @@ export function applyPartialMessage<T extends Message<T>>(
           }
           let destMsg = t[localName];
           if (typeof destMsg !== "object") {
-            destMsg = t[localName] = Object.create(null);
+            destMsg = t[localName] = createMessageRecord();
           }
-          applyPartialMessage(sourceValue, destMsg, mt.fields);
+          applyPartialMessage(
+            sourceValue,
+            destMsg as Message<AnyMessage>,
+            mt.fields,
+          );
         }
         break;
       }
@@ -168,8 +191,8 @@ export function applyPartialMessage<T extends Message<T>>(
 }
 // applyPartialMap applies a partial source map to a target map.
 export function applyPartialMap(
-  sourceMap: Record<string, any> | undefined,
-  targetMap: Record<string, any>,
+  sourceMap: MessageMap | undefined,
+  targetMap: MessageMap,
   value: MapValueInfo,
   clone: boolean,
 ): void {
@@ -194,7 +217,10 @@ export function applyPartialMap(
       for (const [k, v] of Object.entries(sourceMap)) {
         throwSanitizeKey(k);
         if (v !== undefined) {
-          targetMap[k] = normalizeEnumValue(value.T, v);
+          targetMap[k] = normalizeEnumValue(
+            value.T,
+            v as string | number | null | undefined,
+          );
         } else {
           delete targetMap[k];
         }
@@ -211,15 +237,15 @@ export function applyPartialMap(
         if (typeof v !== "object") {
           throw new Error(`invalid value: must be object`);
         }
-        let val: AnyMessage = targetMap[k];
+        let val = targetMap[k] as AnyMessage;
         if (messageType.fieldWrapper) {
           // For wrapper type messages, call createCompleteMessage.
           val = targetMap[k] = createCompleteMessage(messageType.fields);
         } else if (typeof val !== "object") {
           // Otherwise apply the partial to the existing value, if any.
-          val = targetMap[k] = Object.create(null);
+          val = targetMap[k] = createMessageRecord();
         }
-        applyPartialMessage(v, val, messageType.fields);
+        applyPartialMessage(v as Message<AnyMessage>, val, messageType.fields);
       }
       break;
     }

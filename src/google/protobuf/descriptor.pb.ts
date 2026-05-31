@@ -40,8 +40,11 @@
 // @generated from file google/protobuf/descriptor.proto (package google.protobuf, syntax proto2)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createEnumType, createMessageType, ScalarType } from "../../index.js";
+import { createEnumType } from "../../enum.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import { ScalarType } from "../../scalar.js";
+import type { PartialFieldInfo } from "../../field.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -125,20 +128,22 @@ export enum Edition {
   EDITION_MAX = 2147483647,
 }
 
-// Edition_Enum is the enum type for Edition.
-export const Edition_Enum = createEnumType("google.protobuf.Edition", [
-  { no: 0, name: "EDITION_UNKNOWN" },
-  { no: 998, name: "EDITION_PROTO2" },
-  { no: 999, name: "EDITION_PROTO3" },
-  { no: 1000, name: "EDITION_2023" },
-  { no: 1001, name: "EDITION_2024" },
-  { no: 1, name: "EDITION_1_TEST_ONLY" },
-  { no: 2, name: "EDITION_2_TEST_ONLY" },
-  { no: 99997, name: "EDITION_99997_TEST_ONLY" },
-  { no: 99998, name: "EDITION_99998_TEST_ONLY" },
-  { no: 99999, name: "EDITION_99999_TEST_ONLY" },
-  { no: 2147483647, name: "EDITION_MAX" },
-]);
+export const Edition_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.Edition",
+  [
+    { no: 0, name: "EDITION_UNKNOWN" },
+    { no: 998, name: "EDITION_PROTO2" },
+    { no: 999, name: "EDITION_PROTO3" },
+    { no: 1000, name: "EDITION_2023" },
+    { no: 1001, name: "EDITION_2024" },
+    { no: 1, name: "EDITION_1_TEST_ONLY" },
+    { no: 2, name: "EDITION_2_TEST_ONLY" },
+    { no: 99997, name: "EDITION_99997_TEST_ONLY" },
+    { no: 99998, name: "EDITION_99998_TEST_ONLY" },
+    { no: 99999, name: "EDITION_99999_TEST_ONLY" },
+    { no: 2147483647, name: "EDITION_MAX" },
+  ],
+);
 
 /**
  * The verification state of the extension range.
@@ -159,14 +164,14 @@ export enum ExtensionRangeOptions_VerificationState {
   UNVERIFIED = 1,
 }
 
-// ExtensionRangeOptions_VerificationState_Enum is the enum type for ExtensionRangeOptions_VerificationState.
-export const ExtensionRangeOptions_VerificationState_Enum = createEnumType(
-  "google.protobuf.ExtensionRangeOptions.VerificationState",
-  [
-    { no: 0, name: "DECLARATION" },
-    { no: 1, name: "UNVERIFIED" },
-  ],
-);
+export const ExtensionRangeOptions_VerificationState_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.ExtensionRangeOptions.VerificationState",
+    [
+      { no: 0, name: "DECLARATION" },
+      { no: 1, name: "UNVERIFIED" },
+    ],
+  );
 
 /**
  * @generated from enum google.protobuf.FieldDescriptorProto.Type
@@ -286,8 +291,7 @@ export enum FieldDescriptorProto_Type {
   SINT64 = 18,
 }
 
-// FieldDescriptorProto_Type_Enum is the enum type for FieldDescriptorProto_Type.
-export const FieldDescriptorProto_Type_Enum = createEnumType(
+export const FieldDescriptorProto_Type_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Type",
   [
     { no: 1, name: "TYPE_DOUBLE" },
@@ -337,8 +341,7 @@ export enum FieldDescriptorProto_Label {
   REQUIRED = 2,
 }
 
-// FieldDescriptorProto_Label_Enum is the enum type for FieldDescriptorProto_Label.
-export const FieldDescriptorProto_Label_Enum = createEnumType(
+export const FieldDescriptorProto_Label_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Label",
   [
     { no: 1, name: "LABEL_OPTIONAL" },
@@ -377,8 +380,7 @@ export enum FileOptions_OptimizeMode {
   LITE_RUNTIME = 3,
 }
 
-// FileOptions_OptimizeMode_Enum is the enum type for FileOptions_OptimizeMode.
-export const FileOptions_OptimizeMode_Enum = createEnumType(
+export const FileOptions_OptimizeMode_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FileOptions.OptimizeMode",
   [
     { no: 1, name: "SPEED" },
@@ -416,8 +418,7 @@ export enum FieldOptions_CType {
   STRING_PIECE = 2,
 }
 
-// FieldOptions_CType_Enum is the enum type for FieldOptions_CType.
-export const FieldOptions_CType_Enum = createEnumType(
+export const FieldOptions_CType_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldOptions.CType",
   [
     { no: 0, name: "STRING" },
@@ -452,8 +453,7 @@ export enum FieldOptions_JSType {
   JS_NUMBER = 2,
 }
 
-// FieldOptions_JSType_Enum is the enum type for FieldOptions_JSType.
-export const FieldOptions_JSType_Enum = createEnumType(
+export const FieldOptions_JSType_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldOptions.JSType",
   [
     { no: 0, name: "JS_NORMAL" },
@@ -486,8 +486,7 @@ export enum FieldOptions_OptionRetention {
   RETENTION_SOURCE = 2,
 }
 
-// FieldOptions_OptionRetention_Enum is the enum type for FieldOptions_OptionRetention.
-export const FieldOptions_OptionRetention_Enum = createEnumType(
+export const FieldOptions_OptionRetention_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldOptions.OptionRetention",
   [
     { no: 0, name: "RETENTION_UNKNOWN" },
@@ -556,22 +555,22 @@ export enum FieldOptions_OptionTargetType {
   TARGET_TYPE_METHOD = 9,
 }
 
-// FieldOptions_OptionTargetType_Enum is the enum type for FieldOptions_OptionTargetType.
-export const FieldOptions_OptionTargetType_Enum = createEnumType(
-  "google.protobuf.FieldOptions.OptionTargetType",
-  [
-    { no: 0, name: "TARGET_TYPE_UNKNOWN" },
-    { no: 1, name: "TARGET_TYPE_FILE" },
-    { no: 2, name: "TARGET_TYPE_EXTENSION_RANGE" },
-    { no: 3, name: "TARGET_TYPE_MESSAGE" },
-    { no: 4, name: "TARGET_TYPE_FIELD" },
-    { no: 5, name: "TARGET_TYPE_ONEOF" },
-    { no: 6, name: "TARGET_TYPE_ENUM" },
-    { no: 7, name: "TARGET_TYPE_ENUM_ENTRY" },
-    { no: 8, name: "TARGET_TYPE_SERVICE" },
-    { no: 9, name: "TARGET_TYPE_METHOD" },
-  ],
-);
+export const FieldOptions_OptionTargetType_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.FieldOptions.OptionTargetType",
+    [
+      { no: 0, name: "TARGET_TYPE_UNKNOWN" },
+      { no: 1, name: "TARGET_TYPE_FILE" },
+      { no: 2, name: "TARGET_TYPE_EXTENSION_RANGE" },
+      { no: 3, name: "TARGET_TYPE_MESSAGE" },
+      { no: 4, name: "TARGET_TYPE_FIELD" },
+      { no: 5, name: "TARGET_TYPE_ONEOF" },
+      { no: 6, name: "TARGET_TYPE_ENUM" },
+      { no: 7, name: "TARGET_TYPE_ENUM_ENTRY" },
+      { no: 8, name: "TARGET_TYPE_SERVICE" },
+      { no: 9, name: "TARGET_TYPE_METHOD" },
+    ],
+  );
 
 /**
  * Is this method side-effect-free (or safe in HTTP parlance), or idempotent,
@@ -601,15 +600,15 @@ export enum MethodOptions_IdempotencyLevel {
   IDEMPOTENT = 2,
 }
 
-// MethodOptions_IdempotencyLevel_Enum is the enum type for MethodOptions_IdempotencyLevel.
-export const MethodOptions_IdempotencyLevel_Enum = createEnumType(
-  "google.protobuf.MethodOptions.IdempotencyLevel",
-  [
-    { no: 0, name: "IDEMPOTENCY_UNKNOWN" },
-    { no: 1, name: "NO_SIDE_EFFECTS" },
-    { no: 2, name: "IDEMPOTENT" },
-  ],
-);
+export const MethodOptions_IdempotencyLevel_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.MethodOptions.IdempotencyLevel",
+    [
+      { no: 0, name: "IDEMPOTENCY_UNKNOWN" },
+      { no: 1, name: "NO_SIDE_EFFECTS" },
+      { no: 2, name: "IDEMPOTENT" },
+    ],
+  );
 
 /**
  * @generated from enum google.protobuf.FeatureSet.FieldPresence
@@ -636,8 +635,7 @@ export enum FeatureSet_FieldPresence {
   LEGACY_REQUIRED = 3,
 }
 
-// FeatureSet_FieldPresence_Enum is the enum type for FeatureSet_FieldPresence.
-export const FeatureSet_FieldPresence_Enum = createEnumType(
+export const FeatureSet_FieldPresence_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.FieldPresence",
   [
     { no: 0, name: "FIELD_PRESENCE_UNKNOWN" },
@@ -667,8 +665,7 @@ export enum FeatureSet_EnumType {
   CLOSED = 2,
 }
 
-// FeatureSet_EnumType_Enum is the enum type for FeatureSet_EnumType.
-export const FeatureSet_EnumType_Enum = createEnumType(
+export const FeatureSet_EnumType_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.EnumType",
   [
     { no: 0, name: "ENUM_TYPE_UNKNOWN" },
@@ -697,15 +694,15 @@ export enum FeatureSet_RepeatedFieldEncoding {
   EXPANDED = 2,
 }
 
-// FeatureSet_RepeatedFieldEncoding_Enum is the enum type for FeatureSet_RepeatedFieldEncoding.
-export const FeatureSet_RepeatedFieldEncoding_Enum = createEnumType(
-  "google.protobuf.FeatureSet.RepeatedFieldEncoding",
-  [
-    { no: 0, name: "REPEATED_FIELD_ENCODING_UNKNOWN" },
-    { no: 1, name: "PACKED" },
-    { no: 2, name: "EXPANDED" },
-  ],
-);
+export const FeatureSet_RepeatedFieldEncoding_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.FeatureSet.RepeatedFieldEncoding",
+    [
+      { no: 0, name: "REPEATED_FIELD_ENCODING_UNKNOWN" },
+      { no: 1, name: "PACKED" },
+      { no: 2, name: "EXPANDED" },
+    ],
+  );
 
 /**
  * @generated from enum google.protobuf.FeatureSet.Utf8Validation
@@ -727,8 +724,7 @@ export enum FeatureSet_Utf8Validation {
   NONE = 3,
 }
 
-// FeatureSet_Utf8Validation_Enum is the enum type for FeatureSet_Utf8Validation.
-export const FeatureSet_Utf8Validation_Enum = createEnumType(
+export const FeatureSet_Utf8Validation_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.Utf8Validation",
   [
     { no: 0, name: "UTF8_VALIDATION_UNKNOWN" },
@@ -757,8 +753,7 @@ export enum FeatureSet_MessageEncoding {
   DELIMITED = 2,
 }
 
-// FeatureSet_MessageEncoding_Enum is the enum type for FeatureSet_MessageEncoding.
-export const FeatureSet_MessageEncoding_Enum = createEnumType(
+export const FeatureSet_MessageEncoding_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.MessageEncoding",
   [
     { no: 0, name: "MESSAGE_ENCODING_UNKNOWN" },
@@ -787,8 +782,7 @@ export enum FeatureSet_JsonFormat {
   LEGACY_BEST_EFFORT = 2,
 }
 
-// FeatureSet_JsonFormat_Enum is the enum type for FeatureSet_JsonFormat.
-export const FeatureSet_JsonFormat_Enum = createEnumType(
+export const FeatureSet_JsonFormat_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FeatureSet.JsonFormat",
   [
     { no: 0, name: "JSON_FORMAT_UNKNOWN" },
@@ -826,15 +820,15 @@ export enum GeneratedCodeInfo_Annotation_Semantic {
   ALIAS = 2,
 }
 
-// GeneratedCodeInfo_Annotation_Semantic_Enum is the enum type for GeneratedCodeInfo_Annotation_Semantic.
-export const GeneratedCodeInfo_Annotation_Semantic_Enum = createEnumType(
-  "google.protobuf.GeneratedCodeInfo.Annotation.Semantic",
-  [
-    { no: 0, name: "NONE" },
-    { no: 1, name: "SET" },
-    { no: 2, name: "ALIAS" },
-  ],
-);
+export const GeneratedCodeInfo_Annotation_Semantic_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.GeneratedCodeInfo.Annotation.Semantic",
+    [
+      { no: 0, name: "NONE" },
+      { no: 1, name: "SET" },
+      { no: 2, name: "ALIAS" },
+    ],
+  );
 
 /**
  * @generated from message google.protobuf.FieldOptions.EditionDefault
@@ -852,14 +846,13 @@ export interface FieldOptions_EditionDefault {
   value?: string;
 }
 
-// FieldOptions_EditionDefault contains the message type declaration for FieldOptions_EditionDefault.
 export const FieldOptions_EditionDefault: MessageType<FieldOptions_EditionDefault> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.FieldOptions.EditionDefault",
     fields: [
       { no: 3, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
       { no: 2, name: "value", kind: "scalar", T: ScalarType.STRING, opt: true },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -900,55 +893,55 @@ export interface FeatureSet {
   jsonFormat?: FeatureSet_JsonFormat;
 }
 
-// FeatureSet contains the message type declaration for FeatureSet.
-export const FeatureSet: MessageType<FeatureSet> = createMessageType({
-  typeName: "google.protobuf.FeatureSet",
-  fields: [
-    {
-      no: 1,
-      name: "field_presence",
-      kind: "enum",
-      T: FeatureSet_FieldPresence_Enum,
-      opt: true,
-    },
-    {
-      no: 2,
-      name: "enum_type",
-      kind: "enum",
-      T: FeatureSet_EnumType_Enum,
-      opt: true,
-    },
-    {
-      no: 3,
-      name: "repeated_field_encoding",
-      kind: "enum",
-      T: FeatureSet_RepeatedFieldEncoding_Enum,
-      opt: true,
-    },
-    {
-      no: 4,
-      name: "utf8_validation",
-      kind: "enum",
-      T: FeatureSet_Utf8Validation_Enum,
-      opt: true,
-    },
-    {
-      no: 5,
-      name: "message_encoding",
-      kind: "enum",
-      T: FeatureSet_MessageEncoding_Enum,
-      opt: true,
-    },
-    {
-      no: 6,
-      name: "json_format",
-      kind: "enum",
-      T: FeatureSet_JsonFormat_Enum,
-      opt: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const FeatureSet: MessageType<FeatureSet> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.FeatureSet",
+    fields: [
+      {
+        no: 1,
+        name: "field_presence",
+        kind: "enum",
+        T: FeatureSet_FieldPresence_Enum,
+        opt: true,
+      },
+      {
+        no: 2,
+        name: "enum_type",
+        kind: "enum",
+        T: FeatureSet_EnumType_Enum,
+        opt: true,
+      },
+      {
+        no: 3,
+        name: "repeated_field_encoding",
+        kind: "enum",
+        T: FeatureSet_RepeatedFieldEncoding_Enum,
+        opt: true,
+      },
+      {
+        no: 4,
+        name: "utf8_validation",
+        kind: "enum",
+        T: FeatureSet_Utf8Validation_Enum,
+        opt: true,
+      },
+      {
+        no: 5,
+        name: "message_encoding",
+        kind: "enum",
+        T: FeatureSet_MessageEncoding_Enum,
+        opt: true,
+      },
+      {
+        no: 6,
+        name: "json_format",
+        kind: "enum",
+        T: FeatureSet_JsonFormat_Enum,
+        opt: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * The name of the uninterpreted option.  Each string represents a segment in
@@ -970,9 +963,8 @@ export interface UninterpretedOption_NamePart {
   isExtension?: boolean;
 }
 
-// UninterpretedOption_NamePart contains the message type declaration for UninterpretedOption_NamePart.
 export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NamePart> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.UninterpretedOption.NamePart",
     fields: [
       {
@@ -989,7 +981,7 @@ export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NameP
         T: ScalarType.BOOL,
         req: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1037,9 +1029,8 @@ export interface UninterpretedOption {
   aggregateValue?: string;
 }
 
-// UninterpretedOption contains the message type declaration for UninterpretedOption.
 export const UninterpretedOption: MessageType<UninterpretedOption> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.UninterpretedOption",
     fields: [
       {
@@ -1091,7 +1082,7 @@ export const UninterpretedOption: MessageType<UninterpretedOption> =
         T: ScalarType.STRING,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1221,105 +1212,105 @@ export interface FieldOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// FieldOptions contains the message type declaration for FieldOptions.
-export const FieldOptions: MessageType<FieldOptions> = createMessageType({
-  typeName: "google.protobuf.FieldOptions",
-  fields: [
-    {
-      no: 1,
-      name: "ctype",
-      kind: "enum",
-      T: FieldOptions_CType_Enum,
-      opt: true,
-      default: FieldOptions_CType.STRING,
-    },
-    { no: 2, name: "packed", kind: "scalar", T: ScalarType.BOOL, opt: true },
-    {
-      no: 6,
-      name: "jstype",
-      kind: "enum",
-      T: FieldOptions_JSType_Enum,
-      opt: true,
-      default: FieldOptions_JSType.JS_NORMAL,
-    },
-    {
-      no: 5,
-      name: "lazy",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 15,
-      name: "unverified_lazy",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 3,
-      name: "deprecated",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 10,
-      name: "weak",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 16,
-      name: "debug_redact",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 17,
-      name: "retention",
-      kind: "enum",
-      T: FieldOptions_OptionRetention_Enum,
-      opt: true,
-    },
-    {
-      no: 19,
-      name: "targets",
-      kind: "enum",
-      T: FieldOptions_OptionTargetType_Enum,
-      repeated: true,
-    },
-    {
-      no: 20,
-      name: "edition_defaults",
-      kind: "message",
-      T: () => FieldOptions_EditionDefault,
-      repeated: true,
-    },
-    {
-      no: 21,
-      name: "features",
-      kind: "message",
-      T: () => FeatureSet,
-      opt: true,
-    },
-    {
-      no: 999,
-      name: "uninterpreted_option",
-      kind: "message",
-      T: () => UninterpretedOption,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const FieldOptions: MessageType<FieldOptions> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.FieldOptions",
+    fields: [
+      {
+        no: 1,
+        name: "ctype",
+        kind: "enum",
+        T: FieldOptions_CType_Enum,
+        opt: true,
+        default: FieldOptions_CType.STRING,
+      },
+      { no: 2, name: "packed", kind: "scalar", T: ScalarType.BOOL, opt: true },
+      {
+        no: 6,
+        name: "jstype",
+        kind: "enum",
+        T: FieldOptions_JSType_Enum,
+        opt: true,
+        default: FieldOptions_JSType.JS_NORMAL,
+      },
+      {
+        no: 5,
+        name: "lazy",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 15,
+        name: "unverified_lazy",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 3,
+        name: "deprecated",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 10,
+        name: "weak",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 16,
+        name: "debug_redact",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 17,
+        name: "retention",
+        kind: "enum",
+        T: FieldOptions_OptionRetention_Enum,
+        opt: true,
+      },
+      {
+        no: 19,
+        name: "targets",
+        kind: "enum",
+        T: FieldOptions_OptionTargetType_Enum,
+        repeated: true,
+      },
+      {
+        no: 20,
+        name: "edition_defaults",
+        kind: "message",
+        T: () => FieldOptions_EditionDefault,
+        repeated: true,
+      },
+      {
+        no: 21,
+        name: "features",
+        kind: "message",
+        T: () => FeatureSet,
+        opt: true,
+      },
+      {
+        no: 999,
+        name: "uninterpreted_option",
+        kind: "message",
+        T: () => UninterpretedOption,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * Describes a field within a message.
@@ -1420,9 +1411,8 @@ export interface FieldDescriptorProto {
   proto3Optional?: boolean;
 }
 
-// FieldDescriptorProto contains the message type declaration for FieldDescriptorProto.
 export const FieldDescriptorProto: MessageType<FieldDescriptorProto> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.FieldDescriptorProto",
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
@@ -1490,7 +1480,7 @@ export const FieldDescriptorProto: MessageType<FieldDescriptorProto> =
         T: ScalarType.BOOL,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1529,9 +1519,8 @@ export interface EnumValueOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// EnumValueOptions contains the message type declaration for EnumValueOptions.
 export const EnumValueOptions: MessageType<EnumValueOptions> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.EnumValueOptions",
     fields: [
       {
@@ -1564,7 +1553,7 @@ export const EnumValueOptions: MessageType<EnumValueOptions> =
         T: () => UninterpretedOption,
         repeated: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1588,9 +1577,8 @@ export interface EnumValueDescriptorProto {
   options?: EnumValueOptions;
 }
 
-// EnumValueDescriptorProto contains the message type declaration for EnumValueDescriptorProto.
 export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.EnumValueDescriptorProto",
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
@@ -1602,7 +1590,7 @@ export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> =
         T: () => EnumValueOptions,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1652,49 +1640,49 @@ export interface EnumOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// EnumOptions contains the message type declaration for EnumOptions.
-export const EnumOptions: MessageType<EnumOptions> = createMessageType({
-  typeName: "google.protobuf.EnumOptions",
-  fields: [
-    {
-      no: 2,
-      name: "allow_alias",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-    },
-    {
-      no: 3,
-      name: "deprecated",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 6,
-      name: "deprecated_legacy_json_field_conflicts",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-    },
-    {
-      no: 7,
-      name: "features",
-      kind: "message",
-      T: () => FeatureSet,
-      opt: true,
-    },
-    {
-      no: 999,
-      name: "uninterpreted_option",
-      kind: "message",
-      T: () => UninterpretedOption,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const EnumOptions: MessageType<EnumOptions> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.EnumOptions",
+    fields: [
+      {
+        no: 2,
+        name: "allow_alias",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+      },
+      {
+        no: 3,
+        name: "deprecated",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 6,
+        name: "deprecated_legacy_json_field_conflicts",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+      },
+      {
+        no: 7,
+        name: "features",
+        kind: "message",
+        T: () => FeatureSet,
+        opt: true,
+      },
+      {
+        no: 999,
+        name: "uninterpreted_option",
+        kind: "message",
+        T: () => UninterpretedOption,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * Range of reserved numeric values. Reserved values may not be used by
@@ -1721,14 +1709,13 @@ export interface EnumDescriptorProto_EnumReservedRange {
   end?: number;
 }
 
-// EnumDescriptorProto_EnumReservedRange contains the message type declaration for EnumDescriptorProto_EnumReservedRange.
 export const EnumDescriptorProto_EnumReservedRange: MessageType<EnumDescriptorProto_EnumReservedRange> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.EnumDescriptorProto.EnumReservedRange",
     fields: [
       { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
       { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1767,9 +1754,8 @@ export interface EnumDescriptorProto {
   reservedName?: string[];
 }
 
-// EnumDescriptorProto contains the message type declaration for EnumDescriptorProto.
 export const EnumDescriptorProto: MessageType<EnumDescriptorProto> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.EnumDescriptorProto",
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
@@ -1801,7 +1787,7 @@ export const EnumDescriptorProto: MessageType<EnumDescriptorProto> =
         T: ScalarType.STRING,
         repeated: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1847,9 +1833,8 @@ export interface ExtensionRangeOptions_Declaration {
   repeated?: boolean;
 }
 
-// ExtensionRangeOptions_Declaration contains the message type declaration for ExtensionRangeOptions_Declaration.
 export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOptions_Declaration> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.ExtensionRangeOptions.Declaration",
     fields: [
       { no: 1, name: "number", kind: "scalar", T: ScalarType.INT32, opt: true },
@@ -1875,7 +1860,7 @@ export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOption
         T: ScalarType.BOOL,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1913,9 +1898,8 @@ export interface ExtensionRangeOptions {
   verification?: ExtensionRangeOptions_VerificationState;
 }
 
-// ExtensionRangeOptions contains the message type declaration for ExtensionRangeOptions.
 export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.ExtensionRangeOptions",
     fields: [
       {
@@ -1947,7 +1931,7 @@ export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> =
         opt: true,
         default: ExtensionRangeOptions_VerificationState.UNVERIFIED,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -1973,9 +1957,8 @@ export interface DescriptorProto_ExtensionRange {
   options?: ExtensionRangeOptions;
 }
 
-// DescriptorProto_ExtensionRange contains the message type declaration for DescriptorProto_ExtensionRange.
 export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_ExtensionRange> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.DescriptorProto.ExtensionRange",
     fields: [
       { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
@@ -1987,7 +1970,7 @@ export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_Extensi
         T: () => ExtensionRangeOptions,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -2009,27 +1992,27 @@ export interface OneofOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// OneofOptions contains the message type declaration for OneofOptions.
-export const OneofOptions: MessageType<OneofOptions> = createMessageType({
-  typeName: "google.protobuf.OneofOptions",
-  fields: [
-    {
-      no: 1,
-      name: "features",
-      kind: "message",
-      T: () => FeatureSet,
-      opt: true,
-    },
-    {
-      no: 999,
-      name: "uninterpreted_option",
-      kind: "message",
-      T: () => UninterpretedOption,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const OneofOptions: MessageType<OneofOptions> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.OneofOptions",
+    fields: [
+      {
+        no: 1,
+        name: "features",
+        kind: "message",
+        T: () => FeatureSet,
+        opt: true,
+      },
+      {
+        no: 999,
+        name: "uninterpreted_option",
+        kind: "message",
+        T: () => UninterpretedOption,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * Describes a oneof.
@@ -2047,9 +2030,8 @@ export interface OneofDescriptorProto {
   options?: OneofOptions;
 }
 
-// OneofDescriptorProto contains the message type declaration for OneofDescriptorProto.
 export const OneofDescriptorProto: MessageType<OneofDescriptorProto> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.OneofDescriptorProto",
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
@@ -2060,7 +2042,7 @@ export const OneofDescriptorProto: MessageType<OneofDescriptorProto> =
         T: () => OneofOptions,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -2164,59 +2146,65 @@ export interface MessageOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// MessageOptions contains the message type declaration for MessageOptions.
-export const MessageOptions: MessageType<MessageOptions> = createMessageType({
-  typeName: "google.protobuf.MessageOptions",
-  fields: [
-    {
-      no: 1,
-      name: "message_set_wire_format",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 2,
-      name: "no_standard_descriptor_accessor",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 3,
-      name: "deprecated",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    { no: 7, name: "map_entry", kind: "scalar", T: ScalarType.BOOL, opt: true },
-    {
-      no: 11,
-      name: "deprecated_legacy_json_field_conflicts",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-    },
-    {
-      no: 12,
-      name: "features",
-      kind: "message",
-      T: () => FeatureSet,
-      opt: true,
-    },
-    {
-      no: 999,
-      name: "uninterpreted_option",
-      kind: "message",
-      T: () => UninterpretedOption,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const MessageOptions: MessageType<MessageOptions> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.MessageOptions",
+    fields: [
+      {
+        no: 1,
+        name: "message_set_wire_format",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 2,
+        name: "no_standard_descriptor_accessor",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 3,
+        name: "deprecated",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 7,
+        name: "map_entry",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+      },
+      {
+        no: 11,
+        name: "deprecated_legacy_json_field_conflicts",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+      },
+      {
+        no: 12,
+        name: "features",
+        kind: "message",
+        T: () => FeatureSet,
+        opt: true,
+      },
+      {
+        no: 999,
+        name: "uninterpreted_option",
+        kind: "message",
+        T: () => UninterpretedOption,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * Range of reserved tag numbers. Reserved tag numbers may not be used by
@@ -2240,14 +2228,13 @@ export interface DescriptorProto_ReservedRange {
   end?: number;
 }
 
-// DescriptorProto_ReservedRange contains the message type declaration for DescriptorProto_ReservedRange.
 export const DescriptorProto_ReservedRange: MessageType<DescriptorProto_ReservedRange> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.DescriptorProto.ReservedRange",
     fields: [
       { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
       { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -2302,77 +2289,77 @@ export interface DescriptorProto {
   reservedName?: string[];
 }
 
-// DescriptorProto contains the message type declaration for DescriptorProto.
-export const DescriptorProto: MessageType<DescriptorProto> = createMessageType({
-  typeName: "google.protobuf.DescriptorProto",
-  fields: [
-    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-    {
-      no: 2,
-      name: "field",
-      kind: "message",
-      T: () => FieldDescriptorProto,
-      repeated: true,
-    },
-    {
-      no: 6,
-      name: "extension",
-      kind: "message",
-      T: () => FieldDescriptorProto,
-      repeated: true,
-    },
-    {
-      no: 3,
-      name: "nested_type",
-      kind: "message",
-      T: () => DescriptorProto,
-      repeated: true,
-    },
-    {
-      no: 4,
-      name: "enum_type",
-      kind: "message",
-      T: () => EnumDescriptorProto,
-      repeated: true,
-    },
-    {
-      no: 5,
-      name: "extension_range",
-      kind: "message",
-      T: () => DescriptorProto_ExtensionRange,
-      repeated: true,
-    },
-    {
-      no: 8,
-      name: "oneof_decl",
-      kind: "message",
-      T: () => OneofDescriptorProto,
-      repeated: true,
-    },
-    {
-      no: 7,
-      name: "options",
-      kind: "message",
-      T: () => MessageOptions,
-      opt: true,
-    },
-    {
-      no: 9,
-      name: "reserved_range",
-      kind: "message",
-      T: () => DescriptorProto_ReservedRange,
-      repeated: true,
-    },
-    {
-      no: 10,
-      name: "reserved_name",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const DescriptorProto: MessageType<DescriptorProto> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.DescriptorProto",
+    fields: [
+      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
+      {
+        no: 2,
+        name: "field",
+        kind: "message",
+        T: () => FieldDescriptorProto,
+        repeated: true,
+      },
+      {
+        no: 6,
+        name: "extension",
+        kind: "message",
+        T: () => FieldDescriptorProto,
+        repeated: true,
+      },
+      {
+        no: 3,
+        name: "nested_type",
+        kind: "message",
+        T: () => DescriptorProto,
+        repeated: true,
+      },
+      {
+        no: 4,
+        name: "enum_type",
+        kind: "message",
+        T: () => EnumDescriptorProto,
+        repeated: true,
+      },
+      {
+        no: 5,
+        name: "extension_range",
+        kind: "message",
+        T: () => DescriptorProto_ExtensionRange,
+        repeated: true,
+      },
+      {
+        no: 8,
+        name: "oneof_decl",
+        kind: "message",
+        T: () => OneofDescriptorProto,
+        repeated: true,
+      },
+      {
+        no: 7,
+        name: "options",
+        kind: "message",
+        T: () => MessageOptions,
+        opt: true,
+      },
+      {
+        no: 9,
+        name: "reserved_range",
+        kind: "message",
+        T: () => DescriptorProto_ReservedRange,
+        repeated: true,
+      },
+      {
+        no: 10,
+        name: "reserved_name",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * @generated from message google.protobuf.MethodOptions
@@ -2405,43 +2392,43 @@ export interface MethodOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// MethodOptions contains the message type declaration for MethodOptions.
-export const MethodOptions: MessageType<MethodOptions> = createMessageType({
-  typeName: "google.protobuf.MethodOptions",
-  fields: [
-    {
-      no: 33,
-      name: "deprecated",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 34,
-      name: "idempotency_level",
-      kind: "enum",
-      T: MethodOptions_IdempotencyLevel_Enum,
-      opt: true,
-      default: MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN,
-    },
-    {
-      no: 35,
-      name: "features",
-      kind: "message",
-      T: () => FeatureSet,
-      opt: true,
-    },
-    {
-      no: 999,
-      name: "uninterpreted_option",
-      kind: "message",
-      T: () => UninterpretedOption,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const MethodOptions: MessageType<MethodOptions> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.MethodOptions",
+    fields: [
+      {
+        no: 33,
+        name: "deprecated",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 34,
+        name: "idempotency_level",
+        kind: "enum",
+        T: MethodOptions_IdempotencyLevel_Enum,
+        opt: true,
+        default: MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN,
+      },
+      {
+        no: 35,
+        name: "features",
+        kind: "message",
+        T: () => FeatureSet,
+        opt: true,
+      },
+      {
+        no: 999,
+        name: "uninterpreted_option",
+        kind: "message",
+        T: () => UninterpretedOption,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * Describes a method of a service.
@@ -2482,9 +2469,8 @@ export interface MethodDescriptorProto {
   serverStreaming?: boolean;
 }
 
-// MethodDescriptorProto contains the message type declaration for MethodDescriptorProto.
 export const MethodDescriptorProto: MessageType<MethodDescriptorProto> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.MethodDescriptorProto",
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
@@ -2525,7 +2511,7 @@ export const MethodDescriptorProto: MessageType<MethodDescriptorProto> =
         opt: true,
         default: false,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -2556,35 +2542,35 @@ export interface ServiceOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// ServiceOptions contains the message type declaration for ServiceOptions.
-export const ServiceOptions: MessageType<ServiceOptions> = createMessageType({
-  typeName: "google.protobuf.ServiceOptions",
-  fields: [
-    {
-      no: 34,
-      name: "features",
-      kind: "message",
-      T: () => FeatureSet,
-      opt: true,
-    },
-    {
-      no: 33,
-      name: "deprecated",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 999,
-      name: "uninterpreted_option",
-      kind: "message",
-      T: () => UninterpretedOption,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const ServiceOptions: MessageType<ServiceOptions> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.ServiceOptions",
+    fields: [
+      {
+        no: 34,
+        name: "features",
+        kind: "message",
+        T: () => FeatureSet,
+        opt: true,
+      },
+      {
+        no: 33,
+        name: "deprecated",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 999,
+        name: "uninterpreted_option",
+        kind: "message",
+        T: () => UninterpretedOption,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * Describes a service.
@@ -2606,9 +2592,8 @@ export interface ServiceDescriptorProto {
   options?: ServiceOptions;
 }
 
-// ServiceDescriptorProto contains the message type declaration for ServiceDescriptorProto.
 export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.ServiceDescriptorProto",
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
@@ -2626,7 +2611,7 @@ export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> =
         T: () => ServiceOptions,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -2803,168 +2788,168 @@ export interface FileOptions {
   uninterpretedOption?: UninterpretedOption[];
 }
 
-// FileOptions contains the message type declaration for FileOptions.
-export const FileOptions: MessageType<FileOptions> = createMessageType({
-  typeName: "google.protobuf.FileOptions",
-  fields: [
-    {
-      no: 1,
-      name: "java_package",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 8,
-      name: "java_outer_classname",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 10,
-      name: "java_multiple_files",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 20,
-      name: "java_generate_equals_and_hash",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-    },
-    {
-      no: 27,
-      name: "java_string_check_utf8",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 9,
-      name: "optimize_for",
-      kind: "enum",
-      T: FileOptions_OptimizeMode_Enum,
-      opt: true,
-      default: FileOptions_OptimizeMode.SPEED,
-    },
-    {
-      no: 11,
-      name: "go_package",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 16,
-      name: "cc_generic_services",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 17,
-      name: "java_generic_services",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 18,
-      name: "py_generic_services",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 23,
-      name: "deprecated",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: false,
-    },
-    {
-      no: 31,
-      name: "cc_enable_arenas",
-      kind: "scalar",
-      T: ScalarType.BOOL,
-      opt: true,
-      default: true,
-    },
-    {
-      no: 36,
-      name: "objc_class_prefix",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 37,
-      name: "csharp_namespace",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 39,
-      name: "swift_prefix",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 40,
-      name: "php_class_prefix",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 41,
-      name: "php_namespace",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 44,
-      name: "php_metadata_namespace",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 45,
-      name: "ruby_package",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      opt: true,
-    },
-    {
-      no: 50,
-      name: "features",
-      kind: "message",
-      T: () => FeatureSet,
-      opt: true,
-    },
-    {
-      no: 999,
-      name: "uninterpreted_option",
-      kind: "message",
-      T: () => UninterpretedOption,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const FileOptions: MessageType<FileOptions> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.FileOptions",
+    fields: [
+      {
+        no: 1,
+        name: "java_package",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 8,
+        name: "java_outer_classname",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 10,
+        name: "java_multiple_files",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 20,
+        name: "java_generate_equals_and_hash",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+      },
+      {
+        no: 27,
+        name: "java_string_check_utf8",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 9,
+        name: "optimize_for",
+        kind: "enum",
+        T: FileOptions_OptimizeMode_Enum,
+        opt: true,
+        default: FileOptions_OptimizeMode.SPEED,
+      },
+      {
+        no: 11,
+        name: "go_package",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 16,
+        name: "cc_generic_services",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 17,
+        name: "java_generic_services",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 18,
+        name: "py_generic_services",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 23,
+        name: "deprecated",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: false,
+      },
+      {
+        no: 31,
+        name: "cc_enable_arenas",
+        kind: "scalar",
+        T: ScalarType.BOOL,
+        opt: true,
+        default: true,
+      },
+      {
+        no: 36,
+        name: "objc_class_prefix",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 37,
+        name: "csharp_namespace",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 39,
+        name: "swift_prefix",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 40,
+        name: "php_class_prefix",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 41,
+        name: "php_namespace",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 44,
+        name: "php_metadata_namespace",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 45,
+        name: "ruby_package",
+        kind: "scalar",
+        T: ScalarType.STRING,
+        opt: true,
+      },
+      {
+        no: 50,
+        name: "features",
+        kind: "message",
+        T: () => FeatureSet,
+        opt: true,
+      },
+      {
+        no: 999,
+        name: "uninterpreted_option",
+        kind: "message",
+        T: () => UninterpretedOption,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * @generated from message google.protobuf.SourceCodeInfo.Location
@@ -3070,9 +3055,8 @@ export interface SourceCodeInfo_Location {
   leadingDetachedComments?: string[];
 }
 
-// SourceCodeInfo_Location contains the message type declaration for SourceCodeInfo_Location.
 export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.SourceCodeInfo.Location",
     fields: [
       {
@@ -3112,7 +3096,7 @@ export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> =
         T: ScalarType.STRING,
         repeated: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -3173,20 +3157,20 @@ export interface SourceCodeInfo {
   location?: SourceCodeInfo_Location[];
 }
 
-// SourceCodeInfo contains the message type declaration for SourceCodeInfo.
-export const SourceCodeInfo: MessageType<SourceCodeInfo> = createMessageType({
-  typeName: "google.protobuf.SourceCodeInfo",
-  fields: [
-    {
-      no: 1,
-      name: "location",
-      kind: "message",
-      T: () => SourceCodeInfo_Location,
-      repeated: true,
-    },
-  ] as readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const SourceCodeInfo: MessageType<SourceCodeInfo> =
+  /* @__PURE__ */ createMessageType({
+    typeName: "google.protobuf.SourceCodeInfo",
+    fields: [
+      {
+        no: 1,
+        name: "location",
+        kind: "message",
+        T: () => SourceCodeInfo_Location,
+        repeated: true,
+      },
+    ] satisfies readonly PartialFieldInfo[],
+    packedByDefault: false,
+  });
 
 /**
  * Describes a complete .proto file.
@@ -3273,9 +3257,8 @@ export interface FileDescriptorProto {
   edition?: Edition;
 }
 
-// FileDescriptorProto contains the message type declaration for FileDescriptorProto.
 export const FileDescriptorProto: MessageType<FileDescriptorProto> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.FileDescriptorProto",
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
@@ -3357,7 +3340,7 @@ export const FileDescriptorProto: MessageType<FileDescriptorProto> =
         opt: true,
       },
       { no: 14, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -3374,9 +3357,8 @@ export interface FileDescriptorSet {
   file?: FileDescriptorProto[];
 }
 
-// FileDescriptorSet contains the message type declaration for FileDescriptorSet.
 export const FileDescriptorSet: MessageType<FileDescriptorSet> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.FileDescriptorSet",
     fields: [
       {
@@ -3386,7 +3368,7 @@ export const FileDescriptorSet: MessageType<FileDescriptorSet> =
         T: () => FileDescriptorProto,
         repeated: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -3409,9 +3391,8 @@ export interface FeatureSetDefaults_FeatureSetEditionDefault {
   features?: FeatureSet;
 }
 
-// FeatureSetDefaults_FeatureSetEditionDefault contains the message type declaration for FeatureSetDefaults_FeatureSetEditionDefault.
 export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSetDefaults_FeatureSetEditionDefault> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault",
     fields: [
       { no: 3, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
@@ -3422,7 +3403,7 @@ export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSet
         T: () => FeatureSet,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -3455,9 +3436,8 @@ export interface FeatureSetDefaults {
   maximumEdition?: Edition;
 }
 
-// FeatureSetDefaults contains the message type declaration for FeatureSetDefaults.
 export const FeatureSetDefaults: MessageType<FeatureSetDefaults> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.FeatureSetDefaults",
     fields: [
       {
@@ -3481,7 +3461,7 @@ export const FeatureSetDefaults: MessageType<FeatureSetDefaults> =
         T: Edition_Enum,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -3523,9 +3503,8 @@ export interface GeneratedCodeInfo_Annotation {
   semantic?: GeneratedCodeInfo_Annotation_Semantic;
 }
 
-// GeneratedCodeInfo_Annotation contains the message type declaration for GeneratedCodeInfo_Annotation.
 export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotation> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.GeneratedCodeInfo.Annotation",
     fields: [
       {
@@ -3552,7 +3531,7 @@ export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotat
         T: GeneratedCodeInfo_Annotation_Semantic_Enum,
         opt: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });
 
@@ -3573,9 +3552,8 @@ export interface GeneratedCodeInfo {
   annotation?: GeneratedCodeInfo_Annotation[];
 }
 
-// GeneratedCodeInfo contains the message type declaration for GeneratedCodeInfo.
 export const GeneratedCodeInfo: MessageType<GeneratedCodeInfo> =
-  createMessageType({
+  /* @__PURE__ */ createMessageType({
     typeName: "google.protobuf.GeneratedCodeInfo",
     fields: [
       {
@@ -3585,6 +3563,6 @@ export const GeneratedCodeInfo: MessageType<GeneratedCodeInfo> =
         T: () => GeneratedCodeInfo_Annotation,
         repeated: true,
       },
-    ] as readonly PartialFieldInfo[],
+    ] satisfies readonly PartialFieldInfo[],
     packedByDefault: false,
   });

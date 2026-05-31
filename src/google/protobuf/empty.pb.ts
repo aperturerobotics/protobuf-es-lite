@@ -32,8 +32,9 @@
 // @generated from file google/protobuf/empty.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType } from "../../index.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import type { PartialFieldInfo } from "../../field.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -51,9 +52,8 @@ export const protobufPackage = "google.protobuf";
  */
 export interface Empty {}
 
-// Empty contains the message type declaration for Empty.
-export const Empty: MessageType<Empty> = createMessageType({
+export const Empty: MessageType<Empty> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Empty",
-  fields: [] as readonly PartialFieldInfo[],
+  fields: [] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });

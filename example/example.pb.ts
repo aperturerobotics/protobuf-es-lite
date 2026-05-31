@@ -2,9 +2,12 @@
 // @generated from file example/example.proto (package example, syntax proto3)
 /* eslint-disable */
 
-import type { MessageType, PartialFieldInfo } from "../src/index.js";
-import { createEnumType, createMessageType, ScalarType } from "../src/index.js";
+import { createEnumType } from "../src/enum.js";
+import type { MessageType } from "../src/message.js";
+import { createMessageType } from "../src/message.js";
+import { ScalarType } from "../src/scalar.js";
 import { Timestamp } from "../src/google/protobuf/timestamp.pb.js";
+import type { PartialFieldInfo } from "../src/field.js";
 
 export const protobufPackage = "example";
 
@@ -30,12 +33,14 @@ export enum ExampleEnum {
   SECOND = 2,
 }
 
-// ExampleEnum_Enum is the enum type for ExampleEnum.
-export const ExampleEnum_Enum = createEnumType("example.ExampleEnum", [
-  { no: 0, name: "UNKNOWN" },
-  { no: 1, name: "FIRST" },
-  { no: 2, name: "SECOND" },
-]);
+export const ExampleEnum_Enum = /* @__PURE__ */ createEnumType(
+  "example.ExampleEnum",
+  [
+    { no: 0, name: "UNKNOWN" },
+    { no: 1, name: "FIRST" },
+    { no: 2, name: "SECOND" },
+  ],
+);
 
 /**
  * EchoMsg is the message body for Echo.
@@ -80,8 +85,7 @@ export interface EchoMsg {
       };
 }
 
-// EchoMsg contains the message type declaration for EchoMsg.
-export const EchoMsg: MessageType<EchoMsg> = createMessageType({
+export const EchoMsg: MessageType<EchoMsg> = /* @__PURE__ */ createMessageType({
   typeName: "example.EchoMsg",
   fields: [
     { no: 1, name: "body", kind: "scalar", T: ScalarType.STRING },
@@ -107,6 +111,6 @@ export const EchoMsg: MessageType<EchoMsg> = createMessageType({
       T: () => Timestamp,
       repeated: true,
     },
-  ] as readonly PartialFieldInfo[],
+  ] satisfies readonly PartialFieldInfo[],
   packedByDefault: true,
 });

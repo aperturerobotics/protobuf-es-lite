@@ -33,19 +33,16 @@
 /* eslint-disable */
 
 import type {
-  IMessageTypeRegistry,
   JsonReadOptions,
   JsonValue,
   JsonWriteOptions,
-  Message,
-  MessageType,
-  PartialFieldInfo,
-} from "../../index.js";
-import {
-  applyPartialMessage,
-  createMessageType,
-  ScalarType,
-} from "../../index.js";
+} from "../../json.js";
+import type { Message, MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import { applyPartialMessage } from "../../partial.js";
+import type { IMessageTypeRegistry } from "../../type-registry.js";
+import { ScalarType } from "../../scalar.js";
+import type { PartialFieldInfo } from "../../field.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -182,7 +179,6 @@ export interface Any {
   value?: Uint8Array;
 }
 
-// Any_Wkt contains the well-known-type overrides for Any.
 const Any_Wkt = {
   toJson(msg: Any, options?: Partial<JsonWriteOptions>): JsonValue {
     const typeName = msg?.typeUrl;
@@ -295,18 +291,15 @@ const Any_Wkt = {
   },
 };
 
-// Any contains the message type declaration for Any.
-export const Any: MessageType<Any> & typeof Any_Wkt = createMessageType<
-  Any,
-  typeof Any_Wkt
->(
-  {
-    typeName: "google.protobuf.Any",
-    fields: [
-      { no: 1, name: "type_url", kind: "scalar", T: ScalarType.STRING },
-      { no: 2, name: "value", kind: "scalar", T: ScalarType.BYTES },
-    ] as readonly PartialFieldInfo[],
-    packedByDefault: true,
-  },
-  Any_Wkt,
-);
+export const Any: MessageType<Any> & typeof Any_Wkt =
+  /* @__PURE__ */ createMessageType<Any, typeof Any_Wkt>(
+    {
+      typeName: "google.protobuf.Any",
+      fields: [
+        { no: 1, name: "type_url", kind: "scalar", T: ScalarType.STRING },
+        { no: 2, name: "value", kind: "scalar", T: ScalarType.BYTES },
+      ] satisfies readonly PartialFieldInfo[],
+      packedByDefault: true,
+    },
+    Any_Wkt,
+  );

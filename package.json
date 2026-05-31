@@ -72,6 +72,16 @@
       "import": "./dist/partial.js",
       "require": "./dist/partial.js"
     },
+    "./proto-int64": {
+      "types": "./dist/proto-int64.d.ts",
+      "import": "./dist/proto-int64.js",
+      "require": "./dist/proto-int64.js"
+    },
+    "./proto-double": {
+      "types": "./dist/proto-double.d.ts",
+      "import": "./dist/proto-double.js",
+      "require": "./dist/proto-double.js"
+    },
     "./type-registry": {
       "types": "./dist/type-registry.d.ts",
       "import": "./dist/type-registry.js",

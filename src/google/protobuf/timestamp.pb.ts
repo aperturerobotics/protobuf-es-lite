@@ -32,8 +32,12 @@
 // @generated from file google/protobuf/timestamp.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { JsonValue, MessageType, PartialFieldInfo } from "../../index.js";
-import { createMessageType, protoInt64, ScalarType } from "../../index.js";
+import type { JsonValue } from "../../json.js";
+import { protoInt64 } from "../../proto-int64.js";
+import type { MessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
+import { ScalarType } from "../../scalar.js";
+import type { PartialFieldInfo } from "../../field.js";
 
 export const protobufPackage = "google.protobuf";
 
@@ -152,7 +156,6 @@ export interface Timestamp {
   nanos?: number;
 }
 
-// Timestamp_Wkt contains the well-known-type overrides for Timestamp.
 const Timestamp_Wkt = {
   fromJson(json: JsonValue): Timestamp {
     if (typeof json !== "string") {
@@ -263,15 +266,14 @@ const Timestamp_Wkt = {
   },
 };
 
-// Timestamp contains the message type declaration for Timestamp.
 export const Timestamp: MessageType<Timestamp> & typeof Timestamp_Wkt =
-  createMessageType<Timestamp, typeof Timestamp_Wkt>(
+  /* @__PURE__ */ createMessageType<Timestamp, typeof Timestamp_Wkt>(
     {
       typeName: "google.protobuf.Timestamp",
       fields: [
         { no: 1, name: "seconds", kind: "scalar", T: ScalarType.INT64 },
         { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
-      ] as readonly PartialFieldInfo[],
+      ] satisfies readonly PartialFieldInfo[],
       packedByDefault: true,
       fieldWrapper: {
         wrapField(value: Timestamp | Date | null | undefined): Timestamp {

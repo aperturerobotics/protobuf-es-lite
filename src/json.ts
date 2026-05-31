@@ -16,6 +16,8 @@ import { protoInt64 } from "./proto-int64.js";
 import { protoBase64 } from "./proto-base64.js";
 import type { IMessageTypeRegistry } from "./type-registry.js";
 import { throwSanitizeKey } from "./names.js";
+import type { MessageMap, MessageRecord } from "./message-access.js";
+import { createMessageRecord } from "./message-access.js";
 
 /**
  * Options for parsing JSON data.
@@ -165,7 +167,7 @@ function readMessage<T>(
         }
         oneofSeen.set(field.oneof, jsonKey);
       }
-      readField(message as Record<string, unknown>, jsonValue, field, options);
+      readField(message as MessageRecord, jsonValue, field, options);
     } else {
       const found = false;
       if (!found && !options.ignoreUnknownFields) {
@@ -187,7 +189,8 @@ function writeMessage<T>(
   let field: FieldInfo | undefined;
   try {
     for (field of fields.byNumber()) {
-      if (!isFieldSet(field, message as Record<string, any>)) {
+      const record = message as MessageRecord;
+      if (!isFieldSet(field, record)) {
         if (field.req) {
           throw `required field not set`;
         }
@@ -200,8 +203,8 @@ function writeMessage<T>(
       }
       const value =
         field.oneof ?
-          (message as any)[field.oneof.localName].value
-        : (message as any)[field.localName];
+          (record[field.oneof.localName] as MessageRecord).value
+        : record[field.localName];
       const jsonValue = writeField(field, value, options);
       if (jsonValue !== undefined) {
         json[options.useProtoFieldName ? field.name : field.jsonName] =
@@ -222,7 +225,7 @@ function writeMessage<T>(
 // Read a JSON value for a field.
 // The "parentType" argument is only used to provide context in errors.
 function readField(
-  target: Record<string, unknown>,
+  target: MessageRecord,
   jsonValue: JsonValue,
   field: FieldInfo,
   options: JsonReadOptions,
@@ -301,9 +304,9 @@ function readField(
         } from JSON: ${jsonDebugValue(jsonValue)}`,
       );
     }
-    let targetMap = target[localName] as Record<string, unknown>;
+    let targetMap = target[localName] as MessageMap;
     if (typeof targetMap !== "object") {
-      targetMap = target[localName] = Object.create(null);
+      targetMap = target[localName] = createMessageRecord();
     }
     for (const [jsonMapKey, jsonMapValue] of Object.entries(jsonValue)) {
       if (jsonMapValue === null) {
@@ -622,7 +625,7 @@ function readMapKey(type: ScalarType, json: JsonValue) {
 /**
  * Resets the field, so that isFieldSet() will return false.
  */
-export function clearField(field: FieldInfo, target: Record<string, any>) {
+export function clearField(field: FieldInfo, target: MessageRecord) {
   const localName = field.localName;
   const implicitPresence = !field.opt && !field.req;
   if (field.repeated) {
@@ -632,7 +635,7 @@ export function clearField(field: FieldInfo, target: Record<string, any>) {
   } else {
     switch (field.kind) {
       case "map":
-        target[localName] = Object.create(null);
+        target[localName] = createMessageRecord();
         break;
       case "enum":
         target[localName] = implicitPresence ? field.T.values[0].no : undefined;
@@ -714,7 +717,7 @@ function writeField(
   if (field.repeated) {
     assert(!value || Array.isArray(value));
     const jsonArr: JsonValue[] = [];
-    const valueArr = value as Array<any>;
+    const valueArr = value as unknown[];
     if (valueArr && valueArr.length) {
       switch (field.kind) {
         case "scalar":
@@ -762,7 +765,10 @@ function writeField(
       return writeScalar(field.T, value);
     }
     case "enum": {
-      const enumValue = normalizeEnumValue(field.T, value as any);
+      const enumValue = normalizeEnumValue(
+        field.T,
+        value as string | number | null | undefined,
+      );
       if (!options.emitDefaultValues && enumZeroValue(field.T) === enumValue) {
         return undefined;
       }

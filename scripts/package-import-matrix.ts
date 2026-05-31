@@ -26,6 +26,14 @@ const esmCases: ImportCase[] = [
     specifier: "@aptre/protobuf-es-lite/partial",
     exports: ["applyPartialMessage"],
   },
+  {
+    specifier: "@aptre/protobuf-es-lite/proto-int64",
+    exports: ["protoInt64"],
+  },
+  {
+    specifier: "@aptre/protobuf-es-lite/proto-double",
+    exports: ["protoDouble"],
+  },
   { specifier: "@aptre/protobuf-es-lite/type-registry", exports: [] },
   {
     specifier: "@aptre/protobuf-es-lite/service-type",
@@ -48,6 +56,10 @@ const cjsCases: ImportCase[] = [
   {
     specifier: "@aptre/protobuf-es-lite/google/protobuf/timestamp",
     exports: ["Timestamp"],
+  },
+  {
+    specifier: "@aptre/protobuf-es-lite/proto-int64",
+    exports: ["protoInt64"],
   },
 ];
 

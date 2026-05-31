@@ -41,8 +41,16 @@ import {
   jsonWriteMessage,
 } from "./json.js";
 import type { FieldWrapper } from "./field-wrapper.js";
+import type { MessageRecord } from "./message-access.js";
+import { asMessageRecord, createMessageRecord } from "./message-access.js";
 import { throwSanitizeKey } from "./names.js";
 import { enumZeroValue } from "./enum.js";
+
+type ScalarComparable = Parameters<typeof scalarEquals>[1];
+type OneofRuntimeValue = {
+  case?: string;
+  value?: any;
+};
 
 export type Field<T> =
   T extends Date | Uint8Array | bigint | boolean | string | number ? T
@@ -329,66 +337,100 @@ export function compareMessages<T extends Message<T>>(
     return false;
   }
   return fields.byMember().every((m) => {
-    const va = (a as any)[m.localName];
-    const vb = (b as any)[m.localName];
+    const va = asMessageRecord(a)[m.localName];
+    const vb = asMessageRecord(b)[m.localName];
     if (m.repeated) {
-      if ((va?.length ?? 0) !== (vb?.length ?? 0)) {
+      const vaArray = va as unknown[] | undefined;
+      const vbArray = vb as unknown[] | undefined;
+      if ((vaArray?.length ?? 0) !== (vbArray?.length ?? 0)) {
         return false;
       }
-      if (!va?.length) {
+      if (!vaArray?.length) {
         return true;
       }
 
       switch (m.kind) {
         case "message": {
-          const messageType = resolveMessageType(m.T);
-          return (va as any[]).every((a, i) => messageType.equals(a, vb[i]));
+          const messageType = resolveMessageType(m.T) as MessageType<any>;
+          const values = vaArray as Message<AnyMessage>[];
+          const otherValues = vbArray as Message<AnyMessage>[];
+          return values.every((a, i) => messageType.equals(a, otherValues[i]));
         }
         case "scalar":
-          return (va as any[]).every((a: any, i: number) =>
-            scalarEquals(m.T, a, vb[i]),
+          return vaArray.every((a, i) =>
+            scalarEquals(
+              m.T,
+              a as ScalarComparable,
+              vbArray?.[i] as ScalarComparable,
+            ),
           );
         case "enum":
-          return (va as any[]).every((a: any, i: number) =>
-            scalarEquals(ScalarType.INT32, a, vb[i]),
+          return vaArray.every((a, i) =>
+            scalarEquals(
+              ScalarType.INT32,
+              a as ScalarComparable,
+              vbArray?.[i] as ScalarComparable,
+            ),
           );
       }
       throw new Error(`repeated cannot contain ${m.kind}`);
     }
     switch (m.kind) {
       case "message":
-        return resolveMessageType(m.T).equals(va, vb);
+        return (resolveMessageType(m.T) as MessageType<any>).equals(va, vb);
       case "enum":
-        return scalarEquals(ScalarType.INT32, va, vb);
+        return scalarEquals(
+          ScalarType.INT32,
+          va as ScalarComparable,
+          vb as ScalarComparable,
+        );
       case "scalar":
-        return scalarEquals(m.T, va, vb);
+        return scalarEquals(
+          m.T,
+          va as ScalarComparable,
+          vb as ScalarComparable,
+        );
       case "oneof": {
-        if (va?.case !== vb?.case) {
+        const oneofA = va as OneofRuntimeValue | undefined;
+        const oneofB = vb as OneofRuntimeValue | undefined;
+        if (oneofA?.case !== oneofB?.case) {
           return false;
         }
-        if (va == null) {
+        if (oneofA == null) {
           return true;
         }
-        const s = m.findField(va.case);
+        const oneofCase = oneofA.case;
+        if (oneofCase === undefined) {
+          return true;
+        }
+        const s = m.findField(oneofCase);
         if (s === undefined) {
           return true;
         }
 
         switch (s.kind) {
           case "message": {
-            const messageType = resolveMessageType(s.T);
-            return messageType.equals(va.value, vb.value);
+            const messageType = resolveMessageType(s.T) as MessageType<any>;
+            return messageType.equals(oneofA.value, oneofB?.value);
           }
           case "enum":
-            return scalarEquals(ScalarType.INT32, va.value, vb.value);
+            return scalarEquals(
+              ScalarType.INT32,
+              oneofA.value as ScalarComparable,
+              oneofB?.value as ScalarComparable,
+            );
           case "scalar":
-            return scalarEquals(s.T, va.value, vb.value);
+            return scalarEquals(
+              s.T,
+              oneofA.value as ScalarComparable,
+              oneofB?.value as ScalarComparable,
+            );
         }
         throw new Error(`oneof cannot contain ${s.kind}`);
       }
       case "map": {
-        const ma = va ?? {};
-        const mb = vb ?? {};
+        const ma = (va ?? {}) as MessageRecord;
+        const mb = (vb ?? {}) as MessageRecord;
         const keys = Object.keys(ma).concat(Object.keys(mb));
         switch (m.V.kind) {
           case "message": {
@@ -397,11 +439,21 @@ export function compareMessages<T extends Message<T>>(
           }
           case "enum":
             return keys.every((k) =>
-              scalarEquals(ScalarType.INT32, ma[k], mb[k]),
+              scalarEquals(
+                ScalarType.INT32,
+                ma[k] as ScalarComparable,
+                mb[k] as ScalarComparable,
+              ),
             );
           case "scalar": {
             const scalarType = m.V.T;
-            return keys.every((k) => scalarEquals(scalarType, ma[k], mb[k]));
+            return keys.every((k) =>
+              scalarEquals(
+                scalarType,
+                ma[k] as ScalarComparable,
+                mb[k] as ScalarComparable,
+              ),
+            );
           }
         }
       }
@@ -416,7 +468,7 @@ export function cloneMessage<T extends Message<T>>(
   if (message == null) {
     return null;
   }
-  const clone = Object.create(null) as T;
+  const clone = createMessageRecord() as T;
   applyPartialMessage(message, clone, fields, true);
   return clone;
 }
@@ -433,8 +485,8 @@ export function createCompleteMessage<T extends Message<T>>(
     throwSanitizeKey(localName);
     switch (fieldKind) {
       case "oneof":
-        message[localName] = Object.create(null);
-        message[localName].case = undefined;
+        message[localName] = createMessageRecord();
+        (message[localName] as MessageRecord).case = undefined;
         break;
       case "scalar":
         if (field.repeated) {
@@ -464,7 +516,7 @@ export function createCompleteMessage<T extends Message<T>>(
         break;
       }
       case "map":
-        message[localName] = Object.create(null);
+        message[localName] = createMessageRecord();
         break;
       default:
         field satisfies never;

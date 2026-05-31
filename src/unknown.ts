@@ -1,4 +1,10 @@
 import { WireType } from "./binary-encoding.js";
+import type { MessageRecord } from "./message-access.js";
+
+type UnknownField = { no: number; wireType: WireType; data: Uint8Array };
+type UnknownFieldRecord = {
+  [unknownFieldsSymbol]?: UnknownField[] | undefined;
+};
 
 // unknownFieldsSymbol is the symbol used for unknown fields.
 export const unknownFieldsSymbol = Symbol(
@@ -6,14 +12,14 @@ export const unknownFieldsSymbol = Symbol(
 );
 
 export function listUnknownFields(
-  message: any,
-): ReadonlyArray<{ no: number; wireType: WireType; data: Uint8Array }> {
-  return message[unknownFieldsSymbol] ?? [];
+  message: MessageRecord,
+): ReadonlyArray<UnknownField> {
+  return (message as UnknownFieldRecord)[unknownFieldsSymbol] ?? [];
 }
 
 // handleUnknownField stores an unknown field.
 export function handleUnknownField(
-  message: any,
+  message: MessageRecord,
   no: number,
   wireType: WireType,
   data: Uint8Array,
@@ -21,7 +27,7 @@ export function handleUnknownField(
   if (typeof message !== "object") {
     return;
   }
-  const m = message as any;
+  const m = message as UnknownFieldRecord;
   if (!Array.isArray(m[unknownFieldsSymbol])) {
     m[unknownFieldsSymbol] = [];
   }
