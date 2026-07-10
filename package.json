@@ -180,7 +180,8 @@
   "preferUnplugged": true,
   "dependencies": {
     "@typescript/vfs": "^1.5.0",
-    "lz-string": "^1.5.0"
+    "lz-string": "^1.5.0",
+    "typescript": "5.9.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.0",
@@ -195,7 +196,6 @@
     "lint-staged": ">=15.2.5",
     "prettier": "^3.2.5",
     "rimraf": "^6.0.0",
-    "typescript": "^5.4.5",
     "vitest": "^4.0.0"
   },
   "lint-staged": {
