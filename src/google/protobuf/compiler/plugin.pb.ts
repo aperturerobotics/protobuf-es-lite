@@ -29,8 +29,6 @@ import { ScalarType } from "../../../scalar.js";
 import type { PartialFieldInfo } from "../../../field.js";
 import { FileDescriptorProto, GeneratedCodeInfo } from "../descriptor.pb.js";
 
-export const protobufPackage = "google.protobuf.compiler";
-
 /**
  * Sync with code_generator.h.
  *
@@ -56,11 +54,7 @@ export enum CodeGeneratorResponse_Feature {
 export const CodeGeneratorResponse_Feature_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.compiler.CodeGeneratorResponse.Feature",
-    [
-      [0, "FEATURE_NONE"],
-      [1, "FEATURE_PROTO3_OPTIONAL"],
-      [2, "FEATURE_SUPPORTS_EDITIONS"],
-    ],
+    CodeGeneratorResponse_Feature,
   );
 
 /**

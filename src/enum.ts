@@ -53,10 +53,38 @@ export type EnumValueSource =
   | Omit<EnumValueInfo, "localName">
   | readonly [no: number, name: string];
 
+// TsEnumObject describes the runtime shape of a TypeScript enum object.
+// Member names map to their numeric value; a reverse mapping (number -> name)
+// also exists on the same object at runtime.
+export type TsEnumObject = { readonly [member: string]: string | number };
+
 function isEnumValueTuple(
   value: EnumValueSource,
 ): value is readonly [no: number, name: string] {
   return Array.isArray(value);
+}
+
+function isTsEnumObject(
+  values: EnumValueSource[] | TsEnumObject,
+): values is TsEnumObject {
+  return !Array.isArray(values);
+}
+
+// tsEnumObjectToValues converts a TypeScript enum object into a list of enum
+// values. A TypeScript enum object contains a reverse mapping (number -> name)
+// in addition to the forward mapping (name -> number); the reverse entries are
+// filtered out here.
+function tsEnumObjectToValues(enumObject: TsEnumObject): EnumValueSource[] {
+  const values: EnumValueSource[] = [];
+  for (const key of Object.keys(enumObject)) {
+    const v = enumObject[key];
+    if (typeof v != "number") {
+      // Skip the reverse mapping entries (number -> name).
+      continue;
+    }
+    values.push({ no: v, name: key });
+  }
+  return values;
 }
 
 /**
@@ -64,12 +92,13 @@ function isEnumValueTuple(
  */
 export function createEnumType(
   typeName: string,
-  values: EnumValueSource[],
+  values: EnumValueSource[] | TsEnumObject,
 ): EnumType {
   const names = Object.create(null) as Record<string, EnumValueInfo>;
   const numbers = Object.create(null) as Record<number, EnumValueInfo>;
+  const list = isTsEnumObject(values) ? tsEnumObjectToValues(values) : values;
   const normalValues: EnumValueInfo[] = [];
-  for (const value of values) {
+  for (const value of list) {
     // We do not surface options at this time
     // const value: EnumValueInfo = {...v, options: v.options ?? emptyReadonlyObject};
     const n =

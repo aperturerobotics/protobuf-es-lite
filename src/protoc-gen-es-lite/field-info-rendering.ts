@@ -29,6 +29,7 @@ import type {
   DescMessage,
 } from "../descriptor-set.js";
 import { localName } from "../names.js";
+import { fieldJsonName } from "../field.js";
 import { LongType, ScalarType } from "../scalar.js";
 import {
   FeatureSet_FieldPresence,
@@ -70,7 +71,10 @@ export function getFieldInfoLiteral(
   e.push("{ no: ", field.number, `, `);
   if (field.kind == "field") {
     e.push(`name: "`, field.name, `", `);
-    if (field.jsonName !== undefined) {
+    if (
+      field.jsonName !== undefined &&
+      field.jsonName !== fieldJsonName(field.name)
+    ) {
       e.push(`jsonName: "`, field.jsonName, `", `);
     }
   }

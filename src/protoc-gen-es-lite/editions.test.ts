@@ -38,7 +38,9 @@ describe("protoc-gen-es-lite editions", () => {
     expect(response.maximumEdition).toBe(Edition.EDITION_2024);
 
     const content = response.file?.[0]?.content ?? "";
-    expect(content).toContain("packedByDefault: true");
+    // packedByDefault is omitted when true (the runtime default).
+    expect(content).not.toContain("packedByDefault: true");
+    expect(content).not.toContain("packedByDefault: false");
     expect(content).toContain(
       '{ no: 1, name: "explicit_int32", kind: "scalar", T: ScalarType.INT32, opt: true }',
     );

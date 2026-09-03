@@ -39,8 +39,6 @@ import { createMessageType } from "../../message.js";
 import { ScalarType } from "../../scalar.js";
 import type { PartialFieldInfo } from "../../field.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * A Timestamp represents a point in time independent of any time zone or local
  * calendar, encoded as a count of seconds and fractions of seconds at
@@ -274,7 +272,6 @@ export const Timestamp: MessageType<Timestamp> & typeof Timestamp_Wkt =
         { no: 1, name: "seconds", kind: "scalar", T: ScalarType.INT64 },
         { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: Timestamp | Date | null | undefined): Timestamp {
           if (value == null || value instanceof Date) {

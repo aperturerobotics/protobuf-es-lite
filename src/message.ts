@@ -187,9 +187,10 @@ export type MessageTypeParams<T extends Message<T>> = Pick<
   fields: FieldListSource;
   /**
    * `packedByDefault` specifies whether fields that do not specify `packed`
-   * should be packed (proto3) or unpacked (proto2).
+   * should be packed (proto3) or unpacked (proto2). Defaults to true (proto3
+   * behavior) when omitted.
    */
-  packedByDefault: boolean;
+  packedByDefault?: boolean;
   /**
    * `delimitedMessageEncoding` specifies whether fields are encoded without
    * delimited fields (proto3) or with (proto2 legacy).
@@ -203,7 +204,8 @@ const emptyFieldListSource: FieldListSource = [];
  * createMessageType creates a new message type.
  *
  * The argument `packedByDefault` specifies whether fields that do not specify
- * `packed` should be packed (proto3) or unpacked (proto2).
+ * `packed` should be packed (proto3) or unpacked (proto2). It defaults to
+ * true (proto3 behavior).
  */
 export function createMessageType<
   T extends Message<T>,
@@ -212,11 +214,13 @@ export function createMessageType<
   const {
     fields: fieldsSource,
     typeName,
-    packedByDefault,
     delimitedMessageEncoding,
     fieldWrapper,
   } = params;
-  const fields = newFieldList(fieldsSource as FieldListSource, packedByDefault);
+  const fields = newFieldList(
+    fieldsSource as FieldListSource,
+    params.packedByDefault ?? true,
+  );
 
   const mt: MessageType<T> = {
     typeName,

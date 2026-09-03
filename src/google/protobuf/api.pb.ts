@@ -40,8 +40,6 @@ import { ScalarType } from "../../scalar.js";
 import type { PartialFieldInfo } from "../../field.js";
 import { SourceContext } from "./source_context.pb.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * Method represents a method of an API interface.
  *
@@ -109,7 +107,6 @@ export const Method: MessageType<Method> = /* @__PURE__ */ createMessageType({
     },
     { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });
 
 /**
@@ -216,7 +213,6 @@ export const Mixin: MessageType<Mixin> = /* @__PURE__ */ createMessageType({
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
     { no: 2, name: "root", kind: "scalar", T: ScalarType.STRING },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });
 
 /**
@@ -321,5 +317,4 @@ export const Api: MessageType<Api> = /* @__PURE__ */ createMessageType({
     { no: 6, name: "mixins", kind: "message", T: () => Mixin, repeated: true },
     { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });

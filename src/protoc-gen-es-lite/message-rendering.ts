@@ -191,7 +191,9 @@ export function generateMessage(
     generateFieldInfo(f, schema, field);
   }
   f.print("    ] satisfies readonly ", PartialFieldInfo, "[],");
-  f.print("    packedByDefault: ", packedByDefault(message), ",");
+  if (!packedByDefault(message)) {
+    f.print("    packedByDefault: false,");
+  }
   if (reWkt == null) {
     f.print("});");
   } else {

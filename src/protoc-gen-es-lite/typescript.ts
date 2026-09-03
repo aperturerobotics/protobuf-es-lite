@@ -28,7 +28,7 @@ export function generateTs(schema: Schema) {
     checkSupportedFile(file);
     const f = schema.generateFile(file.name + ".pb.ts");
     f.preamble(file);
-    f.print(`export const protobufPackage = "${file.proto.package}";`);
+    // f.print(`export const protobufPackage = "${file.proto.package}";`);
     f.print();
 
     for (const enumeration of file.enums) {

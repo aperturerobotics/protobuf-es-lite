@@ -53,8 +53,6 @@ import type { MessageType } from "../../message.js";
 import { createMessageType } from "../../message.js";
 import type { PartialFieldInfo } from "../../field.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * Wrapper message for `double`.
  *
@@ -102,7 +100,6 @@ export const DoubleValue: MessageType<DoubleValue> & typeof DoubleValue_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.DOUBLE },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: number | null | undefined): DoubleValue {
           return DoubleValue.createComplete({ value: value ?? undefined });
@@ -162,7 +159,6 @@ export const FloatValue: MessageType<FloatValue> & typeof FloatValue_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.FLOAT },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: number | null | undefined): FloatValue {
           return FloatValue.createComplete({ value: value ?? undefined });
@@ -222,7 +218,6 @@ export const Int64Value: MessageType<Int64Value> & typeof Int64Value_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.INT64 },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: bigint | null | undefined): Int64Value {
           return Int64Value.createComplete({ value: value ?? undefined });
@@ -282,7 +277,6 @@ export const UInt64Value: MessageType<UInt64Value> & typeof UInt64Value_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT64 },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: bigint | null | undefined): UInt64Value {
           return UInt64Value.createComplete({ value: value ?? undefined });
@@ -342,7 +336,6 @@ export const Int32Value: MessageType<Int32Value> & typeof Int32Value_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.INT32 },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: number | null | undefined): Int32Value {
           return Int32Value.createComplete({ value: value ?? undefined });
@@ -402,7 +395,6 @@ export const UInt32Value: MessageType<UInt32Value> & typeof UInt32Value_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT32 },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: number | null | undefined): UInt32Value {
           return UInt32Value.createComplete({ value: value ?? undefined });
@@ -462,7 +454,6 @@ export const BoolValue: MessageType<BoolValue> & typeof BoolValue_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.BOOL },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: boolean | null | undefined): BoolValue {
           return BoolValue.createComplete({ value: value ?? undefined });
@@ -522,7 +513,6 @@ export const StringValue: MessageType<StringValue> & typeof StringValue_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.STRING },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: string | null | undefined): StringValue {
           return StringValue.createComplete({ value: value ?? undefined });
@@ -582,7 +572,6 @@ export const BytesValue: MessageType<BytesValue> & typeof BytesValue_Wkt =
       fields: [
         { no: 1, name: "value", kind: "scalar", T: ScalarType.BYTES },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
       fieldWrapper: {
         wrapField(value: Uint8Array | null | undefined): BytesValue {
           return BytesValue.createComplete({ value: value ?? undefined });

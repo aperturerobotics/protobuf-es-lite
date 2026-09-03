@@ -9,8 +9,6 @@ import { ScalarType } from "../src/scalar.js";
 import { Timestamp } from "../src/google/protobuf/timestamp.pb.js";
 import type { PartialFieldInfo } from "../src/field.js";
 
-export const protobufPackage = "example";
-
 /**
  * ExampleEnum is an example enumeration.
  *
@@ -35,11 +33,7 @@ export enum ExampleEnum {
 
 export const ExampleEnum_Enum = /* @__PURE__ */ createEnumType(
   "example.ExampleEnum",
-  [
-    [0, "UNKNOWN"],
-    [1, "FIRST"],
-    [2, "SECOND"],
-  ],
+  ExampleEnum,
 );
 
 /**
@@ -112,5 +106,4 @@ export const EchoMsg: MessageType<EchoMsg> = /* @__PURE__ */ createMessageType({
       repeated: true,
     },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });

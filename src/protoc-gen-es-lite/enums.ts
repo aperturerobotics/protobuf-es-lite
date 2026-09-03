@@ -41,11 +41,9 @@ export function generateEnum(
     schema.runtime.createEnumType,
     "(",
     f.string(enumeration.typeName),
-    ", [",
+    ", ",
+    enumeration,
+    ");",
   );
-  for (const value of enumeration.values) {
-    f.print("  [", value.number, ', "', value.name, '"],');
-  }
-  f.print("]);");
   f.print();
 }

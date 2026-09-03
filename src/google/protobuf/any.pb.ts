@@ -44,8 +44,6 @@ import type { IMessageTypeRegistry } from "../../type-registry.js";
 import { ScalarType } from "../../scalar.js";
 import type { PartialFieldInfo } from "../../field.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * `Any` contains an arbitrary serialized protocol buffer message along with a
  * URL that describes the type of the serialized message.
@@ -299,7 +297,6 @@ export const Any: MessageType<Any> & typeof Any_Wkt =
         { no: 1, name: "type_url", kind: "scalar", T: ScalarType.STRING },
         { no: 2, name: "value", kind: "scalar", T: ScalarType.BYTES },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
     },
     Any_Wkt,
   );

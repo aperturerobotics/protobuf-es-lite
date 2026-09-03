@@ -40,8 +40,6 @@ import { createMessageType } from "../../message.js";
 import { ScalarType } from "../../scalar.js";
 import type { PartialFieldInfo } from "../../field.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * A Duration represents a signed, fixed-length span of time represented
  * as a count of seconds and fractions of seconds at nanosecond
@@ -195,7 +193,6 @@ export const Duration: MessageType<Duration> & typeof Duration_Wkt =
         { no: 1, name: "seconds", kind: "scalar", T: ScalarType.INT64 },
         { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
     },
     Duration_Wkt,
   );

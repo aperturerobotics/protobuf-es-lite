@@ -37,8 +37,6 @@ import { createMessageType } from "../../message.js";
 import { ScalarType } from "../../scalar.js";
 import type { PartialFieldInfo } from "../../field.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * `SourceContext` represents information about the source of a
  * protobuf element, like the file in which it is defined.
@@ -61,5 +59,4 @@ export const SourceContext: MessageType<SourceContext> =
     fields: [
       { no: 1, name: "file_name", kind: "scalar", T: ScalarType.STRING },
     ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: true,
   });

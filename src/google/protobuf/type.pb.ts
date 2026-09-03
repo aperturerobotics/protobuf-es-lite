@@ -40,8 +40,6 @@ import { ScalarType } from "../../scalar.js";
 import type { PartialFieldInfo } from "../../field.js";
 import { SourceContext } from "./source_context.pb.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * The syntax in which a protocol buffer element is defined.
  *
@@ -72,11 +70,7 @@ export enum Syntax {
 
 export const Syntax_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Syntax",
-  [
-    [0, "SYNTAX_PROTO2"],
-    [1, "SYNTAX_PROTO3"],
-    [2, "SYNTAX_EDITIONS"],
-  ],
+  Syntax,
 );
 
 /**
@@ -221,27 +215,7 @@ export enum Field_Kind {
 
 export const Field_Kind_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Field.Kind",
-  [
-    [0, "TYPE_UNKNOWN"],
-    [1, "TYPE_DOUBLE"],
-    [2, "TYPE_FLOAT"],
-    [3, "TYPE_INT64"],
-    [4, "TYPE_UINT64"],
-    [5, "TYPE_INT32"],
-    [6, "TYPE_FIXED64"],
-    [7, "TYPE_FIXED32"],
-    [8, "TYPE_BOOL"],
-    [9, "TYPE_STRING"],
-    [10, "TYPE_GROUP"],
-    [11, "TYPE_MESSAGE"],
-    [12, "TYPE_BYTES"],
-    [13, "TYPE_UINT32"],
-    [14, "TYPE_ENUM"],
-    [15, "TYPE_SFIXED32"],
-    [16, "TYPE_SFIXED64"],
-    [17, "TYPE_SINT32"],
-    [18, "TYPE_SINT64"],
-  ],
+  Field_Kind,
 );
 
 /**
@@ -281,12 +255,7 @@ export enum Field_Cardinality {
 
 export const Field_Cardinality_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Field.Cardinality",
-  [
-    [0, "CARDINALITY_UNKNOWN"],
-    [1, "CARDINALITY_OPTIONAL"],
-    [2, "CARDINALITY_REQUIRED"],
-    [3, "CARDINALITY_REPEATED"],
-  ],
+  Field_Cardinality,
 );
 
 /**
@@ -322,7 +291,6 @@ export const Option: MessageType<Option> = /* @__PURE__ */ createMessageType({
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
     { no: 2, name: "value", kind: "message", T: () => Any },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });
 
 /**
@@ -415,7 +383,6 @@ export const Field: MessageType<Field> = /* @__PURE__ */ createMessageType({
     { no: 10, name: "json_name", kind: "scalar", T: ScalarType.STRING },
     { no: 11, name: "default_value", kind: "scalar", T: ScalarType.STRING },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });
 
 /**
@@ -491,7 +458,6 @@ export const Type: MessageType<Type> = /* @__PURE__ */ createMessageType({
     { no: 6, name: "syntax", kind: "enum", T: Syntax_Enum },
     { no: 7, name: "edition", kind: "scalar", T: ScalarType.STRING },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });
 
 /**
@@ -534,7 +500,6 @@ export const EnumValue: MessageType<EnumValue> =
         repeated: true,
       },
     ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: true,
   });
 
 /**
@@ -603,5 +568,4 @@ export const Enum: MessageType<Enum> = /* @__PURE__ */ createMessageType({
     { no: 5, name: "syntax", kind: "enum", T: Syntax_Enum },
     { no: 6, name: "edition", kind: "scalar", T: ScalarType.STRING },
   ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: true,
 });

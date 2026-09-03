@@ -45,8 +45,6 @@ import { createMessageType } from "../../message.js";
 import type { PartialFieldInfo } from "../../field.js";
 import { ScalarType } from "../../scalar.js";
 
-export const protobufPackage = "google.protobuf";
-
 /**
  * `NullValue` is a singleton enumeration to represent the null value for the
  * `Value` type union.
@@ -66,7 +64,7 @@ export enum NullValue {
 
 export const NullValue_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.NullValue",
-  [[0, "NULL_VALUE"]],
+  NullValue,
 );
 
 /**
@@ -119,7 +117,6 @@ export const ListValue: MessageType<ListValue> & typeof ListValue_Wkt =
           repeated: true,
         },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
     },
     ListValue_Wkt,
   );
@@ -312,7 +309,6 @@ export const Value: MessageType<Value> & typeof Value_Wkt =
           oneof: "kind",
         },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
     },
     Value_Wkt,
   );
@@ -379,7 +375,6 @@ export const Struct: MessageType<Struct> & typeof Struct_Wkt =
           V: { kind: "message", T: () => Value },
         },
       ] satisfies readonly PartialFieldInfo[],
-      packedByDefault: true,
     },
     Struct_Wkt,
   );
