@@ -47,8 +47,20 @@ export function generateFieldInfo(
   f: GeneratedFile,
   schema: Schema,
   field: DescField | DescExtension,
+  emitted?: ReadonlySet<DescMessage>,
 ) {
-  f.print("        ", getFieldInfoLiteral(schema, field), ",");
+  f.print("        ", getFieldInfoLiteral(schema, field, emitted), ",");
+}
+
+// canReferenceDirectly returns true if a message field can reference its
+// target message type directly instead of through a lazy thunk. This is only
+// safe when the target was already emitted earlier in the same file in
+// topological order; cross-file and self references keep the thunk.
+function canReferenceDirectly(
+  message: DescMessage,
+  emitted: ReadonlySet<DescMessage> | undefined,
+): boolean {
+  return emitted?.has(message) ?? false;
 }
 
 export const createTypeImport = (
@@ -65,6 +77,7 @@ export const createTypeImport = (
 export function getFieldInfoLiteral(
   schema: Schema,
   field: DescField | DescExtension,
+  emitted?: ReadonlySet<DescMessage>,
 ): Printable {
   const { ScalarType: rtScalarType, LongType: rtLongType } = schema.runtime;
   const e: Printable = [];
@@ -122,11 +135,12 @@ export function getFieldInfoLiteral(
           e.push(`}, `);
           break;
         case "message":
-          e.push(
-            `V: {kind: "message", T: () => `,
-            field.mapValue.message,
-            `}, `,
-          );
+          e.push(`V: {kind: "message", T: `);
+          if (canReferenceDirectly(field.mapValue.message, emitted)) {
+            e.push(field.mapValue.message, `}, `);
+          } else {
+            e.push(`() => `, field.mapValue.message, `}, `);
+          }
           break;
         case "enum":
           e.push(`V: {kind: "enum", T: `, field.mapValue.enum, `}, `);
@@ -134,7 +148,12 @@ export function getFieldInfoLiteral(
       }
       break;
     case "message":
-      e.push(`kind: "message", T: () => `, field.message, `, `);
+      e.push(`kind: "message", T: `);
+      if (canReferenceDirectly(field.message, emitted)) {
+        e.push(field.message, `, `);
+      } else {
+        e.push(`() => `, field.message, `, `);
+      }
       if (
         field.proto.type === FieldDescriptorProto_Type.GROUP ||
         field.getFeatures().messageEncoding ==

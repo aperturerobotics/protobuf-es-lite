@@ -298,13 +298,7 @@ export const Api: MessageType<Api> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Api",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-    {
-      no: 2,
-      name: "methods",
-      kind: "message",
-      T: () => Method,
-      repeated: true,
-    },
+    { no: 2, name: "methods", kind: "message", T: Method, repeated: true },
     {
       no: 3,
       name: "options",
@@ -314,7 +308,7 @@ export const Api: MessageType<Api> = /* @__PURE__ */ createMessageType({
     },
     { no: 4, name: "version", kind: "scalar", T: ScalarType.STRING },
     { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
-    { no: 6, name: "mixins", kind: "message", T: () => Mixin, repeated: true },
+    { no: 6, name: "mixins", kind: "message", T: Mixin, repeated: true },
     { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
   ] satisfies readonly PartialFieldInfo[],
 });

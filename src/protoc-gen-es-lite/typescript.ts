@@ -44,8 +44,11 @@ export function generateTs(schema: Schema) {
 
     // Topological sort to ensure consts are declared in the right order.
     const sortedMessageTypes = topologicalSort(messageTypes, dependencies);
+    // Track emitted messages so same-file references can skip lazy thunks.
+    const emittedMessages = new Set<DescMessage>();
     for (const message of sortedMessageTypes) {
-      generateMessage(schema, f, message);
+      generateMessage(schema, f, message, emittedMessages);
+      emittedMessages.add(message);
     }
 
     // We do not generate anything for services or extensions

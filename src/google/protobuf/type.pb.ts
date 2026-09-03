@@ -373,13 +373,7 @@ export const Field: MessageType<Field> = /* @__PURE__ */ createMessageType({
     { no: 6, name: "type_url", kind: "scalar", T: ScalarType.STRING },
     { no: 7, name: "oneof_index", kind: "scalar", T: ScalarType.INT32 },
     { no: 8, name: "packed", kind: "scalar", T: ScalarType.BOOL },
-    {
-      no: 9,
-      name: "options",
-      kind: "message",
-      T: () => Option,
-      repeated: true,
-    },
+    { no: 9, name: "options", kind: "message", T: Option, repeated: true },
     { no: 10, name: "json_name", kind: "scalar", T: ScalarType.STRING },
     { no: 11, name: "default_value", kind: "scalar", T: ScalarType.STRING },
   ] satisfies readonly PartialFieldInfo[],
@@ -439,7 +433,7 @@ export const Type: MessageType<Type> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Type",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-    { no: 2, name: "fields", kind: "message", T: () => Field, repeated: true },
+    { no: 2, name: "fields", kind: "message", T: Field, repeated: true },
     {
       no: 3,
       name: "oneofs",
@@ -447,13 +441,7 @@ export const Type: MessageType<Type> = /* @__PURE__ */ createMessageType({
       T: ScalarType.STRING,
       repeated: true,
     },
-    {
-      no: 4,
-      name: "options",
-      kind: "message",
-      T: () => Option,
-      repeated: true,
-    },
+    { no: 4, name: "options", kind: "message", T: Option, repeated: true },
     { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
     { no: 6, name: "syntax", kind: "enum", T: Syntax_Enum },
     { no: 7, name: "edition", kind: "scalar", T: ScalarType.STRING },
@@ -492,13 +480,7 @@ export const EnumValue: MessageType<EnumValue> =
     fields: [
       { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
       { no: 2, name: "number", kind: "scalar", T: ScalarType.INT32 },
-      {
-        no: 3,
-        name: "options",
-        kind: "message",
-        T: () => Option,
-        repeated: true,
-      },
+      { no: 3, name: "options", kind: "message", T: Option, repeated: true },
     ] satisfies readonly PartialFieldInfo[],
   });
 
@@ -550,20 +532,8 @@ export const Enum: MessageType<Enum> = /* @__PURE__ */ createMessageType({
   typeName: "google.protobuf.Enum",
   fields: [
     { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-    {
-      no: 2,
-      name: "enumvalue",
-      kind: "message",
-      T: () => EnumValue,
-      repeated: true,
-    },
-    {
-      no: 3,
-      name: "options",
-      kind: "message",
-      T: () => Option,
-      repeated: true,
-    },
+    { no: 2, name: "enumvalue", kind: "message", T: EnumValue, repeated: true },
+    { no: 3, name: "options", kind: "message", T: Option, repeated: true },
     { no: 4, name: "source_context", kind: "message", T: () => SourceContext },
     { no: 5, name: "syntax", kind: "enum", T: Syntax_Enum },
     { no: 6, name: "edition", kind: "scalar", T: ScalarType.STRING },

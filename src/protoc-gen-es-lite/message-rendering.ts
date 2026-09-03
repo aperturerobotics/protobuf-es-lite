@@ -102,6 +102,7 @@ export function generateMessage(
   schema: Schema,
   f: GeneratedFile,
   message: DescMessage,
+  emitted?: ReadonlySet<DescMessage>,
 ) {
   const {
     MessageType: rtMessageType,
@@ -188,7 +189,7 @@ export function generateMessage(
   f.print("    typeName: ", f.string(message.typeName), ",");
   f.print("    fields: [");
   for (const field of message.fields) {
-    generateFieldInfo(f, schema, field);
+    generateFieldInfo(f, schema, field, emitted);
   }
   f.print("    ] satisfies readonly ", PartialFieldInfo, "[],");
   if (!packedByDefault(message)) {

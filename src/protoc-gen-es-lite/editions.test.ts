@@ -60,7 +60,7 @@ describe("protoc-gen-es-lite editions", () => {
       '{ no: 7, name: "expanded_int32", kind: "scalar", T: ScalarType.INT32, repeated: true, packed: false }',
     );
     expect(content).toContain(
-      '{ no: 8, name: "delimited_child", kind: "message", T: () => Child, delimited: true, opt: true }',
+      '{ no: 8, name: "delimited_child", kind: "message", T: Child, delimited: true, opt: true }',
     );
     expect(content).toContain(
       '{ no: 9, name: "labels", kind: "map", K: ScalarType.STRING, keyUtf8: true, V: {kind: "scalar", T: ScalarType.STRING, utf8: true} }',
