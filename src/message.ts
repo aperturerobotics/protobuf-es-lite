@@ -42,7 +42,11 @@ import {
 } from "./json.js";
 import type { FieldWrapper } from "./field-wrapper.js";
 import type { MessageRecord } from "./message-access.js";
-import { asMessageRecord, createMessageRecord } from "./message-access.js";
+import {
+  asMessageRecord,
+  createMapRecord,
+  createMessageRecord,
+} from "./message-access.js";
 import { throwSanitizeKey } from "./names.js";
 import { enumZeroValue } from "./enum.js";
 
@@ -228,7 +232,7 @@ export function createMessageType<
     fieldWrapper,
 
     create(partial?: Message<T>): Message<T> {
-      const message = Object.create(null) as Message<T>;
+      const message = createMessageRecord() as Message<T>;
       applyPartialMessage(partial, message, fields);
       return message;
     },
@@ -539,7 +543,7 @@ export function createCompleteMessage<T extends Message<T>>(
         break;
       }
       case "map":
-        message[localName] = createMessageRecord();
+        message[localName] = createMapRecord();
         break;
       default:
         field satisfies never;

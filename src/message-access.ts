@@ -16,8 +16,19 @@
 export type MessageRecord = Record<string | symbol, unknown>;
 export type MessageMap = Record<string, unknown>;
 
+// createMessageRecord returns an ordinary object for a message or oneof value.
+// Its keys are schema field names, which throwSanitizeKey keeps off the
+// prototype chain. Structured clone and Workers RPC serialize only objects with
+// the ordinary prototype.
 export function createMessageRecord(): MessageRecord {
-  return Object.create(null) as MessageRecord;
+  return {};
+}
+
+// createMapRecord returns a null-prototype object for a map field. Map keys
+// come from decoded data, so a key such as "__proto__" must stay an own
+// property instead of reaching the prototype.
+export function createMapRecord(): MessageMap {
+  return Object.create(null) as MessageMap;
 }
 
 export function asMessageRecord(value: object): MessageRecord {

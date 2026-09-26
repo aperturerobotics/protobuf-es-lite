@@ -93,3 +93,45 @@ describe("binary implicit scalar presence", () => {
     ]);
   });
 });
+
+type ParentMsg = {
+  child?: SparseScalarMsg;
+  children?: SparseScalarMsg[];
+};
+
+const ParentMsg = createMessageType<ParentMsg>({
+  typeName: "test.ParentMsg",
+  fields: [
+    { no: 1, name: "child", kind: "message", T: () => SparseScalarMsg },
+    {
+      no: 2,
+      name: "children",
+      kind: "message",
+      T: () => SparseScalarMsg,
+      repeated: true,
+    },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
+
+// Workers RPC serializes only objects with the ordinary prototype, so decoded
+// and created messages at every depth must keep it.
+describe("binary message objects", () => {
+  it("decodes nested messages as ordinary objects", () => {
+    const msg = ParentMsg.fromBinary(
+      ParentMsg.toBinary({ child: { count: 1 }, children: [{ count: 2 }] }),
+    );
+    expect(Object.getPrototypeOf(msg)).toBe(Object.prototype);
+    expect(Object.getPrototypeOf(msg.child)).toBe(Object.prototype);
+    expect(Object.getPrototypeOf(msg.children?.[0])).toBe(Object.prototype);
+    expect(Object.getPrototypeOf(ParentMsg.create({}))).toBe(Object.prototype);
+  });
+
+  it("keeps a __proto__ map key as an own entry", () => {
+    const msg = Utf8Msg.fromBinary(
+      Utf8Msg.toBinary({ labels: JSON.parse('{"__proto__":"v"}') }),
+    );
+    expect(Object.getOwnPropertyNames(msg.labels)).toEqual(["__proto__"]);
+    expect(msg.labels?.["__proto__"]).toBe("v");
+  });
+});

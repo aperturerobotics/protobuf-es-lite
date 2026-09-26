@@ -17,7 +17,7 @@ import { protoBase64 } from "./proto-base64.js";
 import type { IMessageTypeRegistry } from "./type-registry.js";
 import { throwSanitizeKey } from "./names.js";
 import type { MessageMap, MessageRecord } from "./message-access.js";
-import { createMessageRecord } from "./message-access.js";
+import { createMapRecord } from "./message-access.js";
 
 /**
  * Options for parsing JSON data.
@@ -306,7 +306,7 @@ function readField(
     }
     let targetMap = target[localName] as MessageMap;
     if (typeof targetMap !== "object") {
-      targetMap = target[localName] = createMessageRecord();
+      targetMap = target[localName] = createMapRecord();
     }
     for (const [jsonMapKey, jsonMapValue] of Object.entries(jsonValue)) {
       if (jsonMapValue === null) {
@@ -635,7 +635,7 @@ export function clearField(field: FieldInfo, target: MessageRecord) {
   } else {
     switch (field.kind) {
       case "map":
-        target[localName] = createMessageRecord();
+        target[localName] = createMapRecord();
         break;
       case "enum":
         target[localName] = implicitPresence ? field.T.values[0].no : undefined;

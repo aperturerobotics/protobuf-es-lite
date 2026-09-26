@@ -3,7 +3,7 @@ import { FieldList, isFieldSet, resolveMessageType } from "./field.js";
 import { handleUnknownField, unknownFieldsSymbol } from "./unknown.js";
 import { unwrapField, wrapField } from "./field-wrapper.js";
 import type { MessageMap, MessageRecord } from "./message-access.js";
-import { createMessageRecord } from "./message-access.js";
+import { createMapRecord, createMessageRecord } from "./message-access.js";
 import type { ScalarValue } from "./scalar.js";
 import { LongType, ScalarType, scalarZeroValue } from "./scalar.js";
 import { assert } from "./assert.js";
@@ -160,7 +160,7 @@ function readField(
     case "map": {
       const [mapKey, mapVal] = readMapEntry(field, reader, options);
       if (typeof target[localName] !== "object") {
-        target[localName] = createMessageRecord();
+        target[localName] = createMapRecord();
       }
       // safe to assume presence of map object, oneof cannot contain repeated values
       (target[localName] as MessageMap)[mapKey] = mapVal;

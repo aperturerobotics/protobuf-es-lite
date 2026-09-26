@@ -4,7 +4,11 @@ import { FieldList, resolveMessageType } from "./field.js";
 import type { AnyMessage, Message } from "./message.js";
 import { createCompleteMessage } from "./message.js";
 import type { MessageMap, MessageRecord } from "./message-access.js";
-import { asMessageRecord, createMessageRecord } from "./message-access.js";
+import {
+  asMessageRecord,
+  createMapRecord,
+  createMessageRecord,
+} from "./message-access.js";
 import { throwSanitizeKey } from "./names.js";
 import { normalizeScalarValue } from "./scalar.js";
 
@@ -128,7 +132,7 @@ export function applyPartialMessage<T extends Message<T>>(
         }
         let tMap = t[localName];
         if (typeof tMap !== "object") {
-          tMap = t[localName] = createMessageRecord();
+          tMap = t[localName] = createMapRecord();
         }
         applyPartialMap(
           sourceValue as MessageMap,
