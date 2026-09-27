@@ -22,6 +22,10 @@ const esmCases: ImportCase[] = [
     exports: ["binaryMakeReadOptions"],
   },
   {
+    specifier: "@aptre/protobuf-es-lite/binary-encoding",
+    exports: ["BinaryReader", "BinaryWriter", "WireType"],
+  },
+  {
     specifier: "@aptre/protobuf-es-lite/json",
     exports: ["jsonMakeReadOptions"],
   },
