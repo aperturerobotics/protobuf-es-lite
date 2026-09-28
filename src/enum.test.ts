@@ -127,4 +127,21 @@ describe("enum", () => {
       expect(normalizeEnumValue(TestEnum, 2)).toBe(2);
     });
   });
+
+  describe("createEnumType from a TypeScript enum", () => {
+    enum Color {
+      UNKNOWN = 0,
+      RED = 1,
+    }
+    const ColorEnum = createEnumType("Color", Color, "COLOR_");
+
+    it("restores the protobuf names the members omit", () => {
+      expect(ColorEnum.values).toEqual([
+        { no: 0, name: "COLOR_UNKNOWN", localName: "UNKNOWN" },
+        { no: 1, name: "COLOR_RED", localName: "RED" },
+      ]);
+      expect(ColorEnum.findName("COLOR_RED")?.no).toBe(1);
+      expect(ColorEnum.findNumber(1)?.name).toBe("COLOR_RED");
+    });
+  });
 });

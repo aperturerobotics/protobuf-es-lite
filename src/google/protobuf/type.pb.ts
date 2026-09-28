@@ -71,6 +71,7 @@ export enum Syntax {
 export const Syntax_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Syntax",
   Syntax,
+  "SYNTAX_",
 );
 
 /**
@@ -256,6 +257,7 @@ export enum Field_Cardinality {
 export const Field_Cardinality_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Field.Cardinality",
   Field_Cardinality,
+  "CARDINALITY_",
 );
 
 /**

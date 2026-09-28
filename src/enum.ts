@@ -73,30 +73,41 @@ function isTsEnumObject(
 // tsEnumObjectToValues converts a TypeScript enum object into a list of enum
 // values. A TypeScript enum object contains a reverse mapping (number -> name)
 // in addition to the forward mapping (name -> number); the reverse entries are
-// filtered out here.
-function tsEnumObjectToValues(enumObject: TsEnumObject): EnumValueSource[] {
-  const values: EnumValueSource[] = [];
+// filtered out here. Generated members omit the enum's shared prefix, so the
+// protobuf name is the prefix followed by the member name.
+function tsEnumObjectToValues(
+  enumObject: TsEnumObject,
+  sharedPrefix: string,
+): EnumValueInfo[] {
+  const values: EnumValueInfo[] = [];
   for (const key of Object.keys(enumObject)) {
     const v = enumObject[key];
     if (typeof v != "number") {
       // Skip the reverse mapping entries (number -> name).
       continue;
     }
-    values.push({ no: v, name: key });
+    values.push({ no: v, name: sharedPrefix + key, localName: key });
   }
   return values;
 }
 
 /**
  * Create a new EnumType with the given values.
+ *
+ * A TypeScript enum object may be passed instead of a value list, with the
+ * shared prefix its member names omit from the protobuf value names.
  */
 export function createEnumType(
   typeName: string,
   values: EnumValueSource[] | TsEnumObject,
+  sharedPrefix = "",
 ): EnumType {
   const names = Object.create(null) as Record<string, EnumValueInfo>;
   const numbers = Object.create(null) as Record<number, EnumValueInfo>;
-  const list = isTsEnumObject(values) ? tsEnumObjectToValues(values) : values;
+  const list =
+    isTsEnumObject(values) ?
+      tsEnumObjectToValues(values, sharedPrefix)
+    : values;
   const normalValues: EnumValueInfo[] = [];
   for (const value of list) {
     // We do not surface options at this time

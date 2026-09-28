@@ -13,7 +13,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type { GeneratedFile, Schema } from "../protoplugin/ecmascript/index.js";
+import type {
+  GeneratedFile,
+  Printable,
+  Schema,
+} from "../protoplugin/ecmascript/index.js";
 import type { DescEnum } from "../descriptor-set.js";
 import { localName } from "../names.js";
 
@@ -42,8 +46,29 @@ export function generateEnum(
     "(",
     f.string(enumeration.typeName),
     ", ",
-    enumeration,
+    ...enumValues(f, enumeration),
     ");",
   );
   f.print();
+}
+
+// enumValues renders the value source of createEnumType. The enum object
+// suffices when each protobuf name is the shared prefix followed by the
+// member name; an escaped member name needs the explicit [number, name] list.
+function enumValues(f: GeneratedFile, enumeration: DescEnum): Printable[] {
+  // sharedPrefix is lower case; the value names carry its protobuf spelling.
+  const prefix =
+    enumeration.values[0]?.name.substring(
+      0,
+      enumeration.sharedPrefix?.length ?? 0,
+    ) ?? "";
+  if (
+    enumeration.values.every((value) => value.name == prefix + localName(value))
+  ) {
+    return prefix == "" ? [enumeration] : [enumeration, ", ", f.string(prefix)];
+  }
+  const tuples = enumeration.values.map(
+    (value) => `[${value.number}, ${f.string(value.name)}]`,
+  );
+  return ["[", tuples.join(", "), "]"];
 }

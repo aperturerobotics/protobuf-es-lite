@@ -55,6 +55,7 @@ export const CodeGeneratorResponse_Feature_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.compiler.CodeGeneratorResponse.Feature",
     CodeGeneratorResponse_Feature,
+    "FEATURE_",
   );
 
 /**

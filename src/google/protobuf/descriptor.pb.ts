@@ -277,6 +277,7 @@ export enum FieldDescriptorProto_Type {
 export const FieldDescriptorProto_Type_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Type",
   FieldDescriptorProto_Type,
+  "TYPE_",
 );
 
 /**
@@ -308,6 +309,7 @@ export enum FieldDescriptorProto_Label {
 export const FieldDescriptorProto_Label_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Label",
   FieldDescriptorProto_Label,
+  "LABEL_",
 );
 
 /**
