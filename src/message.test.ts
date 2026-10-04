@@ -103,3 +103,93 @@ describe("compareMessages with map fields", () => {
     ).toBe(false);
   });
 });
+
+type ZeroMsg = {
+  weight?: number;
+  size?: bigint;
+  name?: string;
+  enabled?: boolean;
+  data?: Uint8Array;
+  child?: MapScalarMsg;
+  choice?:
+    | { value: number; case: "count" }
+    | { value?: undefined; case: undefined };
+  labels?: { [key: string]: string };
+};
+
+const ZeroMsg = createMessageType<ZeroMsg>({
+  typeName: "test.ZeroMsg",
+  fields: [
+    { no: 1, name: "weight", kind: "scalar", T: ScalarType.INT32 },
+    { no: 2, name: "size", kind: "scalar", T: ScalarType.UINT64 },
+    { no: 3, name: "name", kind: "scalar", T: ScalarType.STRING },
+    { no: 4, name: "enabled", kind: "scalar", T: ScalarType.BOOL },
+    { no: 5, name: "data", kind: "scalar", T: ScalarType.BYTES },
+    { no: 6, name: "child", kind: "message", T: () => MapScalarMsg },
+    {
+      no: 7,
+      name: "count",
+      kind: "scalar",
+      T: ScalarType.INT32,
+      oneof: "choice",
+    },
+    {
+      no: 8,
+      name: "labels",
+      kind: "map",
+      K: ScalarType.STRING,
+      V: { kind: "scalar", T: ScalarType.STRING },
+    },
+  ] as readonly PartialFieldInfo[],
+  packedByDefault: true,
+});
+
+describe("compareMessages with zero values", () => {
+  it("equals an unset field and its zero value", () => {
+    const zero = ZeroMsg.create({
+      weight: 0,
+      size: 0n,
+      name: "",
+      enabled: false,
+      data: new Uint8Array(0),
+      child: {},
+    });
+    expect(ZeroMsg.equals(zero, {})).toBe(true);
+    expect(ZeroMsg.equals({}, zero)).toBe(true);
+    expect(ZeroMsg.equals(zero, ZeroMsg.createComplete())).toBe(true);
+    expect(ZeroMsg.equals(null, zero)).toBe(true);
+  });
+
+  it("equals a message and its binary round trip", () => {
+    const msg = ZeroMsg.create({
+      weight: 0,
+      name: "peer",
+      child: { labels: {} },
+    });
+    expect(ZeroMsg.equals(msg, ZeroMsg.fromBinary(ZeroMsg.toBinary(msg)))).toBe(
+      true,
+    );
+  });
+
+  it("distinguishes a nonzero value from an unset field", () => {
+    expect(ZeroMsg.equals({ weight: 1 }, {})).toBe(false);
+    expect(ZeroMsg.equals({ child: { labels: { a: "" } } }, {})).toBe(false);
+    expect(ZeroMsg.equals(null, { name: "x" })).toBe(false);
+  });
+
+  it("keeps oneof case and map key presence strict", () => {
+    expect(ZeroMsg.equals({ choice: { case: "count", value: 0 } }, {})).toBe(
+      false,
+    );
+    expect(
+      ZeroMsg.equals(
+        { choice: { case: "count", value: 0 } },
+        { choice: { case: "count", value: 0 } },
+      ),
+    ).toBe(true);
+    expect(ZeroMsg.equals({ labels: { a: "" } }, { labels: {} })).toBe(false);
+    expect(ZeroMsg.equals({ labels: { a: "" } }, { labels: { b: "" } })).toBe(
+      false,
+    );
+  });
+});

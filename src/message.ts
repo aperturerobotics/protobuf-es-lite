@@ -18,6 +18,7 @@ import { applyPartialMessage } from "./partial.js";
 import {
   LongType,
   ScalarType,
+  isScalarZeroValue,
   scalarEquals,
   scalarZeroValue,
 } from "./scalar.js";
@@ -153,7 +154,8 @@ export interface MessageType<T extends Message<T> = AnyMessage> {
 
   /**
    * Returns true if the given arguments have equal field values, recursively.
-   * Will also return true if both messages are `undefined` or `null`.
+   * An unset field equals its zero value, and an unset message equals an empty
+   * one, so a message equals its own binary or JSON round trip.
    */
   equals(a: T | undefined | null, b: T | undefined | null): boolean;
 
@@ -343,59 +345,59 @@ export function createEmptyMessageType<T extends Message<T>>(
 }
 
 // compareMessages compares two messages for equality.
+//
+// An unset field equals its zero value and a null message equals an empty one,
+// matching the wire, which omits zero values. A oneof case and a map key are
+// data on the wire, so their presence is compared strictly.
 export function compareMessages<T extends Message<T>>(
   fields: FieldList,
   a: T | undefined | null,
   b: T | undefined | null,
 ): boolean {
-  if (a == null && b == null) {
-    return true;
-  }
   if (a === b) {
     return true;
   }
-  if (!a || !b) {
-    return false;
-  }
+  const ra = asMessageRecord(a ?? {});
+  const rb = asMessageRecord(b ?? {});
   return fields.byMember().every((m) => {
-    const va = asMessageRecord(a)[m.localName];
-    const vb = asMessageRecord(b)[m.localName];
+    const va = ra[m.localName];
+    const vb = rb[m.localName];
     if (m.repeated) {
-      const vaArray = va as unknown[] | undefined;
-      const vbArray = vb as unknown[] | undefined;
-      if ((vaArray?.length ?? 0) !== (vbArray?.length ?? 0)) {
+      const vaArray = (va ?? []) as unknown[];
+      const vbArray = (vb ?? []) as unknown[];
+      if (vaArray.length !== vbArray.length) {
         return false;
       }
-      if (!vaArray?.length) {
-        return true;
-      }
-
       switch (m.kind) {
         case "message": {
           const messageType = resolveMessageType(m.T) as MessageType;
-          const values = vaArray as Message<AnyMessage>[];
-          const otherValues = vbArray as Message<AnyMessage>[];
-          return values.every((a, i) => messageType.equals(a, otherValues[i]));
+          return vaArray.every((v, i) =>
+            messageType.equals(
+              v as Message<AnyMessage>,
+              vbArray[i] as Message<AnyMessage>,
+            ),
+          );
         }
         case "scalar":
-          return vaArray.every((a, i) =>
+          return vaArray.every((v, i) =>
             scalarEquals(
               m.T,
-              a as ScalarComparable,
-              vbArray?.[i] as ScalarComparable,
+              v as ScalarComparable,
+              vbArray[i] as ScalarComparable,
             ),
           );
         case "enum":
-          return vaArray.every((a, i) =>
+          return vaArray.every((v, i) =>
             scalarEquals(
               ScalarType.INT32,
-              a as ScalarComparable,
-              vbArray?.[i] as ScalarComparable,
+              v as ScalarComparable,
+              vbArray[i] as ScalarComparable,
             ),
           );
       }
       throw new Error(`repeated cannot contain ${m.kind}`);
     }
+
     switch (m.kind) {
       case "message":
         return (resolveMessageType(m.T) as MessageType).equals(
@@ -403,89 +405,70 @@ export function compareMessages<T extends Message<T>>(
           vb as Message<AnyMessage>,
         );
       case "enum":
-        return scalarEquals(
-          ScalarType.INT32,
-          va as ScalarComparable,
-          vb as ScalarComparable,
-        );
+        return singularEquals(ScalarType.INT32, va, vb);
       case "scalar":
-        return scalarEquals(
-          m.T,
-          va as ScalarComparable,
-          vb as ScalarComparable,
-        );
+        return singularEquals(m.T, va, vb);
       case "oneof": {
         const oneofA = va as OneofRuntimeValue | undefined;
         const oneofB = vb as OneofRuntimeValue | undefined;
         if (oneofA?.case !== oneofB?.case) {
           return false;
         }
-        if (oneofA == null) {
-          return true;
-        }
-        const oneofCase = oneofA.case;
-        if (oneofCase === undefined) {
-          return true;
-        }
-        const s = m.findField(oneofCase);
+        const oneofCase = oneofA?.case;
+        const s = oneofCase === undefined ? undefined : m.findField(oneofCase);
         if (s === undefined) {
           return true;
         }
-
         switch (s.kind) {
-          case "message": {
-            const messageType = resolveMessageType(s.T) as MessageType;
-            return messageType.equals(
-              oneofA.value as Message<AnyMessage>,
+          case "message":
+            return (resolveMessageType(s.T) as MessageType).equals(
+              oneofA?.value as Message<AnyMessage>,
               oneofB?.value as Message<AnyMessage>,
             );
-          }
           case "enum":
-            return scalarEquals(
+            return singularEquals(
               ScalarType.INT32,
-              oneofA.value as ScalarComparable,
-              oneofB?.value as ScalarComparable,
+              oneofA?.value,
+              oneofB?.value,
             );
           case "scalar":
-            return scalarEquals(
-              s.T,
-              oneofA.value as ScalarComparable,
-              oneofB?.value as ScalarComparable,
-            );
+            return singularEquals(s.T, oneofA?.value, oneofB?.value);
         }
         throw new Error(`oneof cannot contain ${s.kind}`);
       }
       case "map": {
         const ma = (va ?? {}) as MessageRecord;
         const mb = (vb ?? {}) as MessageRecord;
-        const keys = Object.keys(ma).concat(Object.keys(mb));
-        switch (m.V.kind) {
-          case "message": {
-            const messageType = resolveMessageType(m.V.T);
-            return keys.every((k) => messageType.equals(ma[k], mb[k]));
-          }
-          case "enum":
-            return keys.every((k) =>
-              scalarEquals(
-                ScalarType.INT32,
-                ma[k] as ScalarComparable,
-                mb[k] as ScalarComparable,
-              ),
-            );
-          case "scalar": {
-            const scalarType = m.V.T;
-            return keys.every((k) =>
-              scalarEquals(
-                scalarType,
-                ma[k] as ScalarComparable,
-                mb[k] as ScalarComparable,
-              ),
-            );
-          }
+        const keys = Object.keys(ma);
+        if (keys.length !== Object.keys(mb).length) {
+          return false;
         }
+        const V = m.V;
+        return keys.every((k) => {
+          if (!(k in mb)) {
+            return false;
+          }
+          switch (V.kind) {
+            case "message":
+              return resolveMessageType(V.T).equals(ma[k], mb[k]);
+            case "enum":
+              return singularEquals(ScalarType.INT32, ma[k], mb[k]);
+            case "scalar":
+              return singularEquals(V.T, ma[k], mb[k]);
+          }
+        });
       }
     }
   });
+}
+
+// singularEquals compares two singular scalar or enum values, treating an unset
+// value as the zero value.
+function singularEquals(type: ScalarType, a: unknown, b: unknown): boolean {
+  if (isScalarZeroValue(type, a) && isScalarZeroValue(type, b)) {
+    return true;
+  }
+  return scalarEquals(type, a as ScalarComparable, b as ScalarComparable);
 }
 
 export function cloneMessage<T extends Message<T>>(
