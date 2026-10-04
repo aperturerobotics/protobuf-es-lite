@@ -38,6 +38,7 @@
     "verbatimModuleSyntax": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "types": ["node"],
     "rootDir": "./src"
   }
 }
