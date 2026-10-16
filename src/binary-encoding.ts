@@ -282,28 +282,18 @@ export interface IBinaryWriter {
 
 export class BinaryWriter implements IBinaryWriter {
   /**
-   * We cannot allocate a buffer for the entire output
-   * because we don't know it's size.
-   *
-   * So we collect smaller chunks of known size and
-   * concat them later.
-   *
-   * Use `raw()` to push data to this array. It will flush
-   * `buf` first.
+   * The bytes written so far are buf[0, pos). The buffer doubles when a write
+   * needs more room, so a message encodes into one allocation.
    */
-  private chunks: Uint8Array[];
+  private buf: Uint8Array;
+  private view: DataView;
+  private pos = 0;
 
   /**
-   * A growing buffer for byte values. If you don't know
-   * the size of the data you are writing, push to this
-   * array.
+   * Start offsets of the open forks. Join moves a fork's bytes forward to
+   * make room for its length prefix.
    */
-  protected buf: number[];
-
-  /**
-   * Previous fork states.
-   */
-  private stack: Array<{ chunks: Uint8Array[]; buf: number[] }> = [];
+  private stack: number[] = [];
 
   /**
    * Text encoder instance to convert UTF-8 to bytes.
@@ -312,24 +302,17 @@ export class BinaryWriter implements IBinaryWriter {
 
   constructor(textEncoder?: TextEncoderLike) {
     this.textEncoder = textEncoder ?? new TextEncoder();
-    this.chunks = [];
-    this.buf = [];
+    this.buf = new Uint8Array(64);
+    this.view = new DataView(this.buf.buffer);
   }
 
   /**
    * Return all bytes written and reset this writer.
    */
   finish(): Uint8Array {
-    this.chunks.push(new Uint8Array(this.buf)); // flush the buffer
-    let len = 0;
-    for (let i = 0; i < this.chunks.length; i++) len += this.chunks[i].length;
-    let bytes = new Uint8Array(len);
-    let offset = 0;
-    for (let i = 0; i < this.chunks.length; i++) {
-      bytes.set(this.chunks[i], offset);
-      offset += this.chunks[i].length;
-    }
-    this.chunks = [];
+    const bytes = this.buf.slice(0, this.pos);
+    this.pos = 0;
+    this.stack = [];
     return bytes;
   }
 
@@ -340,9 +323,7 @@ export class BinaryWriter implements IBinaryWriter {
    * Must be joined later with `join()`.
    */
   fork(): IBinaryWriter {
-    this.stack.push({ chunks: this.chunks, buf: this.buf });
-    this.chunks = [];
-    this.buf = [];
+    this.stack.push(this.pos);
     return this;
   }
 
@@ -351,18 +332,25 @@ export class BinaryWriter implements IBinaryWriter {
    * return to the previous state.
    */
   join(): IBinaryWriter {
-    // get chunk of fork
-    let chunk = this.finish();
+    // Measure the fork and the varint of its length.
+    const start = this.stack.pop();
+    if (start === undefined) throw new Error("invalid state, fork stack empty");
+    const length = this.pos - start;
+    let size = 1;
+    for (let rest = length >>> 7; rest; rest >>>= 7) size++;
 
-    // restore previous state
-    let prev = this.stack.pop();
-    if (!prev) throw new Error("invalid state, fork stack empty");
-    this.chunks = prev.chunks;
-    this.buf = prev.buf;
-
-    // write length of chunk as varint
-    this.uint32(chunk.byteLength);
-    return this.raw(chunk);
+    // Move the fork's bytes forward and write the length before them.
+    this.reserve(size);
+    this.buf.copyWithin(start + size, start, this.pos);
+    this.pos += size;
+    let at = start;
+    let rest = length;
+    while (rest > 0x7f) {
+      this.buf[at++] = (rest & 0x7f) | 0x80;
+      rest >>>= 7;
+    }
+    this.buf[at] = rest;
+    return this;
   }
 
   /**
@@ -380,12 +368,18 @@ export class BinaryWriter implements IBinaryWriter {
    * Write a chunk of raw bytes.
    */
   raw(chunk: Uint8Array): IBinaryWriter {
-    if (this.buf.length) {
-      this.chunks.push(new Uint8Array(this.buf));
-      this.buf = [];
-    }
-    this.chunks.push(chunk);
+    this.reserve(chunk.length);
+    this.buf.set(chunk, this.pos);
+    this.pos += chunk.length;
     return this;
+  }
+
+  /**
+   * Append one byte. The varint helpers write through this method.
+   */
+  push(byte: number): void {
+    if (this.pos === this.buf.length) this.reserve(1);
+    this.buf[this.pos++] = byte;
   }
 
   /**
@@ -395,11 +389,12 @@ export class BinaryWriter implements IBinaryWriter {
     assertUInt32(value);
 
     // write value as varint 32, inlined for speed
+    this.reserve(5);
     while (value > 0x7f) {
-      this.buf.push((value & 0x7f) | 0x80);
+      this.buf[this.pos++] = (value & 0x7f) | 0x80;
       value = value >>> 7;
     }
-    this.buf.push(value);
+    this.buf[this.pos++] = value;
 
     return this;
   }
@@ -409,7 +404,7 @@ export class BinaryWriter implements IBinaryWriter {
    */
   int32(value: number): IBinaryWriter {
     assertInt32(value);
-    varint32write(value, this.buf);
+    varint32write(value, this);
     return this;
   }
 
@@ -417,7 +412,7 @@ export class BinaryWriter implements IBinaryWriter {
    * Write a `bool` value, a variant.
    */
   bool(value: boolean): IBinaryWriter {
-    this.buf.push(value ? 1 : 0);
+    this.push(value ? 1 : 0);
     return this;
   }
 
@@ -443,18 +438,20 @@ export class BinaryWriter implements IBinaryWriter {
    */
   float(value: number): IBinaryWriter {
     assertFloat32(value);
-    let chunk = new Uint8Array(4);
-    new DataView(chunk.buffer).setFloat32(0, value, true);
-    return this.raw(chunk);
+    this.reserve(4);
+    this.view.setFloat32(this.pos, value, true);
+    this.pos += 4;
+    return this;
   }
 
   /**
    * Write a `double` value, a 64-bit floating point number.
    */
   double(value: number): IBinaryWriter {
-    let chunk = new Uint8Array(8);
-    new DataView(chunk.buffer).setFloat64(0, value, true);
-    return this.raw(chunk);
+    this.reserve(8);
+    this.view.setFloat64(this.pos, value, true);
+    this.pos += 8;
+    return this;
   }
 
   /**
@@ -462,9 +459,10 @@ export class BinaryWriter implements IBinaryWriter {
    */
   fixed32(value: number): IBinaryWriter {
     assertUInt32(value);
-    let chunk = new Uint8Array(4);
-    new DataView(chunk.buffer).setUint32(0, value, true);
-    return this.raw(chunk);
+    this.reserve(4);
+    this.view.setUint32(this.pos, value, true);
+    this.pos += 4;
+    return this;
   }
 
   /**
@@ -472,9 +470,10 @@ export class BinaryWriter implements IBinaryWriter {
    */
   sfixed32(value: number): IBinaryWriter {
     assertInt32(value);
-    let chunk = new Uint8Array(4);
-    new DataView(chunk.buffer).setInt32(0, value, true);
-    return this.raw(chunk);
+    this.reserve(4);
+    this.view.setInt32(this.pos, value, true);
+    this.pos += 4;
+    return this;
   }
 
   /**
@@ -484,7 +483,7 @@ export class BinaryWriter implements IBinaryWriter {
     assertInt32(value);
     // zigzag encode
     value = ((value << 1) ^ (value >> 31)) >>> 0;
-    varint32write(value, this.buf);
+    varint32write(value, this);
     return this;
   }
 
@@ -492,24 +491,16 @@ export class BinaryWriter implements IBinaryWriter {
    * Write a `fixed64` value, a signed, fixed-length 64-bit integer.
    */
   sfixed64(value: string | number | bigint): IBinaryWriter {
-    let chunk = new Uint8Array(8),
-      view = new DataView(chunk.buffer),
-      tc = protoInt64.enc(value);
-    view.setInt32(0, tc.lo, true);
-    view.setInt32(4, tc.hi, true);
-    return this.raw(chunk);
+    const tc = protoInt64.enc(value);
+    return this.int64Bits(tc.lo, tc.hi);
   }
 
   /**
    * Write a `fixed64` value, an unsigned, fixed-length 64 bit integer.
    */
   fixed64(value: string | number | bigint): IBinaryWriter {
-    let chunk = new Uint8Array(8),
-      view = new DataView(chunk.buffer),
-      tc = protoInt64.uEnc(value);
-    view.setInt32(0, tc.lo, true);
-    view.setInt32(4, tc.hi, true);
-    return this.raw(chunk);
+    const tc = protoInt64.uEnc(value);
+    return this.int64Bits(tc.lo, tc.hi);
   }
 
   /**
@@ -517,7 +508,7 @@ export class BinaryWriter implements IBinaryWriter {
    */
   int64(value: string | number | bigint): IBinaryWriter {
     let tc = protoInt64.enc(value);
-    varint64write(tc.lo, tc.hi, this.buf);
+    varint64write(tc.lo, tc.hi, this);
     return this;
   }
 
@@ -530,7 +521,7 @@ export class BinaryWriter implements IBinaryWriter {
       sign = tc.hi >> 31,
       lo = (tc.lo << 1) ^ sign,
       hi = ((tc.hi << 1) | (tc.lo >>> 31)) ^ sign;
-    varint64write(lo, hi, this.buf);
+    varint64write(lo, hi, this);
     return this;
   }
 
@@ -539,8 +530,33 @@ export class BinaryWriter implements IBinaryWriter {
    */
   uint64(value: string | number | bigint): IBinaryWriter {
     let tc = protoInt64.uEnc(value);
-    varint64write(tc.lo, tc.hi, this.buf);
+    varint64write(tc.lo, tc.hi, this);
     return this;
+  }
+
+  /**
+   * Write a fixed-length 64-bit integer from its low and high words.
+   */
+  private int64Bits(lo: number, hi: number): IBinaryWriter {
+    this.reserve(8);
+    this.view.setInt32(this.pos, lo, true);
+    this.view.setInt32(this.pos + 4, hi, true);
+    this.pos += 8;
+    return this;
+  }
+
+  /**
+   * Grow the buffer, doubling it, until n more bytes fit.
+   */
+  private reserve(n: number): void {
+    const need = this.pos + n;
+    if (need <= this.buf.length) return;
+    let size = this.buf.length * 2;
+    while (size < need) size *= 2;
+    const buf = new Uint8Array(size);
+    buf.set(this.buf.subarray(0, this.pos));
+    this.buf = buf;
+    this.view = new DataView(buf.buffer);
   }
 }
 

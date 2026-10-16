@@ -439,15 +439,16 @@ function writeMessageField<T>(
   const messageType = resolveMessageType(field.T);
   const message = wrapField(messageType.fieldWrapper, value);
 
-  if (field.delimited)
-    writer
-      .tag(field.no, WireType.StartGroup)
-      .raw(messageType.toBinary(message as MessageRecord, options))
-      .tag(field.no, WireType.EndGroup);
-  else
-    writer
-      .tag(field.no, WireType.LengthDelimited)
-      .bytes(messageType.toBinary(message as MessageRecord, options));
+  // Write the message in place: a fork measures it for its length prefix.
+  if (field.delimited) {
+    writer.tag(field.no, WireType.StartGroup);
+    writeMessage(message, messageType.fields, writer, options);
+    writer.tag(field.no, WireType.EndGroup);
+  } else {
+    writer.tag(field.no, WireType.LengthDelimited).fork();
+    writeMessage(message, messageType.fields, writer, options);
+    writer.join();
+  }
 }
 
 function writeScalar(
@@ -478,25 +479,29 @@ function writePacked<T>(
   writer.join();
 }
 
+type ScalarWriteMethod = Exclude<
+  keyof IBinaryWriter,
+  "tag" | "raw" | "fork" | "join" | "finish"
+>;
+
+/**
+ * scalarTypeInfos caches each scalar type's wire type and writer method,
+ * since every scalar written looks them up.
+ */
+const scalarTypeInfos: Array<[WireType, ScalarWriteMethod]> = [];
+
 /**
  * Get information for writing a scalar value.
  *
  * Returns tuple:
  * [0]: appropriate WireType
  * [1]: name of the appropriate method of IBinaryWriter
- * [2]: whether the given value is a default value for proto3 semantics
- *
- * If argument `value` is omitted, [2] is always false.
  */
-// TODO replace call-sites writeScalar() and writePacked(), then remove
-function scalarTypeInfo(
-  type: ScalarType,
-): [
-  WireType,
-  Exclude<keyof IBinaryWriter, "tag" | "raw" | "fork" | "join" | "finish">,
-] {
-  let wireType = WireType.Varint;
+function scalarTypeInfo(type: ScalarType): [WireType, ScalarWriteMethod] {
+  const cached = scalarTypeInfos[type];
+  if (cached) return cached;
 
+  let wireType = WireType.Varint;
   switch (type) {
     case ScalarType.BYTES:
     case ScalarType.STRING:
@@ -513,11 +518,8 @@ function scalarTypeInfo(
       wireType = WireType.Bit32;
       break;
   }
-  const method = ScalarType[type].toLowerCase() as Exclude<
-    keyof IBinaryWriter,
-    "tag" | "raw" | "fork" | "join" | "finish"
-  >;
-  return [wireType, method];
+  const method = ScalarType[type].toLowerCase() as ScalarWriteMethod;
+  return (scalarTypeInfos[type] = [wireType, method]);
 }
 
 function writeMapEntry(
@@ -562,9 +564,9 @@ function writeMapEntry(
     case "message": {
       assert(value !== undefined);
       const messageType = resolveMessageType(field.V.T);
-      writer
-        .tag(2, WireType.LengthDelimited)
-        .bytes(messageType.toBinary(value, options));
+      writer.tag(2, WireType.LengthDelimited).fork();
+      writeMessage(value, messageType.fields, writer, options);
+      writer.join();
       break;
     }
   }

@@ -83,13 +83,21 @@ export function varint64read(this: ReaderLike): [number, number] {
 }
 
 /**
- * Write a 64 bit varint, given as two JS numbers, to the given bytes array.
+ * ByteSink receives the bytes of a varint one at a time: an array or a
+ * binary writer.
+ */
+export interface ByteSink {
+  push(byte: number): unknown;
+}
+
+/**
+ * Write a 64 bit varint, given as two JS numbers, to the given sink.
  *
  * Copyright 2008 Google Inc.  All rights reserved.
  *
  * See https://github.com/protocolbuffers/protobuf/blob/8a71927d74a4ce34efe2d8769fda198f52d20d12/js/experimental/runtime/kernel/writer.js#L344
  */
-export function varint64write(lo: number, hi: number, bytes: number[]): void {
+export function varint64write(lo: number, hi: number, bytes: ByteSink): void {
   for (let i = 0; i < 28; i = i + 7) {
     const shift = lo >>> i;
     const hasNext = !(shift >>> 7 == 0 && hi == 0);
@@ -288,7 +296,7 @@ const decimalFrom1e7WithLeadingZeros = (digit1e7: number) => {
  *
  * See https://github.com/protocolbuffers/protobuf/blob/1b18833f4f2a2f681f4e4a25cdf3b0a43115ec26/js/binary/encoder.js#L144
  */
-export function varint32write(value: number, bytes: number[]): void {
+export function varint32write(value: number, bytes: ByteSink): void {
   if (value >= 0) {
     // write value as varint 32
     while (value > 0x7f) {

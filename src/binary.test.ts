@@ -135,3 +135,29 @@ describe("binary message objects", () => {
     expect(msg.labels?.["__proto__"]).toBe("v");
   });
 });
+
+// The writer encodes nested messages in place and moves each one forward to
+// fit its length prefix, so lengths that need more than one varint byte and
+// a buffer that grows mid-message must still produce canonical bytes.
+describe("binary writer", () => {
+  it("writes a nested message's length before its bytes", () => {
+    expect(ParentMsg.toBinary({ child: { count: 150 } })).toEqual(
+      new Uint8Array([0x0a, 0x03, 0x08, 0x96, 0x01]),
+    );
+  });
+
+  it("round-trips nested messages past one-byte lengths", () => {
+    const children = Array.from({ length: 300 }, (_, i) => ({
+      count: (i + 1) * 1000,
+    }));
+    const msg = { child: { count: 7 }, children };
+    const bytes = ParentMsg.toBinary(msg);
+    expect(ParentMsg.fromBinary(bytes)).toEqual(msg);
+
+    const labels = Object.fromEntries(
+      Array.from({ length: 50 }, (_, i) => [`key${i}`, "v".repeat(i * 5)]),
+    );
+    const text = { strict: "s".repeat(200), labels };
+    expect(Utf8Msg.fromBinary(Utf8Msg.toBinary(text))).toEqual(text);
+  });
+});
