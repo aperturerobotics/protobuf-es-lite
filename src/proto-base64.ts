@@ -64,7 +64,7 @@ export const protoBase64 = {
           case " ":
             continue; // skip white-space, and padding
           default:
-            throw Error("invalid base64 string.");
+            throw new Error("invalid base64 string.");
         }
       }
       switch (groupPos) {
@@ -88,7 +88,7 @@ export const protoBase64 = {
           break;
       }
     }
-    if (groupPos == 1) throw Error("invalid base64 string.");
+    if (groupPos == 1) throw new Error("invalid base64 string.");
     return bytes.subarray(0, bytePos);
   },
   /**

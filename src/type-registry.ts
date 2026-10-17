@@ -13,32 +13,31 @@
 // limitations under the License.
 
 import type { EnumType } from "./enum.js";
-import type { Message, MessageType } from "./message.js";
+import type { AnyMessage, MessageType } from "./message.js";
 import type { ServiceType } from "./service-type.js";
 
 /**
  * IMessageTypeRegistry provides look-up for message types.
  *
- * You can conveniently create a registry using the createRegistry()
- * function:
+ * A registry over a few known types:
  *
  * ```ts
- * import { createTypeRegistry, IMessageTypeRegistry } from "@aptre/protobuf-es-lite";
- * import { MyMessage, MyOtherMessage } from "./gen/my_message.pb.js";
+ * import type { IMessageTypeRegistry, MessageType } from "@aptre/protobuf-es-lite";
+ * import { MyMessage } from "./gen/my_message.pb.js";
  *
- * const reg: IMessageTypeRegistry = createRegistry(
- *   MyMessage,
- *   MyOtherMessage,
- * );
+ * const reg: IMessageTypeRegistry = {
+ *   findMessage: <T,>(name: string) =>
+ *     (name === MyMessage.typeName ? MyMessage : undefined) as
+ *       | MessageType<T>
+ *       | undefined,
+ * };
  * ```
  */
 export interface IMessageTypeRegistry {
   /**
    * Find a message type by its protobuf type name.
    */
-  findMessage<T extends Message<T>>(
-    typeName: string,
-  ): MessageType<T> | undefined;
+  findMessage<T = AnyMessage>(typeName: string): MessageType<T> | undefined;
 }
 
 /**

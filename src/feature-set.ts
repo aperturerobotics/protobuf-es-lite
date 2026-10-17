@@ -18,21 +18,15 @@ import {
   FeatureSetDefaults,
 } from "./google/protobuf/descriptor.pb.js";
 import { protoBase64 } from "./proto-base64.js";
-import type { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
-import type { Message } from "./message.js";
-import { applyPartialMessage } from "./partial.js";
 
 /**
  * Return the edition feature defaults supported by @aptre/protobuf-es-lite.
  */
-export function getFeatureSetDefaults(
-  options?: Partial<BinaryReadOptions>,
-): Message<FeatureSetDefaults> {
+export function getFeatureSetDefaults(): FeatureSetDefaults {
   return FeatureSetDefaults.fromBinary(
     protoBase64.dec(
       "ChESDAgBEAIYAiADKAEwAhjmBwoREgwIAhABGAEgAigBMAEY5wcKERIMCAEQARgBIAIoATABGOgHIOYHKOkH",
     ),
-    options,
   );
 }
 
@@ -53,6 +47,17 @@ export type FeatureResolverFn = (
   b?: FeatureSet,
 ) => MergedFeatureSet;
 
+// featureKeys lists the fields of FeatureSet, each an enum whose zero value
+// means unset.
+const featureKeys = [
+  "fieldPresence",
+  "enumType",
+  "repeatedFieldEncoding",
+  "utf8Validation",
+  "messageEncoding",
+  "jsonFormat",
+] as const;
+
 /**
  * Create an edition feature resolver with the given feature set defaults, or
  * the feature set defaults supported by @aptre/protobuf-es-lite.
@@ -60,11 +65,8 @@ export type FeatureResolverFn = (
 export function createFeatureResolver(
   edition: Edition,
   compiledFeatureSetDefaults?: FeatureSetDefaults,
-  serializationOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>,
 ): FeatureResolverFn {
-  const fds = FeatureSetDefaults.create(
-    compiledFeatureSetDefaults ?? getFeatureSetDefaults(serializationOptions),
-  );
+  const fds = compiledFeatureSetDefaults ?? getFeatureSetDefaults();
   const min = fds.minimumEdition ?? 0;
   const max = fds.maximumEdition ?? 0;
 
@@ -100,15 +102,12 @@ export function createFeatureResolver(
   if (highestMatch === undefined) {
     throw new Error(`No valid default found for edition ${Edition[edition]}`);
   }
-  const featureSetBin = FeatureSet.toBinary(
-    highestMatch.f,
-    serializationOptions,
-  );
+  const defaults = highestMatch.f;
   return (...rest): MergedFeatureSet => {
-    const f = FeatureSet.fromBinary(featureSetBin, serializationOptions);
+    const f = FeatureSet.clone(defaults);
     for (const c of rest) {
-      if (c !== undefined) {
-        applyPartialMessage(c, f, FeatureSet.fields);
+      for (const k of featureKeys) {
+        setFeature(f, c, k);
       }
     }
     if (!validateMergedFeatures(f)) {
@@ -116,6 +115,18 @@ export function createFeatureResolver(
     }
     return f;
   };
+}
+
+// setFeature copies feature k from c to f when c sets it.
+function setFeature<K extends (typeof featureKeys)[number]>(
+  f: FeatureSet,
+  c: FeatureSet | undefined,
+  k: K,
+): void {
+  const v = c?.[k];
+  if (v !== undefined) {
+    f[k] = v;
+  }
 }
 
 // When protoc generates google.protobuf.FeatureSetDefaults, it ensures that
@@ -138,14 +149,5 @@ export function createFeatureResolver(
 function validateMergedFeatures(
   featureSet: FeatureSet,
 ): featureSet is MergedFeatureSet {
-  for (const fi of FeatureSet.fields.list()) {
-    const v = featureSet[fi.localName as keyof FeatureSet] as unknown;
-    if (v === undefined) {
-      return false;
-    }
-    if (fi.kind == "enum" && v === 0) {
-      return false;
-    }
-  }
-  return true;
+  return featureKeys.every((k) => !!featureSet[k]);
 }

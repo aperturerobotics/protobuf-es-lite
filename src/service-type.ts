@@ -58,8 +58,10 @@ export type MethodInfo<
 /**
  * A unary method: rpc (Input) returns (Output)
  */
-export interface MethodInfoUnary<I extends Message<I>, O extends Message<O>>
-  extends miShared<I, O> {
+export interface MethodInfoUnary<
+  I extends Message<I>,
+  O extends Message<O>,
+> extends miShared<I, O> {
   readonly kind: MethodKind.Unary;
 }
 

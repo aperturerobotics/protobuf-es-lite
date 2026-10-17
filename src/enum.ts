@@ -1,199 +1,54 @@
-import type { DescEnum } from "./index.js";
-
 /**
- * Reflection information for a protobuf enumeration.
+ * EnumType describes a protobuf enumeration: its name and its values.
  */
 export interface EnumType {
-  /**
-   * The fully qualified name of the enumeration.
-   */
+  /** The fully qualified name of the enumeration. */
   readonly typeName: string;
 
+  /** The values in declaration order; the first is the default. */
   readonly values: readonly EnumValueInfo[];
 
-  /**
-   * Find an enum value by its (protobuf) name.
-   */
+  /** Find an enum value by its protobuf name. */
   findName(name: string): EnumValueInfo | undefined;
 
-  /**
-   * Find an enum value by its number.
-   */
+  /** Find an enum value by its number. */
   findNumber(no: number): EnumValueInfo | undefined;
-
-  // We do not surface options at this time
-  // readonly options: OptionsMap;
 }
 
 /**
- * Reflection information for a protobuf enumeration value.
+ * EnumValueInfo is one value of a protobuf enumeration.
  */
 export interface EnumValueInfo {
-  /**
-   * The numeric enumeration value, as specified in the protobuf source.
-   */
+  /** The number of the value, as written in the protobuf source. */
   readonly no: number;
 
-  /**
-   * The name of the enumeration value, as specified in the protobuf source.
-   */
+  /** The name of the value, as written in the protobuf source. */
   readonly name: string;
-
-  /**
-   * The name of the enumeration value in generated code.
-   */
-  readonly localName: string;
-
-  // We do not surface options at this time
-  // readonly options: OptionsMap;
-}
-
-export type EnumValueSource =
-  | EnumValueInfo
-  | Omit<EnumValueInfo, "localName">
-  | readonly [no: number, name: string];
-
-// TsEnumObject describes the runtime shape of a TypeScript enum object.
-// Member names map to their numeric value; a reverse mapping (number -> name)
-// also exists on the same object at runtime.
-export type TsEnumObject = { readonly [member: string]: string | number };
-
-function isEnumValueTuple(
-  value: EnumValueSource,
-): value is readonly [no: number, name: string] {
-  return Array.isArray(value);
-}
-
-function isTsEnumObject(
-  values: EnumValueSource[] | TsEnumObject,
-): values is TsEnumObject {
-  return !Array.isArray(values);
-}
-
-// tsEnumObjectToValues converts a TypeScript enum object into a list of enum
-// values. A TypeScript enum object contains a reverse mapping (number -> name)
-// in addition to the forward mapping (name -> number); the reverse entries are
-// filtered out here. Generated members omit the enum's shared prefix, so the
-// protobuf name is the prefix followed by the member name.
-function tsEnumObjectToValues(
-  enumObject: TsEnumObject,
-  sharedPrefix: string,
-): EnumValueInfo[] {
-  const values: EnumValueInfo[] = [];
-  for (const key of Object.keys(enumObject)) {
-    const v = enumObject[key];
-    if (typeof v != "number") {
-      // Skip the reverse mapping entries (number -> name).
-      continue;
-    }
-    values.push({ no: v, name: sharedPrefix + key, localName: key });
-  }
-  return values;
 }
 
 /**
- * Create a new EnumType with the given values.
- *
- * A TypeScript enum object may be passed instead of a value list, with the
- * shared prefix its member names omit from the protobuf value names.
+ * createEnumType creates an EnumType from its values, given as number and
+ * protobuf name pairs in declaration order.
  */
 export function createEnumType(
   typeName: string,
-  values: EnumValueSource[] | TsEnumObject,
-  sharedPrefix = "",
+  values: [no: number, name: string][],
 ): EnumType {
-  const names = Object.create(null) as Record<string, EnumValueInfo>;
-  const numbers = Object.create(null) as Record<number, EnumValueInfo>;
-  const list =
-    isTsEnumObject(values) ?
-      tsEnumObjectToValues(values, sharedPrefix)
-    : values;
-  const normalValues: EnumValueInfo[] = [];
-  for (const value of list) {
-    // We do not surface options at this time
-    // const value: EnumValueInfo = {...v, options: v.options ?? emptyReadonlyObject};
-    const n =
-      isEnumValueTuple(value) ?
-        { no: value[0], name: value[1], localName: value[1] }
-      : "localName" in value ? value
-      : { ...value, localName: value.name };
-    normalValues.push(n);
-    names[n.name] = n;
-    numbers[n.no] = n;
+  const list: EnumValueInfo[] = [];
+  const names = new Map<string, EnumValueInfo>();
+  const numbers = new Map<number, EnumValueInfo>();
+  for (const [no, name] of values) {
+    const info: EnumValueInfo = { no, name };
+    list.push(info);
+    names.set(name, info);
+    if (!numbers.has(no)) {
+      numbers.set(no, info);
+    }
   }
   return {
     typeName,
-    values: normalValues,
-    // We do not surface options at this time
-    // options: opt?.options ?? Object.create(null),
-    findName(name: string): EnumValueInfo | undefined {
-      return names[name];
-    },
-    findNumber(no: number): EnumValueInfo | undefined {
-      return numbers[no];
-    },
+    values: list,
+    findName: (name: string): EnumValueInfo | undefined => names.get(name),
+    findNumber: (no: number): EnumValueInfo | undefined => numbers.get(no),
   };
-}
-
-// enumInfoZeroValue returns the zero value for an enum info.
-export function enumInfoZeroValue(values: EnumValueSource[]): number {
-  if (!values?.length) {
-    return 0;
-  }
-  // In proto3, the first enum value must be zero.
-  // In proto2, protobuf-go returns the first value as the default.
-  const zeroValue = values[0];
-  return isEnumValueTuple(zeroValue) ? zeroValue[0] : zeroValue.no;
-}
-
-// enumDescZeroValue returns the zero value for an enum description.
-export function enumDescZeroValue(info: DescEnum): number {
-  // In proto3, the first enum value must be zero.
-  // In proto2, protobuf-go returns the first value as the default.
-  if (info.values.length < 1) {
-    throw new Error("invalid enum: missing at least one value");
-  }
-  const zeroValue = info.values[0];
-  return zeroValue.number;
-}
-
-// enumZeroValue returns the zero value for an enum type.
-export function enumZeroValue<T extends EnumType>(info: T): number {
-  // In proto3, the first enum value must be zero.
-  // In proto2, protobuf-go returns the first value as the default.
-  if (info.values.length < 1) {
-    throw new Error("invalid enum: missing at least one value");
-  }
-  const zeroValue = info.values[0];
-  return zeroValue.no;
-}
-
-/**
- * Returns the normalized version of the enum value.
- * Null is cast to the default value.
- * String names are cast to the number enum.
- * If string and the value is unknown, throws an error.
- */
-export function normalizeEnumValue(
-  info: EnumType,
-  value: string | number | null | undefined,
-): number {
-  const zeroValue = enumZeroValue(info);
-  if (value == null) {
-    return zeroValue;
-  }
-  if (value === "" || value === zeroValue) {
-    return zeroValue;
-  }
-  if (typeof value === "string") {
-    // TODO: strip the type name prefix as well? MyEnum_VALUE
-    const val = info.findName(value);
-    if (!val) {
-      throw new Error(`enum ${info.typeName}: invalid value: "${value}"`);
-    }
-    return val.no;
-  }
-
-  // return the number value
-  return value;
 }

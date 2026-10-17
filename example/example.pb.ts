@@ -5,9 +5,7 @@
 import { createEnumType } from "../src/enum.js";
 import type { MessageType } from "../src/message.js";
 import { createMessageType } from "../src/message.js";
-import { ScalarType } from "../src/scalar.js";
 import { Timestamp } from "../src/google/protobuf/timestamp.pb.js";
-import type { PartialFieldInfo } from "../src/field.js";
 
 /**
  * ExampleEnum is an example enumeration.
@@ -15,25 +13,18 @@ import type { PartialFieldInfo } from "../src/field.js";
  * @generated from enum example.ExampleEnum
  */
 export enum ExampleEnum {
-  /**
-   * @generated from enum value: UNKNOWN = 0;
-   */
   UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: FIRST = 1;
-   */
   FIRST = 1,
-
-  /**
-   * @generated from enum value: SECOND = 2;
-   */
   SECOND = 2,
 }
 
 export const ExampleEnum_Enum = /* @__PURE__ */ createEnumType(
   "example.ExampleEnum",
-  ExampleEnum,
+  [
+    [0, "UNKNOWN"],
+    [1, "FIRST"],
+    [2, "SECOND"],
+  ],
 );
 
 /**
@@ -42,68 +33,23 @@ export const ExampleEnum_Enum = /* @__PURE__ */ createEnumType(
  * @generated from message example.EchoMsg
  */
 export interface EchoMsg {
-  /**
-   * @generated from field: string body = 1;
-   */
   body?: string;
-  /**
-   * @generated from field: google.protobuf.Timestamp ts = 2;
-   */
   ts?: Date;
-  /**
-   * @generated from field: repeated google.protobuf.Timestamp timestamps = 5;
-   */
   timestamps?: Date[];
-
   /**
    * @generated from oneof example.EchoMsg.demo
    */
   demo?:
-    | {
-        value?: undefined;
-        case: undefined;
-      }
-    | {
-        /**
-         * @generated from field: example.ExampleEnum example_enum = 3;
-         */
-        value: ExampleEnum;
-        case: "exampleEnum";
-      }
-    | {
-        /**
-         * @generated from field: string example_string = 4;
-         */
-        value: string;
-        case: "exampleString";
-      };
+    | { value?: undefined; case: undefined }
+    | { value: ExampleEnum; case: "exampleEnum" }
+    | { value: string; case: "exampleString" };
 }
 
-export const EchoMsg: MessageType<EchoMsg> = /* @__PURE__ */ createMessageType({
-  typeName: "example.EchoMsg",
-  fields: [
-    { no: 1, name: "body", kind: "scalar", T: ScalarType.STRING },
-    { no: 2, name: "ts", kind: "message", T: () => Timestamp },
-    {
-      no: 3,
-      name: "example_enum",
-      kind: "enum",
-      T: ExampleEnum_Enum,
-      oneof: "demo",
-    },
-    {
-      no: 4,
-      name: "example_string",
-      kind: "scalar",
-      T: ScalarType.STRING,
-      oneof: "demo",
-    },
-    {
-      no: 5,
-      name: "timestamps",
-      kind: "message",
-      T: () => Timestamp,
-      repeated: true,
-    },
-  ] satisfies readonly PartialFieldInfo[],
-});
+export const EchoMsg: MessageType<EchoMsg> =
+  /* @__PURE__ */ createMessageType<EchoMsg>("example.EchoMsg", () => [
+    [1, "body", 9],
+    [2, "ts", 11, 0, Timestamp.codec],
+    [3, "example_enum", 14, 0, ExampleEnum_Enum, "demo"],
+    [4, "example_string", 9, 0, 0, "demo"],
+    [5, "timestamps", 11, 1, Timestamp.codec],
+  ]);

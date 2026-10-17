@@ -2,7 +2,7 @@
 set -eo pipefail
 
 # Usage: ./gen.bash <path/to/file.proto> [<path/to/file2.proto>...]
-if [ -z "SKIP_PROTOC" ] && [ $# -eq 0 ]; then
+if [ -z "$SKIP_PROTOC" ] && [ $# -eq 0 ]; then
     echo "Error: no .proto file paths provided"
     echo "Usage: $0 <path/to/file.proto> [<path/to/file2.proto>...]"
     echo "Usage: $0 ./*.proto"

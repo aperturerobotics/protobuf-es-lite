@@ -1,23 +1,7 @@
-import type { FieldInfo, OneofInfo } from "./field.js";
-import { FieldList, isFieldSet, resolveMessageType } from "./field.js";
-import { assert, assertFloat32, assertInt32, assertUInt32 } from "./assert.js";
-import type { ScalarValue } from "./scalar.js";
-import {
-  LongType,
-  ScalarType,
-  isScalarZeroValue,
-  normalizeScalarValue,
-  scalarZeroValue,
-} from "./scalar.js";
-import { unwrapField, wrapField } from "./field-wrapper.js";
 import type { EnumType } from "./enum.js";
-import { enumZeroValue, normalizeEnumValue } from "./enum.js";
-import { protoInt64 } from "./proto-int64.js";
 import { protoBase64 } from "./proto-base64.js";
+import { protoInt64 } from "./proto-int64.js";
 import type { IMessageTypeRegistry } from "./type-registry.js";
-import { throwSanitizeKey } from "./names.js";
-import type { MessageMap, MessageRecord } from "./message-access.js";
-import { createMapRecord } from "./message-access.js";
 
 /**
  * Options for parsing JSON data.
@@ -28,7 +12,7 @@ export interface JsonReadOptions {
    * by default. This option ignores unknown fields in parsing, as well as
    * unrecognized enum string representations.
    */
-  ignoreUnknownFields: boolean;
+  ignoreUnknownFields?: boolean;
 
   /**
    * This option is required to read `google.protobuf.Any` from JSON format.
@@ -45,14 +29,14 @@ export interface JsonWriteOptions {
    * by default in proto3 JSON output. This option overrides this behavior
    * and outputs fields with their default values.
    */
-  emitDefaultValues: boolean;
+  emitDefaultValues?: boolean;
 
   /**
    * Emit enum values as integers instead of strings: The name of an enum
    * value is used by default in JSON output. An option may be provided to
    * use the numeric value of the enum value instead.
    */
-  enumAsInteger: boolean;
+  enumAsInteger?: boolean;
 
   /**
    * Use proto field name instead of lowerCamelCase name: By default proto3
@@ -62,7 +46,7 @@ export interface JsonWriteOptions {
    * required to accept both the converted lowerCamelCase name and the proto
    * field name.
    */
-  useProtoFieldName: boolean;
+  useProtoFieldName?: boolean;
 
   /**
    * This option is required to write `google.protobuf.Any` to JSON format.
@@ -71,10 +55,11 @@ export interface JsonWriteOptions {
 }
 
 /**
- * Options for serializing to JSON.
+ * Options for serializing to a JSON string.
  */
 export interface JsonWriteStringOptions extends JsonWriteOptions {
-  prettySpaces: number;
+  /** Indent nested values by this many spaces; 0 writes one line. */
+  prettySpaces?: number;
 }
 
 /**
@@ -99,778 +84,267 @@ export type JsonValue =
  */
 export type JsonObject = { [k: string]: JsonValue };
 
-// Default options for parsing JSON.
-const jsonReadDefaults: Readonly<JsonReadOptions> = {
-  ignoreUnknownFields: false,
-};
-
-// Default options for serializing to JSON.
-const jsonWriteDefaults: Readonly<JsonWriteStringOptions> = {
-  emitDefaultValues: false,
-  enumAsInteger: false,
-  useProtoFieldName: false,
-  prettySpaces: 0,
-};
-
-function makeReadOptions(
-  options?: Partial<JsonReadOptions>,
-): Readonly<JsonReadOptions> {
-  return options ? { ...jsonReadDefaults, ...options } : jsonReadDefaults;
+/** jsonDouble converts a double to JSON, with NaN and infinities as strings. */
+export function jsonDouble(v: number): JsonValue {
+  if (Number.isNaN(v)) {
+    return "NaN";
+  }
+  if (v === Infinity) {
+    return "Infinity";
+  }
+  if (v === -Infinity) {
+    return "-Infinity";
+  }
+  return v;
 }
 
-function makeWriteOptions(
-  options?: Partial<JsonWriteStringOptions>,
-): Readonly<JsonWriteStringOptions> {
-  return options ? { ...jsonWriteDefaults, ...options } : jsonWriteDefaults;
+/** jsonLong converts a 64-bit integer to its JSON decimal string. */
+export function jsonLong(v: bigint): JsonValue {
+  return v.toString();
 }
 
-function jsonDebugValue(json: unknown): string {
-  if (json === null) {
-    return "null";
-  }
-  switch (typeof json) {
-    case "object":
-      return Array.isArray(json) ? "array" : "object";
-    case "string":
-      return json.length > 100 ? "string" : `"${json.split('"').join('\\"')}"`;
-    default:
-      return String(json);
-  }
-}
-
-function readMessage<T>(
-  fields: FieldList,
-  typeName: string,
-  json: JsonValue,
-  options: JsonReadOptions,
-  message: T,
-): T {
-  if (json == null || Array.isArray(json) || typeof json != "object") {
-    throw new Error(
-      `cannot decode message ${typeName} from JSON: ${jsonDebugValue(json)}`,
-    );
-  }
-  const oneofSeen = new Map<OneofInfo, string>();
-  for (const [jsonKey, jsonValue] of Object.entries(json)) {
-    const field = fields.findJsonName(jsonKey);
-    if (field) {
-      if (field.oneof) {
-        if (jsonValue === null && field.kind == "scalar") {
-          // see conformance test Required.Proto3.JsonInput.OneofFieldNull{First,Second}
-          continue;
-        }
-        const seen = oneofSeen.get(field.oneof);
-        if (seen !== undefined) {
-          throw new Error(
-            `cannot decode message ${typeName} from JSON: multiple keys for oneof "${field.oneof.name}" present: "${seen}", "${jsonKey}"`,
-          );
-        }
-        oneofSeen.set(field.oneof, jsonKey);
-      }
-      readField(message as MessageRecord, jsonValue, field, options);
-    } else {
-      const found = false;
-      if (!found && !options.ignoreUnknownFields) {
-        throw new Error(
-          `cannot decode message ${typeName} from JSON: key "${jsonKey}" is unknown`,
-        );
-      }
-    }
-  }
-  return message;
-}
-
-function writeMessage<T>(
-  message: T,
-  fields: FieldList,
-  options: JsonWriteOptions,
-): JsonValue {
-  const json: JsonObject = Object.create(null);
-  let field: FieldInfo | undefined;
-  try {
-    for (field of fields.byNumber()) {
-      const record = message as MessageRecord;
-      if (!isFieldSet(field, record)) {
-        if (field.req) {
-          throw `required field not set`;
-        }
-        if (!options.emitDefaultValues) {
-          continue;
-        }
-        if (!canEmitFieldDefaultValue(field)) {
-          continue;
-        }
-      }
-      const value =
-        field.oneof ?
-          (record[field.oneof.localName] as MessageRecord).value
-        : record[field.localName];
-      const jsonValue = writeField(field, value, options);
-      if (jsonValue !== undefined) {
-        json[options.useProtoFieldName ? field.name : field.jsonName] =
-          jsonValue;
-      }
-    }
-  } catch (e) {
-    const m =
-      field ?
-        `cannot encode field ${field.name} to JSON`
-      : `cannot encode message to JSON`;
-    const r = e instanceof Error ? e.message : String(e);
-    throw new Error(m + (r.length > 0 ? `: ${r}` : ""), { cause: e });
-  }
-  return json;
-}
-
-// Read a JSON value for a field.
-// The "parentType" argument is only used to provide context in errors.
-function readField(
-  target: MessageRecord,
-  jsonValue: JsonValue,
-  field: FieldInfo,
-  options: JsonReadOptions,
-) {
-  let localName = field.localName;
-  if (field.repeated) {
-    assert(field.kind != "map");
-    if (jsonValue === null) {
-      return;
-    }
-    if (!Array.isArray(jsonValue)) {
-      throw new Error(
-        `cannot decode field ${
-          field.name
-        } from JSON: ${jsonDebugValue(jsonValue)}`,
-      );
-    }
-    let targetArray = target[localName] as unknown[];
-    if (!Array.isArray(targetArray)) {
-      targetArray = target[localName] = [];
-    }
-    for (const jsonItem of jsonValue) {
-      if (jsonItem === null) {
-        throw new Error(
-          `cannot decode field ${
-            field.name
-          } from JSON: ${jsonDebugValue(jsonItem)}`,
-        );
-      }
-      switch (field.kind) {
-        case "message": {
-          const messageType = resolveMessageType(field.T);
-          targetArray.push(
-            unwrapField(
-              messageType.fieldWrapper,
-              messageType.fromJson(jsonItem, options),
-            ),
-          );
-          break;
-        }
-        case "enum": {
-          const enumValue = readEnum(
-            field.T,
-            jsonItem,
-            options.ignoreUnknownFields,
-            true,
-          );
-          if (enumValue !== tokenIgnoredUnknownEnum) {
-            targetArray.push(enumValue);
-          }
-          break;
-        }
-        case "scalar":
-          try {
-            targetArray.push(readScalar(field.T, jsonItem, field.L, true));
-          } catch (e) {
-            let m = `cannot decode field ${
-              field.name
-            } from JSON: ${jsonDebugValue(jsonItem)}`;
-            if (e instanceof Error && e.message.length > 0) {
-              m += `: ${e.message}`;
-            }
-            throw new Error(m, { cause: e });
-          }
-          break;
-      }
-    }
-  } else if (field.kind == "map") {
-    if (jsonValue === null) {
-      return;
-    }
-    if (typeof jsonValue != "object" || Array.isArray(jsonValue)) {
-      throw new Error(
-        `cannot decode field ${
-          field.name
-        } from JSON: ${jsonDebugValue(jsonValue)}`,
-      );
-    }
-    let targetMap = target[localName] as MessageMap;
-    if (typeof targetMap !== "object") {
-      targetMap = target[localName] = createMapRecord();
-    }
-    for (const [jsonMapKey, jsonMapValue] of Object.entries(jsonValue)) {
-      if (jsonMapValue === null) {
-        throw new Error(
-          `cannot decode field ${field.name} from JSON: map value null`,
-        );
-      }
-      let key: string;
-      try {
-        key = readMapKey(field.K, jsonMapKey);
-      } catch (e) {
-        let m = `cannot decode map key for field ${
-          field.name
-        } from JSON: ${jsonDebugValue(jsonValue)}`;
-        if (e instanceof Error && e.message.length > 0) {
-          m += `: ${e.message}`;
-        }
-        throw new Error(m, { cause: e });
-      }
-      throwSanitizeKey(key);
-      switch (field.V.kind) {
-        case "message": {
-          const messageType = resolveMessageType(field.V.T);
-          targetMap[key] = messageType.fromJson(jsonMapValue, options);
-          break;
-        }
-        case "enum": {
-          const enumValue = readEnum(
-            field.V.T,
-            jsonMapValue,
-            options.ignoreUnknownFields,
-            true,
-          );
-          if (enumValue !== tokenIgnoredUnknownEnum) {
-            targetMap[key] = enumValue;
-          }
-          break;
-        }
-        case "scalar":
-          try {
-            targetMap[key] = readScalar(
-              field.V.T,
-              jsonMapValue,
-              LongType.BIGINT,
-              true,
-            );
-          } catch (e) {
-            let m = `cannot decode map value for field ${
-              field.name
-            } from JSON: ${jsonDebugValue(jsonValue)}`;
-            if (e instanceof Error && e.message.length > 0) {
-              m += `: ${e.message}`;
-            }
-            throw new Error(m, { cause: e });
-          }
-          break;
-      }
-    }
-  } else {
-    if (field.oneof) {
-      target = target[field.oneof.localName] = { case: localName };
-      localName = "value";
-    }
-    switch (field.kind) {
-      case "message": {
-        const messageType = resolveMessageType(field.T);
-        if (
-          jsonValue === null &&
-          messageType.typeName != "google.protobuf.Value"
-        ) {
-          return;
-        }
-        target[localName] = unwrapField(
-          messageType.fieldWrapper,
-          messageType.fromJson(jsonValue, options),
-        );
-        break;
-      }
-      case "enum": {
-        const enumValue = readEnum(
-          field.T,
-          jsonValue,
-          options.ignoreUnknownFields,
-          false,
-        );
-        switch (enumValue) {
-          case tokenNull:
-            clearField(field, target);
-            break;
-          case tokenIgnoredUnknownEnum:
-            break;
-          default:
-            target[localName] = enumValue;
-            break;
-        }
-        break;
-      }
-      case "scalar":
-        try {
-          const scalarValue = readScalar(field.T, jsonValue, field.L, false);
-          switch (scalarValue) {
-            case tokenNull:
-              clearField(field, target);
-              break;
-            default:
-              target[localName] = scalarValue;
-              break;
-          }
-        } catch (e) {
-          let m = `cannot decode field ${field.name} from JSON: ${jsonDebugValue(jsonValue)}`;
-          if (e instanceof Error && e.message.length > 0) {
-            m += `: ${e.message}`;
-          }
-          throw new Error(m, { cause: e });
-        }
-        break;
-    }
-  }
-}
-
-const tokenNull = Symbol();
-const tokenIgnoredUnknownEnum = Symbol();
-
-function readEnum(
-  type: EnumType,
-  json: JsonValue,
-  ignoreUnknownFields: boolean,
-  nullAsZeroValue: false,
-): number | typeof tokenIgnoredUnknownEnum | typeof tokenNull;
-function readEnum(
-  type: EnumType,
-  json: JsonValue,
-  ignoreUnknownFields: boolean,
-  nullAsZeroValue: true,
-): number | typeof tokenIgnoredUnknownEnum;
-function readEnum(
-  type: EnumType,
-  json: JsonValue,
-  ignoreUnknownFields: boolean,
-  nullAsZeroValue: boolean,
-): number | typeof tokenNull | typeof tokenIgnoredUnknownEnum {
-  if (json === null) {
-    if (type.typeName == "google.protobuf.NullValue") {
-      return 0; // google.protobuf.NullValue.NULL_VALUE = 0
-    }
-    return nullAsZeroValue ? type.values[0].no : tokenNull;
-  }
-
-  switch (typeof json) {
-    case "number":
-      if (Number.isInteger(json)) {
-        return json;
-      }
-      break;
-    case "string": {
-      const value = type.findName(json);
-      if (value !== undefined) {
-        return value.no;
-      }
-      if (ignoreUnknownFields) {
-        return tokenIgnoredUnknownEnum;
-      }
-      break;
-    }
-  }
-  throw new Error(
-    `cannot decode enum ${type.typeName} from JSON: ${jsonDebugValue(json)}`,
-  );
-}
-
-function readScalar(
-  type: ScalarType,
-  json: JsonValue | null | undefined,
-): ScalarValue;
-function readScalar(
-  type: ScalarType,
-  json: JsonValue | null | undefined,
-  longType: LongType,
-): ScalarValue;
-function readScalar(
-  type: ScalarType,
-  json: JsonValue | null | undefined,
-  longType: LongType,
-  nullAsZeroValue: true,
-): ScalarValue;
-function readScalar(
-  type: ScalarType,
-  json: JsonValue | null | undefined,
-  longType: LongType,
-  nullAsZeroValue: false,
-): ScalarValue | typeof tokenNull;
-function readScalar(
-  type: ScalarType,
-  json: JsonValue | null | undefined,
-  longType: LongType = LongType.BIGINT,
-  nullAsZeroValue: boolean = true,
-): ScalarValue | typeof tokenNull {
-  if (json == null) {
-    if (nullAsZeroValue) {
-      return scalarZeroValue(type, longType);
-    }
-    return tokenNull;
-  }
-  // every valid case in the switch below returns, and every fall
-  // through is regarded as a failure.
-  switch (type) {
-    // float, double: JSON value will be a number or one of the special string values "NaN", "Infinity", and "-Infinity".
-    // Either numbers or strings are accepted. Exponent notation is also accepted.
-    case ScalarType.DOUBLE:
-    case ScalarType.FLOAT: {
-      if (json === "NaN") return Number.NaN;
-      if (json === "Infinity") return Number.POSITIVE_INFINITY;
-      if (json === "-Infinity") return Number.NEGATIVE_INFINITY;
-      if (json === "") {
-        // empty string is not a number
-        break;
-      }
-      if (typeof json == "string" && json.trim().length !== json.length) {
-        // extra whitespace
-        break;
-      }
-      if (typeof json != "string" && typeof json != "number") {
-        break;
-      }
-      const float = Number(json);
-      if (Number.isNaN(float)) {
-        // not a number
-        break;
-      }
-      if (!Number.isFinite(float)) {
-        // infinity and -infinity are handled by string representation above, so this is an error
-        break;
-      }
-      if (type == ScalarType.FLOAT) assertFloat32(float);
-      return float;
-    }
-
-    // int32, fixed32, uint32: JSON value will be a decimal number. Either numbers or strings are accepted.
-    case ScalarType.INT32:
-    case ScalarType.FIXED32:
-    case ScalarType.SFIXED32:
-    case ScalarType.SINT32:
-    case ScalarType.UINT32: {
-      let int32: number | undefined;
-      if (typeof json == "number") int32 = json;
-      else if (typeof json == "string" && json.length > 0) {
-        if (json.trim().length === json.length) int32 = Number(json);
-      }
-      if (int32 === undefined) break;
-      if (type == ScalarType.UINT32 || type == ScalarType.FIXED32)
-        assertUInt32(int32);
-      else assertInt32(int32);
-      return int32;
-    }
-
-    // int64, fixed64, uint64: JSON value will be a decimal string. Either numbers or strings are accepted.
-    case ScalarType.INT64:
-    case ScalarType.SFIXED64:
-    case ScalarType.SINT64: {
-      if (typeof json != "number" && typeof json != "string") break;
-      const long = protoInt64.parse(json);
-
-      return longType ? long.toString() : long;
-    }
-    case ScalarType.FIXED64:
-    case ScalarType.UINT64: {
-      if (typeof json != "number" && typeof json != "string") break;
-      const uLong = protoInt64.uParse(json);
-
-      return longType ? uLong.toString() : uLong;
-    }
-
-    // bool:
-    case ScalarType.BOOL:
-      if (typeof json !== "boolean") break;
-      return json;
-
-    // string:
-    case ScalarType.STRING:
-      if (typeof json !== "string") {
-        break;
-      }
-      // A string must always contain UTF-8 encoded or 7-bit ASCII.
-      // We validate with encodeURIComponent, which appears to be the fastest widely available option.
-      try {
-        encodeURIComponent(json);
-      } catch (_e) {
-        throw new Error("invalid UTF8", { cause: _e });
-      }
-      return json;
-
-    // bytes: JSON value will be the data encoded as a string using standard base64 encoding with paddings.
-    // Either standard or URL-safe base64 encoding with/without paddings are accepted.
-    case ScalarType.BYTES:
-      if (json === "") return new Uint8Array(0);
-      if (typeof json !== "string") break;
-      return protoBase64.dec(json);
-  }
-  throw new Error();
-}
-
-function readMapKey(type: ScalarType, json: JsonValue) {
-  if (type === ScalarType.BOOL) {
-    switch (json) {
-      case "true":
-        json = true;
-        break;
-      case "false":
-        json = false;
-        break;
-    }
-  }
-  return readScalar(type, json, LongType.BIGINT, true)?.toString() ?? "";
+/** jsonBytes converts bytes to standard base64 with padding. */
+export function jsonBytes(v: Uint8Array): JsonValue {
+  return protoBase64.enc(v);
 }
 
 /**
- * Resets the field, so that isFieldSet() will return false.
+ * jsonEnum converts an enum value to its name, or to its number when the
+ * options ask for integers or the number has no name. NullValue is null.
  */
-export function clearField(field: FieldInfo, target: MessageRecord) {
-  const localName = field.localName;
-  const implicitPresence = !field.opt && !field.req;
-  if (field.repeated) {
-    target[localName] = [];
-  } else if (field.oneof) {
-    target[field.oneof.localName] = { case: undefined };
-  } else {
-    switch (field.kind) {
-      case "map":
-        target[localName] = createMapRecord();
-        break;
-      case "enum":
-        target[localName] = implicitPresence ? field.T.values[0].no : undefined;
-        break;
-      case "scalar":
-        target[localName] =
-          implicitPresence ? scalarZeroValue(field.T, field.L) : undefined;
-        break;
-      case "message":
-        target[localName] = undefined;
-        break;
-    }
-  }
-}
-
-// Decide whether an unset field should be emitted with JSON write option `emitDefaultValues`
-function canEmitFieldDefaultValue(field: FieldInfo) {
-  if (field.repeated || field.kind == "map") {
-    return true;
-  }
-  if (field.oneof) {
-    // oneof fields are never emitted
-    return false;
-  }
-  if (field.kind == "message") {
-    // singular message field are allowed to emit JSON null, but we do not
-    return false;
-  }
-
-  if (field.opt || field.req) {
-    // the field uses explicit presence, so we cannot emit a zero value
-    return false;
-  }
-  return true;
-}
-
-function writeField(
-  field: FieldInfo,
-  value: unknown,
-  options: JsonWriteOptions,
-): JsonValue | undefined {
-  if (field.kind == "map") {
-    const jsonObj: JsonObject = Object.create(null);
-    assert(!value || typeof value === "object");
-    const entries = value ? Object.entries(value) : [];
-    switch (field.V.kind) {
-      case "scalar":
-        for (const [entryKey, entryValue] of entries) {
-          jsonObj[entryKey.toString()] = writeScalar(field.V.T, entryValue); // JSON standard allows only (double quoted) string as property key
-        }
-        break;
-      case "message":
-        for (const [entryKey, entryValue] of entries) {
-          // JSON standard allows only (double quoted) string as property key
-          const messageType = resolveMessageType(field.V.T);
-          jsonObj[entryKey.toString()] = messageType.toJson(
-            entryValue,
-            options,
-          );
-        }
-        break;
-      case "enum": {
-        const enumType = field.V.T;
-        for (const [entryKey, entryValue] of entries) {
-          // JSON standard allows only (double quoted) string as property key
-          jsonObj[entryKey.toString()] = writeEnum(
-            enumType,
-            entryValue,
-            options.enumAsInteger,
-          );
-        }
-        break;
-      }
-    }
-    return options.emitDefaultValues || entries.length > 0 ?
-        jsonObj
-      : undefined;
-  }
-  if (field.repeated) {
-    assert(!value || Array.isArray(value));
-    const jsonArr: JsonValue[] = [];
-    const valueArr = value as unknown[];
-    if (valueArr && valueArr.length) {
-      switch (field.kind) {
-        case "scalar":
-          for (let i = 0; i < valueArr.length; i++) {
-            jsonArr.push(writeScalar(field.T, valueArr[i]) as JsonValue);
-          }
-          break;
-        case "enum":
-          for (let i = 0; i < valueArr.length; i++) {
-            jsonArr.push(
-              writeEnum(
-                field.T,
-                valueArr[i],
-                options.enumAsInteger,
-              ) as JsonValue,
-            );
-          }
-          break;
-        case "message": {
-          const messageType = resolveMessageType(field.T);
-          for (let i = 0; i < valueArr.length; i++) {
-            jsonArr.push(
-              messageType.toJson(
-                wrapField(messageType.fieldWrapper, valueArr[i]),
-              ),
-            );
-          }
-          break;
-        }
-      }
-    }
-    return options.emitDefaultValues || jsonArr.length > 0 ?
-        jsonArr
-      : undefined;
-  }
-  switch (field.kind) {
-    case "scalar": {
-      const scalarValue = normalizeScalarValue(field.T, value, false);
-      if (
-        !options.emitDefaultValues &&
-        isScalarZeroValue(field.T, scalarValue)
-      ) {
-        return undefined;
-      }
-      return writeScalar(field.T, value);
-    }
-    case "enum": {
-      const enumValue = normalizeEnumValue(
-        field.T,
-        value as string | number | null | undefined,
-      );
-      if (!options.emitDefaultValues && enumZeroValue(field.T) === enumValue) {
-        return undefined;
-      }
-      return writeEnum(field.T, value, options.enumAsInteger);
-    }
-    case "message": {
-      if (!options.emitDefaultValues && value == null) {
-        return undefined;
-      }
-      const messageType = resolveMessageType(field.T);
-      return messageType.toJson(wrapField(messageType.fieldWrapper, value));
-    }
-  }
-}
-
-function writeScalar(
-  type: ScalarType,
-  value: unknown,
-): string | number | boolean {
-  switch (type) {
-    // int32, fixed32, uint32: JSON value will be a decimal number. Either numbers or strings are accepted.
-    case ScalarType.INT32:
-    case ScalarType.SFIXED32:
-    case ScalarType.SINT32:
-    case ScalarType.FIXED32:
-    case ScalarType.UINT32:
-      assert(typeof value == "number");
-      return value;
-
-    // float, double: JSON value will be a number or one of the special string values "NaN", "Infinity", and "-Infinity".
-    // Either numbers or strings are accepted. Exponent notation is also accepted.
-    case ScalarType.FLOAT:
-    // assertFloat32(value);
-    case ScalarType.DOUBLE: // eslint-disable-line no-fallthrough
-      assert(typeof value == "number");
-      if (Number.isNaN(value)) return "NaN";
-      if (value === Number.POSITIVE_INFINITY) return "Infinity";
-      if (value === Number.NEGATIVE_INFINITY) return "-Infinity";
-      return value;
-
-    // string:
-    case ScalarType.STRING:
-      assert(typeof value == "string");
-      return value;
-
-    // bool:
-    case ScalarType.BOOL:
-      assert(typeof value == "boolean");
-      return value;
-
-    // JSON value will be a decimal string. Either numbers or strings are accepted.
-    case ScalarType.UINT64:
-    case ScalarType.FIXED64:
-    case ScalarType.INT64:
-    case ScalarType.SFIXED64:
-    case ScalarType.SINT64:
-      assert(
-        typeof value == "bigint" ||
-          typeof value == "string" ||
-          typeof value == "number",
-      );
-      return value.toString();
-
-    // bytes: JSON value will be the data encoded as a string using standard base64 encoding with paddings.
-    // Either standard or URL-safe base64 encoding with/without paddings are accepted.
-    case ScalarType.BYTES:
-      assert(value instanceof Uint8Array);
-      return protoBase64.enc(value);
-    case ScalarType.DATE:
-      throw new Error("cannot write date with writeScalar");
-    default:
-      throw new Error("unknown scalar type");
-  }
-}
-
-function writeEnum(
+export function jsonEnum(
+  v: number,
   type: EnumType,
-  value: unknown,
-  enumAsInteger: boolean,
-): string | number | null {
-  assert(typeof value == "number");
-  if (type.typeName == "google.protobuf.NullValue") {
+  o: JsonWriteOptions,
+): JsonValue {
+  if (type.typeName === "google.protobuf.NullValue") {
     return null;
   }
-  if (enumAsInteger) {
-    return value;
+  if (o.enumAsInteger) {
+    return v;
   }
-  const val = type.findNumber(value);
-  return val?.name ?? value; // if we don't know the enum value, just return the number
+  return type.findNumber(v)?.name ?? v;
 }
 
-export {
-  readEnum as jsonReadEnum,
-  readField as jsonReadField,
-  readMapKey as jsonReadMapKey,
-  readScalar as jsonReadScalar,
-  readMessage as jsonReadMessage,
-  writeEnum as jsonWriteEnum,
-  writeField as jsonWriteField,
-  writeScalar as jsonWriteScalar,
-  writeMessage as jsonWriteMessage,
-  makeReadOptions as jsonMakeReadOptions,
-  makeWriteOptions as jsonMakeWriteOptions,
-  jsonDebugValue,
-};
+/**
+ * jsonEntries returns the entries of the JSON object of a message, and
+ * throws if j is not an object.
+ */
+export function jsonEntries(
+  j: JsonValue,
+  typeName: string,
+): [string, JsonValue][] {
+  if (j === null || typeof j !== "object" || Array.isArray(j)) {
+    throw new Error(`${typeName} must be a JSON object, not ${debug(j)}`);
+  }
+  return Object.entries(j);
+}
+
+/**
+ * jsonUnknown handles a key no field of the message has: it throws, unless
+ * the options ignore unknown fields.
+ */
+export function jsonUnknown(key: string, o: JsonReadOptions): void {
+  if (!o.ignoreUnknownFields) {
+    throw new Error(`key "${key}" is unknown`);
+  }
+}
+
+/** jsonList returns the elements of a JSON array, and throws otherwise. */
+export function jsonList(j: JsonValue): JsonValue[] {
+  if (!Array.isArray(j)) {
+    throw new Error(`expected a JSON array, not ${debug(j)}`);
+  }
+  return j;
+}
+
+/**
+ * readStr reads a string. The read helpers read null as the zero value, so a
+ * null clears an implicit-presence field.
+ */
+export function readStr(j: JsonValue): string {
+  if (j === null) {
+    return "";
+  }
+  if (typeof j !== "string") {
+    throw bad("string", j);
+  }
+  return j;
+}
+
+/** readBool reads a bool. */
+export function readBool(j: JsonValue): boolean {
+  if (j === null) {
+    return false;
+  }
+  if (typeof j !== "boolean") {
+    throw bad("bool", j);
+  }
+  return j;
+}
+
+/** readInt32 reads a signed 32-bit integer from a number or a string. */
+export function readInt32(j: JsonValue): number {
+  const n = readInt(j);
+  if (n > 0x7fffffff || n < -0x80000000) {
+    throw bad("int32", j);
+  }
+  return n;
+}
+
+/** readUint32 reads an unsigned 32-bit integer from a number or a string. */
+export function readUint32(j: JsonValue): number {
+  const n = readInt(j);
+  if (n > 0xffffffff || n < 0) {
+    throw bad("uint32", j);
+  }
+  return n;
+}
+
+function readInt(j: JsonValue): number {
+  if (j === null) {
+    return 0;
+  }
+  let n = NaN;
+  if (typeof j === "number") {
+    n = j;
+  } else if (typeof j === "string" && j.length > 0 && j.trim() === j) {
+    n = Number(j);
+  }
+  if (!Number.isInteger(n)) {
+    throw bad("integer", j);
+  }
+  return n;
+}
+
+/**
+ * readDouble reads a double from a number, a numeric string, or "NaN",
+ * "Infinity" or "-Infinity".
+ */
+export function readDouble(j: JsonValue): number {
+  if (j === null) {
+    return 0;
+  }
+  if (j === "NaN") {
+    return NaN;
+  }
+  if (j === "Infinity") {
+    return Infinity;
+  }
+  if (j === "-Infinity") {
+    return -Infinity;
+  }
+  let n = NaN;
+  if (typeof j === "number") {
+    n = j;
+  } else if (typeof j === "string" && j.length > 0 && j.trim() === j) {
+    n = Number(j);
+  }
+  if (!Number.isFinite(n)) {
+    throw bad("number", j);
+  }
+  return n;
+}
+
+/** readFloat reads a double that fits in a 32-bit float. */
+export function readFloat(j: JsonValue): number {
+  const n = readDouble(j);
+  if (Number.isFinite(n) && Math.abs(n) > 3.4028234663852886e38) {
+    throw bad("float", j);
+  }
+  return n;
+}
+
+/** readInt64 reads a signed 64-bit integer from a number or a string. */
+export function readInt64(j: JsonValue): bigint {
+  if (j === null) {
+    return 0n;
+  }
+  if (typeof j !== "number" && typeof j !== "string") {
+    throw bad("int64", j);
+  }
+  return protoInt64.parse(j);
+}
+
+/** readUint64 reads an unsigned 64-bit integer from a number or a string. */
+export function readUint64(j: JsonValue): bigint {
+  if (j === null) {
+    return 0n;
+  }
+  if (typeof j !== "number" && typeof j !== "string") {
+    throw bad("uint64", j);
+  }
+  return protoInt64.uParse(j);
+}
+
+/** readBytes reads standard or URL-safe base64, with or without padding. */
+export function readBytes(j: JsonValue): Uint8Array {
+  if (j === null) {
+    return new Uint8Array(0);
+  }
+  if (typeof j !== "string") {
+    throw bad("bytes", j);
+  }
+  return protoBase64.dec(j);
+}
+
+/**
+ * readEnum reads an enum value from its name or number. It returns undefined
+ * for an unknown name when the options ignore unknown fields, so the caller
+ * keeps the field as it was. Null also reads as undefined, an unset field,
+ * except for google.protobuf.NullValue, where it is the value.
+ */
+export function readEnum(
+  j: JsonValue,
+  type: EnumType,
+  o: JsonReadOptions,
+): number | undefined {
+  if (j === null) {
+    return type.typeName === "google.protobuf.NullValue" ? 0 : undefined;
+  }
+  if (typeof j === "number" && Number.isInteger(j)) {
+    return j;
+  }
+  if (typeof j === "string") {
+    const value = type.findName(j);
+    if (value) {
+      return value.no;
+    }
+    if (o.ignoreUnknownFields) {
+      return undefined;
+    }
+  }
+  throw bad(type.typeName, j);
+}
+
+/** readBoolKey reads a bool map key, written in JSON as "true" or "false". */
+export function readBoolKey(k: string): string {
+  if (k !== "true" && k !== "false") {
+    throw bad("bool", k);
+  }
+  return k;
+}
+
+function bad(type: string, j: JsonValue): Error {
+  return new Error(`cannot read ${debug(j)} as ${type}`);
+}
+
+function debug(j: JsonValue): string {
+  if (j === null) {
+    return "null";
+  }
+  if (Array.isArray(j)) {
+    return "array";
+  }
+  if (typeof j === "object") {
+    return "object";
+  }
+  if (typeof j === "string") {
+    return j.length > 100 ? "string" : JSON.stringify(j);
+  }
+  return (
+    typeof j === "number" ? String(j)
+    : j ? "true"
+    : "false"
+  );
+}

@@ -42,11 +42,6 @@
       "import": "./dist/message.js",
       "require": "./dist/message.js"
     },
-    "./field": {
-      "types": "./dist/field.d.ts",
-      "import": "./dist/field.js",
-      "require": "./dist/field.js"
-    },
     "./scalar": {
       "types": "./dist/scalar.d.ts",
       "import": "./dist/scalar.js",
@@ -72,10 +67,10 @@
       "import": "./dist/json.js",
       "require": "./dist/json.js"
     },
-    "./partial": {
-      "types": "./dist/partial.d.ts",
-      "import": "./dist/partial.js",
-      "require": "./dist/partial.js"
+    "./wkt": {
+      "types": "./dist/wkt.d.ts",
+      "import": "./dist/wkt.js",
+      "require": "./dist/wkt.js"
     },
     "./proto-int64": {
       "types": "./dist/proto-int64.d.ts",

@@ -5,7 +5,7 @@ pushd ../
 export SKIP_PROTOC=true
 source gen.bash
 
-PROTO_FILES=$(git ls-files ":(glob)src/google/protobuf/**/*.proto")
+PROTO_FILES=$(git ls-files ":(glob)src/google/protobuf/**/*.proto" ":(glob)src/testdata/*.proto")
 protoc \
     -I ./src \
     --plugin=./dist/dev/protoc-gen-es-lite \
@@ -14,6 +14,20 @@ protoc \
     --es-lite_opt ts_nocheck=false \
     --proto_path ./src \
     $PROTO_FILES
+
+# codec-typed.pb.ts is codec.proto with typed decoders, which the tests compare
+# against the descriptor walker.
+TYPED_OUT=$(mktemp -d)
+protoc \
+    -I ./src \
+    --plugin=./dist/dev/protoc-gen-es-lite \
+    --es-lite_out="$TYPED_OUT" \
+    --es-lite_opt target=ts \
+    --es-lite_opt ts_nocheck=false \
+    --es-lite_opt typed_decode=true \
+    src/testdata/codec.proto
+mv "$TYPED_OUT/testdata/codec.pb.ts" src/testdata/codec-typed.pb.ts
+rm -rf "$TYPED_OUT"
 bun run scripts/normalize-generated-imports.ts $(get_ts_files "$PROTO_FILES")
 prettier_ts "$PROTO_FILES"
 popd

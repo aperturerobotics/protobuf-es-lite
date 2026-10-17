@@ -1,61 +1,25 @@
-// Copyright 2021-2024 Buf Technologies, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-import type { FieldListSource } from "./field.js";
-import { FieldList, newFieldList, resolveMessageType } from "./field.js";
-import { applyPartialMessage } from "./partial.js";
 import {
-  LongType,
-  ScalarType,
-  isScalarZeroValue,
-  scalarEquals,
-  scalarZeroValue,
-} from "./scalar.js";
-import type { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
+  BinaryReader,
+  BinaryWriter,
+  WireType,
+  type Writer,
+} from "./binary-encoding.js";
+import type { FieldDesc, Fields, MessageCodec, Obj } from "./codec.js";
 import {
-  binaryMakeReadOptions,
-  binaryMakeWriteOptions,
-  binaryReadMessage,
-  binaryWriteMessage,
-} from "./binary.js";
+  cloneFields,
+  decodeFields,
+  encodeFields,
+  equalsFields,
+  readJsonFields,
+  resolveFields,
+  writeJsonFields,
+} from "./codec.js";
 import type {
   JsonReadOptions,
   JsonValue,
   JsonWriteOptions,
   JsonWriteStringOptions,
 } from "./json.js";
-import {
-  jsonMakeReadOptions,
-  jsonMakeWriteOptions,
-  jsonReadMessage,
-  jsonWriteMessage,
-} from "./json.js";
-import type { FieldWrapper } from "./field-wrapper.js";
-import type { MessageRecord } from "./message-access.js";
-import {
-  asMessageRecord,
-  createMapRecord,
-  createMessageRecord,
-} from "./message-access.js";
-import { throwSanitizeKey } from "./names.js";
-import { enumZeroValue } from "./enum.js";
-
-type ScalarComparable = Parameters<typeof scalarEquals>[1];
-type OneofRuntimeValue = {
-  case?: string;
-  value?: unknown;
-};
 
 export type Field<T> =
   T extends Date | Uint8Array | bigint | boolean | string | number ? T
@@ -79,458 +43,250 @@ export type CompleteMessage<T extends object> = {
   [K in keyof T]-?: Field<T[K]>;
 };
 
-// AnyMessage is a type that represents a message with arbitrary field names and values.
-// It allows accessing fields dynamically using string keys.
+// AnyMessage is a message with arbitrary field names and values.
 export type AnyMessage = {
   [key: string]: any | undefined;
 };
 
 /**
- * MessageType represents a protobuf message declaration. It provides:
- * - a constructor that produces an instance of the message
- * - metadata for reflection-based operations
- * - common functionality like serialization
+ * MessageType is a generated message type: the codec its field descriptions
+ * drive, and the conversions built on it. Every function works on a message
+ * that may have any field unset.
  */
-export interface MessageType<T extends Message<T> = AnyMessage> {
-  /**
-   * The fully qualified name of the message.
-   */
+export interface MessageType<T = AnyMessage> {
+  /** The fully qualified name of the message. */
   readonly typeName: string;
 
-  /**
-   * Field metadata.
-   */
-  readonly fields: FieldList;
+  /** The untyped form of this type, which field descriptions refer to. */
+  readonly codec: MessageCodec;
+
+  /** Write every set field of m to w, in field-number order. */
+  encode(m: T, w: Writer): void;
 
   /**
-   * When used as a field, unwrap this message to a simple value.
+   * Read fields from r into m until offset end or an end-group tag, and return
+   * m. Repeated fields append, map entries overwrite, and message fields merge.
    */
-  readonly fieldWrapper?: FieldWrapper<T>;
+  decode(r: BinaryReader, end: number, m: T): T;
+
+  /** Convert m to its JSON value. */
+  writeJson(m: T, o: JsonWriteOptions): JsonValue;
+
+  /** Read the JSON value j into m and return m. */
+  readJson(j: JsonValue, o: JsonReadOptions, m: T): T;
+
+  /** Return a deep copy of partial, or an empty message. */
+  create(partial?: T): T;
+
+  /** Return a deep copy of a; null and undefined give an empty message. */
+  clone(a: T | null | undefined): T;
 
   /**
-   * Create a new empty instance of this message applying the partial message.
+   * Return true if a and b have equal field values, recursively. An unset
+   * field equals its zero value and a null message equals an empty one, so a
+   * message equals its own binary or JSON round trip.
    */
-  create(partial?: Message<T>): Message<T>;
+  equals(a: T | null | undefined, b: T | null | undefined): boolean;
+
+  /** Encode a message to binary. Null and undefined encode as empty. */
+  toBinary(a: T | null | undefined): Uint8Array;
 
   /**
-   * Create a new instance of this message with zero values for fields.
+   * Decode a message from binary. Decoded bytes fields are views into the
+   * input, so they change if the input does.
    */
-  createComplete(partial?: Message<T>): CompleteMessage<T>;
+  fromBinary(bytes: Uint8Array | null | undefined): T;
 
-  /**
-   * Create a deep copy.
-   */
-  clone(a: T | undefined | null): T | undefined | null;
+  /** Convert a message to a JSON value that JSON.stringify accepts. */
+  toJson(a: T | null | undefined, options?: JsonWriteOptions): JsonValue;
 
-  /**
-   * Parse from binary data, merging fields.
-   *
-   * Repeated fields are appended. Map entries are added, overwriting
-   * existing keys.
-   *
-   * If a message field is already present, it will be merged with the
-   * new data.
-   */
-  fromBinary(
-    bytes: Uint8Array | null | undefined,
-    options?: Partial<BinaryReadOptions>,
-  ): T;
-
-  /**
-   * Parse a message from a JSON value.
-   */
-  fromJson(
-    jsonValue: JsonValue | null | undefined,
-    options?: Partial<JsonReadOptions>,
-  ): T;
-
-  /**
-   * Parse a message from a JSON string.
-   */
-  fromJsonString(
-    jsonString: string | null | undefined,
-    options?: Partial<JsonReadOptions>,
-  ): T;
-
-  /**
-   * Returns true if the given arguments have equal field values, recursively.
-   * An unset field equals its zero value, and an unset message equals an empty
-   * one, so a message equals its own binary or JSON round trip.
-   */
-  equals(a: T | undefined | null, b: T | undefined | null): boolean;
-
-  /**
-   * Serialize the message to binary data.
-   */
-  toBinary(
-    a: Message<T> | undefined | null,
-    options?: Partial<BinaryWriteOptions>,
-  ): Uint8Array;
-
-  /**
-   * Serialize the message to a JSON value, a JavaScript value that can be
-   * passed to JSON.stringify().
-   */
-  toJson(a: Message<T>, options?: Partial<JsonWriteOptions>): JsonValue;
-
-  /**
-   * Serialize the message to a JSON string.
-   */
+  /** Encode a message to a JSON string. */
   toJsonString(
-    a: Message<T>,
-    options?: Partial<JsonWriteStringOptions>,
+    a: T | null | undefined,
+    options?: JsonWriteStringOptions,
   ): string;
+
+  /** Decode a message from a JSON value. */
+  fromJson(json: JsonValue | null | undefined, options?: JsonReadOptions): T;
+
+  /** Decode a message from a JSON string. */
+  fromJsonString(json: string | null | undefined, options?: JsonReadOptions): T;
+
+  /**
+   * Write m as field fieldNo of an enclosing message, length-delimited. An
+   * unset m writes nothing.
+   */
+  writeField(w: Writer, fieldNo: number, m: T | null | undefined): void;
+
+  /** Write m as group field fieldNo of an enclosing message. */
+  writeGroup(w: Writer, fieldNo: number, m: T | null | undefined): void;
 }
-
-// MessageTypeParams are parameters passed to the message type constructor.
-export type MessageTypeParams<T extends Message<T>> = Pick<
-  MessageType<T>,
-  "fieldWrapper" | "typeName"
-> & {
-  /**
-   * Fields contains the list of message fields.
-   */
-  fields: FieldListSource;
-  /**
-   * `packedByDefault` specifies whether fields that do not specify `packed`
-   * should be packed (proto3) or unpacked (proto2). Defaults to true (proto3
-   * behavior) when omitted.
-   */
-  packedByDefault?: boolean;
-  /**
-   * `delimitedMessageEncoding` specifies whether fields are encoded without
-   * delimited fields (proto3) or with (proto2 legacy).
-   */
-  delimitedMessageEncoding?: boolean;
-};
-
-const emptyFieldListSource: FieldListSource = [];
 
 /**
- * createMessageType creates a new message type.
- *
- * The argument `packedByDefault` specifies whether fields that do not specify
- * `packed` should be packed (proto3) or unpacked (proto2). It defaults to
- * true (proto3 behavior).
+ * MessageOverrides replaces parts of a generated message type: a typed
+ * decoder generated for the message, and the JSON form and plain field value
+ * of a well-known type.
  */
-export function createMessageType<
-  T extends Message<T>,
-  E extends Partial<MessageType<T>> = Partial<MessageType<T>>,
->(params: MessageTypeParams<T>, exts?: E): MessageType<T> & E {
-  const {
-    fields: fieldsSource,
-    typeName,
-    delimitedMessageEncoding,
-    fieldWrapper,
-  } = params;
-  const fields = newFieldList(
-    fieldsSource as FieldListSource,
-    params.packedByDefault ?? true,
-  );
-
-  const mt: MessageType<T> = {
-    typeName,
-    fields,
-    fieldWrapper,
-
-    create(partial?: Message<T>): Message<T> {
-      const message = createMessageRecord() as Message<T>;
-      applyPartialMessage(partial, message, fields);
-      return message;
-    },
-
-    createComplete(partial?: Message<T>): CompleteMessage<T> {
-      const message = createCompleteMessage<T>(fields);
-      applyPartialMessage(partial, message as Message<T>, fields);
-      return message;
-    },
-
-    equals(a: T | undefined | null, b: T | undefined | null): boolean {
-      return compareMessages(fields, a, b);
-    },
-
-    clone(a: T | undefined | null): T | undefined | null {
-      if (a == null) {
-        return a;
-      }
-      return cloneMessage(a, fields);
-    },
-
-    fromBinary(
-      bytes: Uint8Array | null | undefined,
-      options?: Partial<BinaryReadOptions>,
-    ): T {
-      const message = {} as T;
-      if (bytes && bytes.length) {
-        const opt = binaryMakeReadOptions(options);
-        binaryReadMessage(
-          message,
-          fields,
-          opt.readerFactory(bytes),
-          bytes.byteLength,
-          opt,
-          delimitedMessageEncoding ?? false,
-        );
-      }
-      return message;
-    },
-
-    fromJson(
-      jsonValue: JsonValue | null | undefined,
-      options?: Partial<JsonReadOptions>,
-    ): T {
-      const message = {} as T;
-      if (jsonValue != null) {
-        const opts = jsonMakeReadOptions(options);
-        jsonReadMessage(fields, typeName, jsonValue, opts, message);
-      }
-      return message;
-    },
-
-    fromJsonString(
-      jsonString: string | null | undefined,
-      options?: Partial<JsonReadOptions>,
-    ) {
-      let json: JsonValue | null = null;
-      if (jsonString) {
-        try {
-          json = JSON.parse(jsonString) as JsonValue;
-        } catch (e) {
-          throw new Error(
-            `cannot decode ${typeName} from JSON: ${
-              e instanceof Error ? e.message : String(e)
-            }`,
-            { cause: e },
-          );
-        }
-      }
-      return mt.fromJson(json, options);
-    },
-
-    toBinary(
-      a: T | undefined | null,
-      options?: Partial<BinaryWriteOptions>,
-    ): Uint8Array {
-      if (a == null) return new Uint8Array(0);
-      const opt = binaryMakeWriteOptions(options);
-      const writer = opt.writerFactory();
-      binaryWriteMessage(a, fields, writer, opt);
-      return writer.finish();
-    },
-
-    toJson(a: T, options?: Partial<JsonWriteOptions>): JsonValue {
-      const opt = jsonMakeWriteOptions(options);
-      return jsonWriteMessage(a, fields, opt);
-    },
-
-    toJsonString(a: T, options?: Partial<JsonWriteStringOptions>): string {
-      const value = mt.toJson(a, options);
-      return JSON.stringify(value, null, options?.prettySpaces ?? 0);
-    },
-
-    ...(exts ?? {}),
-  };
-  return mt as MessageType<T> & E;
+export interface MessageOverrides<T> {
+  decode?(r: BinaryReader, end: number, m: T): T;
+  writeJson?(m: T, o: JsonWriteOptions): JsonValue;
+  readJson?(j: JsonValue, o: JsonReadOptions, m: T): T;
+  /** Convert the message to the value fields hold in its place. */
+  unwrap?(m: T): unknown;
+  /** Convert a value fields hold back to the message. */
+  wrap?(v: unknown): T;
 }
 
-export function createEmptyMessageType<T extends Message<T>>(
+/**
+ * createMessageType builds a message type from the descriptions of its
+ * fields. fields is called once, on first use, so descriptions may refer to
+ * types declared after this one.
+ */
+export function createMessageType<T>(
   typeName: string,
-  packedByDefault: boolean,
+  fields: () => readonly FieldDesc[],
+  overrides?: MessageOverrides<T>,
 ): MessageType<T> {
-  return createMessageType<T>({
+  let resolved: Fields | undefined;
+  const fs = (): Fields => {
+    let r = resolved;
+    if (r === undefined) {
+      r = resolveFields(fields());
+      resolved = r;
+    }
+    return r;
+  };
+  const codec: MessageCodec = {
     typeName,
-    fields: emptyFieldListSource,
-    packedByDefault,
+    unwrap:
+      overrides?.unwrap ?
+        (m: Obj): unknown => overrides.unwrap!(m as T)
+      : undefined,
+    wrap:
+      overrides?.wrap ?
+        (v: unknown): Obj => overrides.wrap!(v) as Obj
+      : undefined,
+    encode: (m: Obj, w: Writer): void => encodeFields(fs(), m, w),
+    decode:
+      overrides?.decode ?
+        (r: BinaryReader, end: number, m: Obj): Obj =>
+          overrides.decode!(r, end, m as T) as Obj
+      : (r: BinaryReader, end: number, m: Obj): Obj =>
+          decodeFields(fs(), r, end, m),
+    equals: (a: Obj, b: Obj): boolean => equalsFields(fs(), a, b),
+    clone: (m: Obj): Obj => cloneFields(fs(), m),
+    writeJson:
+      overrides?.writeJson ?
+        (m: Obj, o: JsonWriteOptions): JsonValue =>
+          overrides.writeJson!(m as T, o)
+      : (m: Obj, o: JsonWriteOptions): JsonValue => writeJsonFields(fs(), m, o),
+    readJson:
+      overrides?.readJson ?
+        (j: JsonValue, o: JsonReadOptions, m: Obj): Obj =>
+          overrides.readJson!(j, o, m as T) as Obj
+      : (j: JsonValue, o: JsonReadOptions, m: Obj): Obj =>
+          readJsonFields(fs(), typeName, j, o, m),
+  };
+  const empty = (): T => ({}) as T;
+  const encode = (m: T, w: Writer): void => codec.encode(m as Obj, w);
+  const decode = (r: BinaryReader, end: number, m: T): T =>
+    codec.decode(r, end, m as Obj) as T;
+  const writeJson = (m: T, o: JsonWriteOptions): JsonValue =>
+    codec.writeJson(m as Obj, o);
+  const readJson = (j: JsonValue, o: JsonReadOptions, m: T): T =>
+    codec.readJson(j, o, m as Obj) as T;
+  const toJson = (
+    a: T | null | undefined,
+    options?: JsonWriteOptions,
+  ): JsonValue => writeJson(a ?? empty(), options ?? {});
+  const fromJson = (
+    json: JsonValue | null | undefined,
+    options?: JsonReadOptions,
+  ): T => {
+    if (json == null) {
+      return empty();
+    }
+    try {
+      return readJson(json, options ?? {}, empty());
+    } catch (e) {
+      throw jsonError(typeName, e);
+    }
+  };
+  const clone = (a: T | null | undefined): T =>
+    a ? (codec.clone(a as Obj) as T) : empty();
+  return {
+    typeName,
+    codec,
+    encode,
+    decode,
+    writeJson,
+    readJson,
+    create: clone,
+    clone,
+    equals: (a: T | null | undefined, b: T | null | undefined): boolean =>
+      a === b ||
+      codec.equals(a == null ? {} : (a as Obj), b == null ? {} : (b as Obj)),
+    toBinary: (a: T | null | undefined): Uint8Array => {
+      const w = new BinaryWriter();
+      if (a) {
+        encode(a, w);
+      }
+      return w.finish();
+    },
+    fromBinary: (bytes: Uint8Array | null | undefined): T => {
+      if (!bytes) {
+        return empty();
+      }
+      const r = new BinaryReader(bytes);
+      return decode(r, r.len, empty());
+    },
+    toJson,
+    toJsonString: (
+      a: T | null | undefined,
+      options?: JsonWriteStringOptions,
+    ): string =>
+      JSON.stringify(toJson(a, options), null, options?.prettySpaces ?? 0),
+    fromJson,
+    fromJsonString: (
+      json: string | null | undefined,
+      options?: JsonReadOptions,
+    ): T => {
+      if (!json) {
+        return empty();
+      }
+      let parsed: JsonValue;
+      try {
+        parsed = JSON.parse(json) as JsonValue;
+      } catch (e) {
+        throw jsonError(typeName, e);
+      }
+      return fromJson(parsed, options);
+    },
+    writeField: (w: Writer, fieldNo: number, m: T | null | undefined): void => {
+      if (m == null) {
+        return;
+      }
+      const start = w.tag(fieldNo, WireType.LengthDelimited).fork();
+      encode(m, w);
+      w.join(start);
+    },
+    writeGroup: (w: Writer, fieldNo: number, m: T | null | undefined): void => {
+      if (m == null) {
+        return;
+      }
+      w.tag(fieldNo, WireType.StartGroup);
+      encode(m, w);
+      w.tag(fieldNo, WireType.EndGroup);
+    },
+  };
+}
+
+// jsonError prefixes a JSON decoding error with the message's type name.
+function jsonError(typeName: string, e: unknown): Error {
+  const reason = e instanceof Error ? e.message : String(e);
+  return new Error(`cannot decode ${typeName} from JSON: ${reason}`, {
+    cause: e,
   });
 }
 
-// compareMessages compares two messages for equality.
-//
-// An unset field equals its zero value and a null message equals an empty one,
-// matching the wire, which omits zero values. A oneof case and a map key are
-// data on the wire, so their presence is compared strictly.
-export function compareMessages<T extends Message<T>>(
-  fields: FieldList,
-  a: T | undefined | null,
-  b: T | undefined | null,
-): boolean {
-  if (a === b) {
-    return true;
-  }
-  const ra = asMessageRecord(a ?? {});
-  const rb = asMessageRecord(b ?? {});
-  return fields.byMember().every((m) => {
-    const va = ra[m.localName];
-    const vb = rb[m.localName];
-    if (m.repeated) {
-      const vaArray = (va ?? []) as unknown[];
-      const vbArray = (vb ?? []) as unknown[];
-      if (vaArray.length !== vbArray.length) {
-        return false;
-      }
-      switch (m.kind) {
-        case "message": {
-          const messageType = resolveMessageType(m.T) as MessageType;
-          return vaArray.every((v, i) =>
-            messageType.equals(
-              v as Message<AnyMessage>,
-              vbArray[i] as Message<AnyMessage>,
-            ),
-          );
-        }
-        case "scalar":
-          return vaArray.every((v, i) =>
-            scalarEquals(
-              m.T,
-              v as ScalarComparable,
-              vbArray[i] as ScalarComparable,
-            ),
-          );
-        case "enum":
-          return vaArray.every((v, i) =>
-            scalarEquals(
-              ScalarType.INT32,
-              v as ScalarComparable,
-              vbArray[i] as ScalarComparable,
-            ),
-          );
-      }
-      throw new Error(`repeated cannot contain ${m.kind}`);
-    }
-
-    switch (m.kind) {
-      case "message":
-        return (resolveMessageType(m.T) as MessageType).equals(
-          va as Message<AnyMessage>,
-          vb as Message<AnyMessage>,
-        );
-      case "enum":
-        return singularEquals(ScalarType.INT32, va, vb);
-      case "scalar":
-        return singularEquals(m.T, va, vb);
-      case "oneof": {
-        const oneofA = va as OneofRuntimeValue | undefined;
-        const oneofB = vb as OneofRuntimeValue | undefined;
-        if (oneofA?.case !== oneofB?.case) {
-          return false;
-        }
-        const oneofCase = oneofA?.case;
-        const s = oneofCase === undefined ? undefined : m.findField(oneofCase);
-        if (s === undefined) {
-          return true;
-        }
-        switch (s.kind) {
-          case "message":
-            return (resolveMessageType(s.T) as MessageType).equals(
-              oneofA?.value as Message<AnyMessage>,
-              oneofB?.value as Message<AnyMessage>,
-            );
-          case "enum":
-            return singularEquals(
-              ScalarType.INT32,
-              oneofA?.value,
-              oneofB?.value,
-            );
-          case "scalar":
-            return singularEquals(s.T, oneofA?.value, oneofB?.value);
-        }
-        throw new Error(`oneof cannot contain ${s.kind}`);
-      }
-      case "map": {
-        const ma = (va ?? {}) as MessageRecord;
-        const mb = (vb ?? {}) as MessageRecord;
-        const keys = Object.keys(ma);
-        if (keys.length !== Object.keys(mb).length) {
-          return false;
-        }
-        const V = m.V;
-        return keys.every((k) => {
-          if (!(k in mb)) {
-            return false;
-          }
-          switch (V.kind) {
-            case "message":
-              return resolveMessageType(V.T).equals(ma[k], mb[k]);
-            case "enum":
-              return singularEquals(ScalarType.INT32, ma[k], mb[k]);
-            case "scalar":
-              return singularEquals(V.T, ma[k], mb[k]);
-          }
-        });
-      }
-    }
-  });
-}
-
-// singularEquals compares two singular scalar or enum values, treating an unset
-// value as the zero value.
-function singularEquals(type: ScalarType, a: unknown, b: unknown): boolean {
-  if (isScalarZeroValue(type, a) && isScalarZeroValue(type, b)) {
-    return true;
-  }
-  return scalarEquals(type, a as ScalarComparable, b as ScalarComparable);
-}
-
-export function cloneMessage<T extends Message<T>>(
-  message: T | null | undefined,
-  fields: FieldList,
-): T | null {
-  if (message == null) {
-    return null;
-  }
-  const clone = createMessageRecord() as T;
-  applyPartialMessage(message, clone, fields, true);
-  return clone;
-}
-
-/**
- * createCompleteMessage recursively builds a message filled with zero values based on the given FieldList.
- */
-export function createCompleteMessage<T extends Message<T>>(
-  fields: FieldList,
-): CompleteMessage<T> {
-  const message = {} as AnyMessage;
-  for (const field of fields.byMember()) {
-    const { localName, kind: fieldKind } = field;
-    throwSanitizeKey(localName);
-    switch (fieldKind) {
-      case "oneof":
-        message[localName] = createMessageRecord();
-        (message[localName] as MessageRecord).case = undefined;
-        break;
-      case "scalar":
-        if (field.repeated) {
-          message[localName] = [] as T[keyof T];
-        } else {
-          message[localName] = scalarZeroValue(field.T, LongType.BIGINT);
-        }
-        break;
-      case "enum":
-        message[localName] = field.repeated ? [] : enumZeroValue(field.T);
-        break;
-      case "message": {
-        // oneofs are handled above
-        if (field.oneof) {
-          break;
-        }
-        if (field.repeated) {
-          message[localName] = [];
-          break;
-        }
-
-        const messageType = resolveMessageType(field.T);
-        message[localName] =
-          messageType.fieldWrapper ?
-            messageType.fieldWrapper.unwrapField(null)
-          : createCompleteMessage(messageType.fields);
-        break;
-      }
-      case "map":
-        message[localName] = createMapRecord();
-        break;
-      default:
-        field satisfies never;
-    }
-  }
-  return message as CompleteMessage<T>;
-}
+export { newMap } from "./codec.js";

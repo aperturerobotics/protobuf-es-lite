@@ -32,13 +32,9 @@
 // @generated from file google/protobuf/duration.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type { JsonReadOptions, JsonValue } from "../../json.js";
-import { jsonDebugValue } from "../../json.js";
-import { protoInt64 } from "../../proto-int64.js";
 import type { MessageType } from "../../message.js";
 import { createMessageType } from "../../message.js";
-import { ScalarType } from "../../scalar.js";
-import type { PartialFieldInfo } from "../../field.js";
+import { durationReadJson, durationWriteJson } from "../../wkt.js";
 
 /**
  * A Duration represents a signed, fixed-length span of time represented
@@ -109,8 +105,6 @@ export interface Duration {
    * Signed seconds of the span of time. Must be from -315,576,000,000
    * to +315,576,000,000 inclusive. Note: these bounds are computed from:
    * 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
-   *
-   * @generated from field: int64 seconds = 1;
    */
   seconds?: bigint;
   /**
@@ -120,79 +114,19 @@ export interface Duration {
    * of one second or more, a non-zero value for the `nanos` field must be
    * of the same sign as the `seconds` field. Must be from -999,999,999
    * to +999,999,999 inclusive.
-   *
-   * @generated from field: int32 nanos = 2;
    */
   nanos?: number;
 }
 
-const Duration_Wkt = {
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): Duration {
-    if (typeof json !== "string") {
-      throw new Error(
-        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`,
-      );
-    }
-    const match = json.match(/^(-?[0-9]+)(?:\.([0-9]+))?s/);
-    if (match === null) {
-      throw new Error(
-        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`,
-      );
-    }
-    const longSeconds = Number(match[1]);
-    if (longSeconds > 315576000000 || longSeconds < -315576000000) {
-      throw new Error(
-        `cannot decode google.protobuf.Duration from JSON: ${jsonDebugValue(json)}`,
-      );
-    }
-    const msg = {} as Duration;
-    msg.seconds = protoInt64.parse(longSeconds);
-    if (typeof match[2] == "string") {
-      const nanosStr = match[2] + "0".repeat(9 - match[2].length);
-      msg.nanos = parseInt(nanosStr);
-      if (longSeconds < 0 || Object.is(longSeconds, -0)) {
-        msg.nanos = -msg.nanos;
-      }
-    }
-    return msg;
-  },
-  toJson(msg: Duration): JsonValue {
-    const secs = Number(msg.seconds ?? 0);
-    const nanos = Number(msg.nanos ?? 0);
-    if (secs > 315576000000 || secs < -315576000000) {
-      throw new Error(
-        `cannot encode google.protobuf.Duration to JSON: value out of range`,
-      );
-    }
-    let text = secs.toString();
-    if (nanos !== 0) {
-      let nanosStr = Math.abs(nanos).toString();
-      nanosStr = "0".repeat(9 - nanosStr.length) + nanosStr;
-      if (nanosStr.substring(3) === "000000") {
-        nanosStr = nanosStr.substring(0, 3);
-      } else if (nanosStr.substring(6) === "000") {
-        nanosStr = nanosStr.substring(0, 6);
-      }
-      text += "." + nanosStr;
-      if (nanos < 0 && secs === 0) {
-        text = "-" + text;
-      }
-    }
-    return text + "s";
-  },
-};
-
-export const Duration: MessageType<Duration> & typeof Duration_Wkt =
-  /* @__PURE__ */ createMessageType<Duration, typeof Duration_Wkt>(
+export const Duration: MessageType<Duration> =
+  /* @__PURE__ */ createMessageType<Duration>(
+    "google.protobuf.Duration",
+    () => [
+      [1, "seconds", 3],
+      [2, "nanos", 5],
+    ],
     {
-      typeName: "google.protobuf.Duration",
-      fields: [
-        { no: 1, name: "seconds", kind: "scalar", T: ScalarType.INT64 },
-        { no: 2, name: "nanos", kind: "scalar", T: ScalarType.INT32 },
-      ] satisfies readonly PartialFieldInfo[],
+      writeJson: durationWriteJson,
+      readJson: durationReadJson,
     },
-    Duration_Wkt,
   );

@@ -83,13 +83,9 @@ function createTextForDesc(desc: Exclude<AnyDesc, DescFile>) {
     .join("\n");
   switch (desc.kind) {
     case "enum_value":
-      text += `@generated from enum value: ${desc.declarationString()};`;
-      break;
     case "field":
-      text += `@generated from field: ${desc.declarationString()};`;
-      break;
     case "extension":
-      text += `@generated from extension: ${desc.declarationString()};`;
+      text = text.trimEnd();
       break;
     default:
       text += `@generated from ${desc.toString()}`;
@@ -106,7 +102,7 @@ function createTextForDesc(desc: Exclude<AnyDesc, DescFile>) {
       break;
   }
   if (deprecated) {
-    text += "\n@deprecated";
+    text += text ? "\n@deprecated" : "@deprecated";
   }
   return text;
 }

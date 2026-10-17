@@ -1,0 +1,119 @@
+// Messages that cover each field shape the generated codecs handle.
+syntax = "proto3";
+package codec;
+
+import "google/protobuf/any.proto";
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+enum Color {
+  COLOR_UNSPECIFIED = 0;
+  COLOR_RED = 1;
+  COLOR_BLUE = 2;
+}
+
+message Child {
+  uint32 count = 1;
+  string label = 2;
+}
+
+message Scalars {
+  double f_double = 1;
+  float f_float = 2;
+  int64 f_int64 = 3;
+  uint64 f_uint64 = 4;
+  int32 f_int32 = 5;
+  fixed64 f_fixed64 = 6;
+  fixed32 f_fixed32 = 7;
+  bool f_bool = 8;
+  string f_string = 9;
+  bytes f_bytes = 10;
+  uint32 f_uint32 = 13;
+  sfixed32 f_sfixed32 = 15;
+  sfixed64 f_sfixed64 = 16;
+  sint32 f_sint32 = 17;
+  sint64 f_sint64 = 18;
+  int64 f_int64_str = 19 [jstype = JS_STRING];
+  Color color = 20;
+}
+
+message Optionals {
+  optional int32 o_int32 = 1;
+  optional string o_string = 2;
+  optional bytes o_bytes = 3;
+  optional Color o_color = 4;
+  optional bool o_bool = 5;
+  optional double o_double = 6;
+  optional int64 o_int64 = 7;
+}
+
+message Repeated {
+  repeated int32 r_int32 = 1;
+  repeated double r_double = 2;
+  repeated string r_string = 3;
+  repeated bytes r_bytes = 4;
+  repeated Color r_color = 5;
+  repeated Child r_child = 6;
+  repeated sint64 r_sint64 = 7;
+  repeated int32 r_unpacked = 8 [packed = false];
+  repeated google.protobuf.Timestamp r_ts = 9;
+  repeated google.protobuf.Int32Value r_wrap = 10;
+}
+
+message Maps {
+  map<string, string> m_str = 1;
+  map<int32, Child> m_int_child = 2;
+  map<int64, Color> m_long_enum = 3;
+  map<bool, bytes> m_bool_bytes = 4;
+  map<string, google.protobuf.Timestamp> m_ts = 5;
+  map<uint32, google.protobuf.StringValue> m_wrap = 6;
+  map<sint64, double> m_sint = 7;
+}
+
+message Oneofs {
+  oneof choice {
+    int32 c_int = 1;
+    string c_str = 2;
+    Child c_child = 3;
+    Color c_color = 4;
+    bytes c_bytes = 5;
+    google.protobuf.Timestamp c_ts = 6;
+    google.protobuf.Int32Value c_wrap = 7;
+  }
+  string after = 8;
+}
+
+message Wkts {
+  google.protobuf.Timestamp ts = 1;
+  google.protobuf.Duration dur = 2;
+  google.protobuf.Int32Value i32 = 3;
+  google.protobuf.StringValue str = 4;
+  google.protobuf.Int64Value i64 = 5;
+  google.protobuf.BytesValue byt = 6;
+  google.protobuf.Struct st = 7;
+  google.protobuf.Value val = 8;
+  google.protobuf.ListValue lst = 9;
+  google.protobuf.Any any = 10;
+  google.protobuf.DoubleValue dbl = 11;
+  google.protobuf.BoolValue bln = 12;
+}
+
+message Nested {
+  message Inner {
+    enum Kind {
+      KIND_A = 0;
+      KIND_B = 1;
+    }
+    int32 x = 1;
+    Kind kind = 2;
+  }
+  Child child = 1;
+  Nested next = 2;
+  Inner inner = 3;
+  repeated Child children = 4;
+  string json_named = 5 [json_name = "customName"];
+}
+
+message Empty {}

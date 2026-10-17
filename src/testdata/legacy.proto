@@ -1,0 +1,15 @@
+// Proto2 fields: required, groups, unpacked repeated and explicit presence.
+syntax = "proto2";
+package legacy;
+
+message Legacy {
+  required int32 req = 1;
+  optional string opt = 2;
+  optional group Grp = 3 {
+    optional int32 a = 4;
+  }
+  repeated int32 unpacked = 5;
+  repeated int32 packed = 6 [packed = true];
+  optional bytes b = 7;
+  optional string loose = 8;
+}

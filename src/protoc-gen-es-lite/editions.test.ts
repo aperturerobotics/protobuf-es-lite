@@ -38,32 +38,37 @@ describe("protoc-gen-es-lite editions", () => {
     expect(response.maximumEdition).toBe(Edition.EDITION_2024);
 
     const content = response.file?.[0]?.content ?? "";
-    // packedByDefault is omitted when true (the runtime default).
-    expect(content).not.toContain("packedByDefault: true");
-    expect(content).not.toContain("packedByDefault: false");
+    // Explicit and required presence set the presence flag; implicit has none.
+    expect(content).toContain('[1, "explicit_int32", 5, 4],');
+    expect(content).toContain('[2, "implicit_int32", 5],');
+    expect(content).toContain('[3, "required_int32", 5, 4],');
+    // Editions verify UTF-8 unless a field turns it off.
+    expect(content).toContain('[4, "strict_string", 9, 36],');
+    expect(content).toContain('[5, "loose_string", 9, 4],');
+    expect(content).toContain('[9, "labels", 9, 616],');
+    // Packed by default; expanded is repeated without the packed flag.
+    expect(content).toContain('[6, "packed_int32", 5, 3],');
+    expect(content).toContain('[7, "expanded_int32", 5, 1],');
+    // Delimited message encoding is the group type.
+    expect(content).toContain('[8, "delimited_child", 10, 0, Child.codec],');
+  });
+
+  it("generates a typed decoder with the typed_decode option", () => {
+    const response = protocGenEsLite.run(
+      CodeGeneratorRequest.create({
+        parameter: "target=ts,ts_nocheck=false,typed_decode=true",
+        fileToGenerate: ["editions2024.proto"],
+        protoFile: [edition2024File()],
+      }),
+    );
+    const content = response.file?.[0]?.content ?? "";
+    expect(content).toContain("case 4: m.strictString = r.utf8(); break;");
+    expect(content).toContain("case 5: m.looseString = r.string(); break;");
     expect(content).toContain(
-      '{ no: 1, name: "explicit_int32", kind: "scalar", T: ScalarType.INT32, opt: true }',
+      'r.entry((r) => r.utf8(), (r) => r.utf8(), "", "")',
     );
     expect(content).toContain(
-      '{ no: 2, name: "implicit_int32", kind: "scalar", T: ScalarType.INT32 }',
-    );
-    expect(content).toContain(
-      '{ no: 3, name: "required_int32", kind: "scalar", T: ScalarType.INT32, req: true }',
-    );
-    expect(content).toContain(
-      '{ no: 4, name: "strict_string", kind: "scalar", T: ScalarType.STRING, utf8: true, opt: true }',
-    );
-    expect(content).toContain(
-      '{ no: 5, name: "loose_string", kind: "scalar", T: ScalarType.STRING, opt: true }',
-    );
-    expect(content).toContain(
-      '{ no: 7, name: "expanded_int32", kind: "scalar", T: ScalarType.INT32, repeated: true, packed: false }',
-    );
-    expect(content).toContain(
-      '{ no: 8, name: "delimited_child", kind: "message", T: Child, delimited: true, opt: true }',
-    );
-    expect(content).toContain(
-      '{ no: 9, name: "labels", kind: "map", K: ScalarType.STRING, keyUtf8: true, V: {kind: "scalar", T: ScalarType.STRING, utf8: true} }',
+      "m.delimitedChild = Child.decode(r, r.len, m.delimitedChild ?? {});",
     );
   });
 

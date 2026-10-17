@@ -42,16 +42,23 @@
 // @generated from file google/protobuf/wrappers.proto (package google.protobuf, syntax proto3)
 /* eslint-disable */
 
-import type {
-  JsonReadOptions,
-  JsonValue,
-  JsonWriteOptions,
-} from "../../json.js";
-import { jsonReadScalar, jsonWriteScalar } from "../../json.js";
-import { LongType, ScalarType } from "../../scalar.js";
 import type { MessageType } from "../../message.js";
 import { createMessageType } from "../../message.js";
-import type { PartialFieldInfo } from "../../field.js";
+import type { JsonReadOptions, JsonValue } from "../../json.js";
+import {
+  jsonBytes,
+  jsonDouble,
+  jsonLong,
+  readBool,
+  readBytes,
+  readDouble,
+  readFloat,
+  readInt32,
+  readInt64,
+  readStr,
+  readUint32,
+  readUint64,
+} from "../../json.js";
 
 /**
  * Wrapper message for `double`.
@@ -65,51 +72,27 @@ import type { PartialFieldInfo } from "../../field.js";
 export interface DoubleValue {
   /**
    * The double value.
-   *
-   * @generated from field: double value = 1;
    */
   value?: number;
 }
 
-const DoubleValue_Wkt = {
-  toJson(msg: DoubleValue, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.DOUBLE, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): DoubleValue {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.DOUBLE, json, LongType.BIGINT),
-      } as DoubleValue;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.DoubleValue from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const DoubleValue: MessageType<DoubleValue> & typeof DoubleValue_Wkt =
-  /* @__PURE__ */ createMessageType<DoubleValue, typeof DoubleValue_Wkt>(
+export const DoubleValue: MessageType<DoubleValue> =
+  /* @__PURE__ */ createMessageType<DoubleValue>(
+    "google.protobuf.DoubleValue",
+    () => [[1, "value", 1]],
     {
-      typeName: "google.protobuf.DoubleValue",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.DOUBLE },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: number | null | undefined): DoubleValue {
-          return DoubleValue.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: DoubleValue): number | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: DoubleValue): JsonValue => jsonDouble(m.value ?? 0),
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: DoubleValue,
+      ): DoubleValue => {
+        m.value = readDouble(j);
+        return m;
+      },
+      unwrap: (m: DoubleValue): unknown => m.value ?? 0,
+      wrap: (v: unknown): DoubleValue => ({ value: v as number }),
     },
-    DoubleValue_Wkt,
   );
 
 /**
@@ -124,51 +107,27 @@ export const DoubleValue: MessageType<DoubleValue> & typeof DoubleValue_Wkt =
 export interface FloatValue {
   /**
    * The float value.
-   *
-   * @generated from field: float value = 1;
    */
   value?: number;
 }
 
-const FloatValue_Wkt = {
-  toJson(msg: FloatValue, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.FLOAT, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): FloatValue {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.FLOAT, json, LongType.BIGINT),
-      } as FloatValue;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.FloatValue from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const FloatValue: MessageType<FloatValue> & typeof FloatValue_Wkt =
-  /* @__PURE__ */ createMessageType<FloatValue, typeof FloatValue_Wkt>(
+export const FloatValue: MessageType<FloatValue> =
+  /* @__PURE__ */ createMessageType<FloatValue>(
+    "google.protobuf.FloatValue",
+    () => [[1, "value", 2]],
     {
-      typeName: "google.protobuf.FloatValue",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.FLOAT },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: number | null | undefined): FloatValue {
-          return FloatValue.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: FloatValue): number | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: FloatValue): JsonValue => jsonDouble(m.value ?? 0),
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: FloatValue,
+      ): FloatValue => {
+        m.value = readFloat(j);
+        return m;
+      },
+      unwrap: (m: FloatValue): unknown => m.value ?? 0,
+      wrap: (v: unknown): FloatValue => ({ value: v as number }),
     },
-    FloatValue_Wkt,
   );
 
 /**
@@ -183,51 +142,27 @@ export const FloatValue: MessageType<FloatValue> & typeof FloatValue_Wkt =
 export interface Int64Value {
   /**
    * The int64 value.
-   *
-   * @generated from field: int64 value = 1;
    */
   value?: bigint;
 }
 
-const Int64Value_Wkt = {
-  toJson(msg: Int64Value, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.INT64, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): Int64Value {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.INT64, json, LongType.BIGINT),
-      } as Int64Value;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.Int64Value from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const Int64Value: MessageType<Int64Value> & typeof Int64Value_Wkt =
-  /* @__PURE__ */ createMessageType<Int64Value, typeof Int64Value_Wkt>(
+export const Int64Value: MessageType<Int64Value> =
+  /* @__PURE__ */ createMessageType<Int64Value>(
+    "google.protobuf.Int64Value",
+    () => [[1, "value", 3]],
     {
-      typeName: "google.protobuf.Int64Value",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.INT64 },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: bigint | null | undefined): Int64Value {
-          return Int64Value.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: Int64Value): bigint | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: Int64Value): JsonValue => jsonLong(m.value ?? 0n),
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: Int64Value,
+      ): Int64Value => {
+        m.value = readInt64(j);
+        return m;
+      },
+      unwrap: (m: Int64Value): unknown => m.value ?? 0n,
+      wrap: (v: unknown): Int64Value => ({ value: v as bigint }),
     },
-    Int64Value_Wkt,
   );
 
 /**
@@ -242,51 +177,27 @@ export const Int64Value: MessageType<Int64Value> & typeof Int64Value_Wkt =
 export interface UInt64Value {
   /**
    * The uint64 value.
-   *
-   * @generated from field: uint64 value = 1;
    */
   value?: bigint;
 }
 
-const UInt64Value_Wkt = {
-  toJson(msg: UInt64Value, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.UINT64, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): UInt64Value {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.UINT64, json, LongType.BIGINT),
-      } as UInt64Value;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.UInt64Value from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const UInt64Value: MessageType<UInt64Value> & typeof UInt64Value_Wkt =
-  /* @__PURE__ */ createMessageType<UInt64Value, typeof UInt64Value_Wkt>(
+export const UInt64Value: MessageType<UInt64Value> =
+  /* @__PURE__ */ createMessageType<UInt64Value>(
+    "google.protobuf.UInt64Value",
+    () => [[1, "value", 4]],
     {
-      typeName: "google.protobuf.UInt64Value",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT64 },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: bigint | null | undefined): UInt64Value {
-          return UInt64Value.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: UInt64Value): bigint | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: UInt64Value): JsonValue => jsonLong(m.value ?? 0n),
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: UInt64Value,
+      ): UInt64Value => {
+        m.value = readUint64(j);
+        return m;
+      },
+      unwrap: (m: UInt64Value): unknown => m.value ?? 0n,
+      wrap: (v: unknown): UInt64Value => ({ value: v as bigint }),
     },
-    UInt64Value_Wkt,
   );
 
 /**
@@ -301,51 +212,27 @@ export const UInt64Value: MessageType<UInt64Value> & typeof UInt64Value_Wkt =
 export interface Int32Value {
   /**
    * The int32 value.
-   *
-   * @generated from field: int32 value = 1;
    */
   value?: number;
 }
 
-const Int32Value_Wkt = {
-  toJson(msg: Int32Value, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.INT32, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): Int32Value {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.INT32, json, LongType.BIGINT),
-      } as Int32Value;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.Int32Value from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const Int32Value: MessageType<Int32Value> & typeof Int32Value_Wkt =
-  /* @__PURE__ */ createMessageType<Int32Value, typeof Int32Value_Wkt>(
+export const Int32Value: MessageType<Int32Value> =
+  /* @__PURE__ */ createMessageType<Int32Value>(
+    "google.protobuf.Int32Value",
+    () => [[1, "value", 5]],
     {
-      typeName: "google.protobuf.Int32Value",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.INT32 },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: number | null | undefined): Int32Value {
-          return Int32Value.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: Int32Value): number | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: Int32Value): JsonValue => m.value ?? 0,
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: Int32Value,
+      ): Int32Value => {
+        m.value = readInt32(j);
+        return m;
+      },
+      unwrap: (m: Int32Value): unknown => m.value ?? 0,
+      wrap: (v: unknown): Int32Value => ({ value: v as number }),
     },
-    Int32Value_Wkt,
   );
 
 /**
@@ -360,51 +247,27 @@ export const Int32Value: MessageType<Int32Value> & typeof Int32Value_Wkt =
 export interface UInt32Value {
   /**
    * The uint32 value.
-   *
-   * @generated from field: uint32 value = 1;
    */
   value?: number;
 }
 
-const UInt32Value_Wkt = {
-  toJson(msg: UInt32Value, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.UINT32, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): UInt32Value {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.UINT32, json, LongType.BIGINT),
-      } as UInt32Value;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.UInt32Value from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const UInt32Value: MessageType<UInt32Value> & typeof UInt32Value_Wkt =
-  /* @__PURE__ */ createMessageType<UInt32Value, typeof UInt32Value_Wkt>(
+export const UInt32Value: MessageType<UInt32Value> =
+  /* @__PURE__ */ createMessageType<UInt32Value>(
+    "google.protobuf.UInt32Value",
+    () => [[1, "value", 13]],
     {
-      typeName: "google.protobuf.UInt32Value",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.UINT32 },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: number | null | undefined): UInt32Value {
-          return UInt32Value.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: UInt32Value): number | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: UInt32Value): JsonValue => m.value ?? 0,
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: UInt32Value,
+      ): UInt32Value => {
+        m.value = readUint32(j);
+        return m;
+      },
+      unwrap: (m: UInt32Value): unknown => m.value ?? 0,
+      wrap: (v: unknown): UInt32Value => ({ value: v as number }),
     },
-    UInt32Value_Wkt,
   );
 
 /**
@@ -419,51 +282,27 @@ export const UInt32Value: MessageType<UInt32Value> & typeof UInt32Value_Wkt =
 export interface BoolValue {
   /**
    * The bool value.
-   *
-   * @generated from field: bool value = 1;
    */
   value?: boolean;
 }
 
-const BoolValue_Wkt = {
-  toJson(msg: BoolValue, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.BOOL, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): BoolValue {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.BOOL, json, LongType.BIGINT),
-      } as BoolValue;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.BoolValue from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const BoolValue: MessageType<BoolValue> & typeof BoolValue_Wkt =
-  /* @__PURE__ */ createMessageType<BoolValue, typeof BoolValue_Wkt>(
+export const BoolValue: MessageType<BoolValue> =
+  /* @__PURE__ */ createMessageType<BoolValue>(
+    "google.protobuf.BoolValue",
+    () => [[1, "value", 8]],
     {
-      typeName: "google.protobuf.BoolValue",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.BOOL },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: boolean | null | undefined): BoolValue {
-          return BoolValue.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: BoolValue): boolean | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: BoolValue): JsonValue => m.value ?? false,
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: BoolValue,
+      ): BoolValue => {
+        m.value = readBool(j);
+        return m;
+      },
+      unwrap: (m: BoolValue): unknown => m.value ?? false,
+      wrap: (v: unknown): BoolValue => ({ value: v as boolean }),
     },
-    BoolValue_Wkt,
   );
 
 /**
@@ -478,51 +317,27 @@ export const BoolValue: MessageType<BoolValue> & typeof BoolValue_Wkt =
 export interface StringValue {
   /**
    * The string value.
-   *
-   * @generated from field: string value = 1;
    */
   value?: string;
 }
 
-const StringValue_Wkt = {
-  toJson(msg: StringValue, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.STRING, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): StringValue {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.STRING, json, LongType.BIGINT),
-      } as StringValue;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.StringValue from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const StringValue: MessageType<StringValue> & typeof StringValue_Wkt =
-  /* @__PURE__ */ createMessageType<StringValue, typeof StringValue_Wkt>(
+export const StringValue: MessageType<StringValue> =
+  /* @__PURE__ */ createMessageType<StringValue>(
+    "google.protobuf.StringValue",
+    () => [[1, "value", 9]],
     {
-      typeName: "google.protobuf.StringValue",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.STRING },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: string | null | undefined): StringValue {
-          return StringValue.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: StringValue): string | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: StringValue): JsonValue => m.value ?? "",
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: StringValue,
+      ): StringValue => {
+        m.value = readStr(j);
+        return m;
+      },
+      unwrap: (m: StringValue): unknown => m.value ?? "",
+      wrap: (v: unknown): StringValue => ({ value: v as string }),
     },
-    StringValue_Wkt,
   );
 
 /**
@@ -537,49 +352,26 @@ export const StringValue: MessageType<StringValue> & typeof StringValue_Wkt =
 export interface BytesValue {
   /**
    * The bytes value.
-   *
-   * @generated from field: bytes value = 1;
    */
   value?: Uint8Array;
 }
 
-const BytesValue_Wkt = {
-  toJson(msg: BytesValue, _options?: Partial<JsonWriteOptions>): JsonValue {
-    return jsonWriteScalar(ScalarType.BYTES, msg.value)!;
-  },
-  fromJson(
-    json: JsonValue | null | undefined,
-    _options?: Partial<JsonReadOptions>,
-  ): BytesValue {
-    try {
-      return {
-        value: jsonReadScalar(ScalarType.BYTES, json, LongType.BIGINT),
-      } as BytesValue;
-    } catch (e) {
-      let m = `cannot decode message google.protobuf.BytesValue from JSON"`;
-      if (e instanceof Error && e.message.length > 0) {
-        m += `: ${e.message}`;
-      }
-      throw new Error(m);
-    }
-  },
-};
-
-export const BytesValue: MessageType<BytesValue> & typeof BytesValue_Wkt =
-  /* @__PURE__ */ createMessageType<BytesValue, typeof BytesValue_Wkt>(
+export const BytesValue: MessageType<BytesValue> =
+  /* @__PURE__ */ createMessageType<BytesValue>(
+    "google.protobuf.BytesValue",
+    () => [[1, "value", 12]],
     {
-      typeName: "google.protobuf.BytesValue",
-      fields: [
-        { no: 1, name: "value", kind: "scalar", T: ScalarType.BYTES },
-      ] satisfies readonly PartialFieldInfo[],
-      fieldWrapper: {
-        wrapField(value: Uint8Array | null | undefined): BytesValue {
-          return BytesValue.createComplete({ value: value ?? undefined });
-        },
-        unwrapField(msg: BytesValue): Uint8Array | null | undefined {
-          return msg.value;
-        },
-      } as const,
+      writeJson: (m: BytesValue): JsonValue =>
+        jsonBytes(m.value ?? new Uint8Array(0)),
+      readJson: (
+        j: JsonValue,
+        _o: JsonReadOptions,
+        m: BytesValue,
+      ): BytesValue => {
+        m.value = readBytes(j);
+        return m;
+      },
+      unwrap: (m: BytesValue): unknown => m.value ?? new Uint8Array(0),
+      wrap: (v: unknown): BytesValue => ({ value: v as Uint8Array }),
     },
-    BytesValue_Wkt,
   );

@@ -2,6 +2,7 @@
   "files": [
     "src/protoc-gen-es-lite/protoc-gen-es-lite-plugin.ts",
     "src/index.ts",
+    "src/binary.ts",
     "src/descriptor-set.ts",
     "src/create-descriptor-set.ts",
     "src/protoplugin/index.ts",

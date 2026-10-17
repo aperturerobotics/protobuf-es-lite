@@ -33,7 +33,7 @@
 /* eslint-disable */
 
 import type { MessageType } from "../../message.js";
-import { createEmptyMessageType } from "../../message.js";
+import { createMessageType } from "../../message.js";
 
 /**
  * A generic empty message that you can re-use to avoid defining duplicated
@@ -50,4 +50,4 @@ import { createEmptyMessageType } from "../../message.js";
 export interface Empty {}
 
 export const Empty: MessageType<Empty> =
-  /* @__PURE__ */ createEmptyMessageType<Empty>("google.protobuf.Empty", true);
+  /* @__PURE__ */ createMessageType<Empty>("google.protobuf.Empty", () => []);

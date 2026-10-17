@@ -8,18 +8,17 @@ type ImportCase = {
 const esmCases: ImportCase[] = [
   {
     specifier: "@aptre/protobuf-es-lite",
-    exports: ["createEmptyMessageType", "createMessageType"],
+    exports: ["createMessageType", "newMap"],
   },
   {
     specifier: "@aptre/protobuf-es-lite/message",
-    exports: ["createEmptyMessageType", "createMessageType"],
+    exports: ["createMessageType", "newMap"],
   },
-  { specifier: "@aptre/protobuf-es-lite/field", exports: ["newFieldList"] },
   { specifier: "@aptre/protobuf-es-lite/scalar", exports: ["ScalarType"] },
   { specifier: "@aptre/protobuf-es-lite/enum", exports: ["createEnumType"] },
   {
     specifier: "@aptre/protobuf-es-lite/binary",
-    exports: ["binaryMakeReadOptions"],
+    exports: ["BinaryReader", "BinaryWriter"],
   },
   {
     specifier: "@aptre/protobuf-es-lite/binary-encoding",
@@ -27,11 +26,11 @@ const esmCases: ImportCase[] = [
   },
   {
     specifier: "@aptre/protobuf-es-lite/json",
-    exports: ["jsonMakeReadOptions"],
+    exports: ["jsonDouble"],
   },
   {
-    specifier: "@aptre/protobuf-es-lite/partial",
-    exports: ["applyPartialMessage"],
+    specifier: "@aptre/protobuf-es-lite/wkt",
+    exports: ["anyMethods", "timestampMethods"],
   },
   {
     specifier: "@aptre/protobuf-es-lite/proto-int64",
@@ -56,11 +55,11 @@ const esmCases: ImportCase[] = [
 const cjsCases: ImportCase[] = [
   {
     specifier: "@aptre/protobuf-es-lite",
-    exports: ["createEmptyMessageType", "createMessageType"],
+    exports: ["createMessageType", "newMap"],
   },
   {
     specifier: "@aptre/protobuf-es-lite/message",
-    exports: ["createEmptyMessageType", "createMessageType"],
+    exports: ["createMessageType", "newMap"],
   },
   { specifier: "@aptre/protobuf-es-lite/scalar", exports: ["ScalarType"] },
   {

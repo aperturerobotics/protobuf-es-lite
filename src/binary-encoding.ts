@@ -12,547 +12,274 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  varint32read,
-  varint32write,
-  varint64read,
-  varint64write,
-} from "./varint.js";
-import { assertFloat32, assertInt32, assertUInt32 } from "./assert.js";
-import { protoInt64 } from "./proto-int64.js";
-
-/* eslint-disable prefer-const,no-case-declarations */
-
 /**
  * Protobuf binary format wire types.
  *
  * A wire type provides just enough information to find the length of the
  * following value.
  *
- * See https://developers.google.com/protocol-buffers/docs/encoding#structure
+ * See https://protobuf.dev/programming-guides/encoding/#structure
  */
 export enum WireType {
-  /**
-   * Used for int32, int64, uint32, uint64, sint32, sint64, bool, enum
-   */
+  /** int32, int64, uint32, uint64, sint32, sint64, bool, enum. */
   Varint = 0,
 
-  /**
-   * Used for fixed64, sfixed64, double.
-   * Always 8 bytes with little-endian byte order.
-   */
+  /** fixed64, sfixed64, double: 8 bytes, little-endian. */
   Bit64 = 1,
 
-  /**
-   * Used for string, bytes, embedded messages, packed repeated fields
-   *
-   * Only repeated numeric types (types which use the varint, 32-bit,
-   * or 64-bit wire types) can be packed. In proto3, such fields are
-   * packed by default.
-   */
+  /** string, bytes, embedded messages, packed repeated fields. */
   LengthDelimited = 2,
 
-  /**
-   * Start of a tag-delimited aggregate, such as a proto2 group, or a message
-   * in editions with message_encoding = DELIMITED.
-   */
+  /** Start of a group, or of a message with delimited encoding. */
   StartGroup = 3,
 
-  /**
-   * End of a tag-delimited aggregate.
-   */
+  /** End of a group. */
   EndGroup = 4,
 
-  /**
-   * Used for fixed32, sfixed32, float.
-   * Always 4 bytes with little-endian byte order.
-   */
+  /** fixed32, sfixed32, float: 4 bytes, little-endian. */
   Bit32 = 5,
 }
 
-type TextEncoderLike = { encode(input?: string): Uint8Array };
-type TextDecoderLike = { decode(input?: Uint8Array): string };
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
+const strictDecoder = new TextDecoder("utf-8", { fatal: true });
 
-export interface IBinaryReader {
-  /**
-   * Current position.
-   */
-  readonly pos: number;
-
-  /**
-   * Number of bytes available in this reader.
-   */
-  readonly len: number;
-
-  /**
-   * Reads a tag - field number and wire type.
-   */
-  tag(): [number, WireType];
-
-  /**
-   * Skip one element on the wire and return the skipped data.
-   */
-  skip(wireType: WireType): Uint8Array;
-
-  /**
-   * Read a `uint32` field, an unsigned 32 bit varint.
-   */
-  uint32(): number;
-
-  /**
-   * Read a `int32` field, a signed 32 bit varint.
-   */
-  int32(): number;
-
-  /**
-   * Read a `sint32` field, a signed, zigzag-encoded 32-bit varint.
-   */
-  sint32(): number;
-
-  /**
-   * Read a `int64` field, a signed 64-bit varint.
-   */
-  int64(): bigint | string;
-
-  /**
-   * Read a `sint64` field, a signed, zig-zag-encoded 64-bit varint.
-   */
-  sint64(): bigint | string;
-
-  /**
-   * Read a `fixed64` field, a signed, fixed-length 64-bit integer.
-   */
-  sfixed64(): bigint | string;
-
-  /**
-   * Read a `uint64` field, an unsigned 64-bit varint.
-   */
-  uint64(): bigint | string;
-
-  /**
-   * Read a `fixed64` field, an unsigned, fixed-length 64 bit integer.
-   */
-  fixed64(): bigint | string;
-
-  /**
-   * Read a `bool` field, a variant.
-   */
-  bool(): boolean;
-
-  /**
-   * Read a `fixed32` field, an unsigned, fixed-length 32-bit integer.
-   */
-  fixed32(): number;
-
-  /**
-   * Read a `sfixed32` field, a signed, fixed-length 32-bit integer.
-   */
-  sfixed32(): number;
-
-  /**
-   * Read a `float` field, 32-bit floating point number.
-   */
-  float(): number;
-
-  /**
-   * Read a `double` field, a 64-bit floating point number.
-   */
-  double(): number;
-
-  /**
-   * Read a `bytes` field, length-delimited arbitrary data.
-   */
-  bytes(): Uint8Array;
-
-  /**
-   * Read a `string` field, length-delimited data converted to UTF-8 text.
-   */
-  string(verifyUtf8?: boolean): string;
+/**
+ * Writer receives a message's wire values from its generated encoder.
+ *
+ * A length-delimited value opens with fork, which returns where its body
+ * starts, and closes with join, which takes that position back. BinaryWriter
+ * writes bytes; the writer behind sizeOf only counts them.
+ */
+export interface Writer {
+  /** Start a length-delimited value. Pass the result to join. */
+  fork(): number;
+  /** Close the length-delimited value that started at start. */
+  join(start: number): Writer;
+  /** Write a field's tag: its number and wire type. */
+  tag(fieldNo: number, wireType: WireType): Writer;
+  /** Write raw bytes. */
+  raw(chunk: Uint8Array): Writer;
+  uint32(value: number): Writer;
+  int32(value: number): Writer;
+  sint32(value: number): Writer;
+  bool(value: boolean): Writer;
+  int64(value: bigint): Writer;
+  uint64(value: bigint): Writer;
+  sint64(value: bigint): Writer;
+  fixed32(value: number): Writer;
+  sfixed32(value: number): Writer;
+  fixed64(value: bigint): Writer;
+  sfixed64(value: bigint): Writer;
+  float(value: number): Writer;
+  double(value: number): Writer;
+  bytes(value: Uint8Array): Writer;
+  string(value: string): Writer;
 }
 
-export interface IBinaryWriter {
-  /**
-   * Return all bytes written and reset this writer.
-   */
-  finish(): Uint8Array;
-
-  /**
-   * Start a new fork for length-delimited data like a message
-   * or a packed repeated field.
-   *
-   * Must be joined later with `join()`.
-   */
-  fork(): IBinaryWriter;
-
-  /**
-   * Join the last fork. Write its length and bytes, then
-   * return to the previous state.
-   */
-  join(): IBinaryWriter;
-
-  /**
-   * Writes a tag (field number and wire type).
-   *
-   * Equivalent to `uint32( (fieldNo << 3 | type) >>> 0 )`
-   *
-   * Generated code should compute the tag ahead of time and call `uint32()`.
-   */
-  tag(fieldNo: number, type: WireType): IBinaryWriter;
-
-  /**
-   * Write a chunk of raw bytes.
-   */
-  raw(chunk: Uint8Array): IBinaryWriter;
-
-  /**
-   * Write a `uint32` value, an unsigned 32 bit varint.
-   */
-  uint32(value: number): IBinaryWriter;
-
-  /**
-   * Write a `int32` value, a signed 32 bit varint.
-   */
-  int32(value: number): IBinaryWriter;
-
-  /**
-   * Write a `sint32` value, a signed, zigzag-encoded 32-bit varint.
-   */
-  sint32(value: number): IBinaryWriter;
-
-  /**
-   * Write a `int64` value, a signed 64-bit varint.
-   */
-  int64(value: string | number | bigint): IBinaryWriter;
-
-  /**
-   * Write a `uint64` value, an unsigned 64-bit varint.
-   */
-  uint64(value: string | number | bigint): IBinaryWriter;
-
-  /**
-   * Write a `sint64` value, a signed, zig-zag-encoded 64-bit varint.
-   */
-  sint64(value: string | number | bigint): IBinaryWriter;
-
-  /**
-   * Write a `fixed64` value, an unsigned, fixed-length 64 bit integer.
-   */
-  fixed64(value: string | number | bigint): IBinaryWriter;
-
-  /**
-   * Write a `fixed64` value, a signed, fixed-length 64-bit integer.
-   */
-  sfixed64(value: string | number | bigint): IBinaryWriter;
-
-  /**
-   * Write a `bool` value, a variant.
-   */
-  bool(value: boolean): IBinaryWriter;
-
-  /**
-   * Write a `fixed32` value, an unsigned, fixed-length 32-bit integer.
-   */
-  fixed32(value: number): IBinaryWriter;
-
-  /**
-   * Write a `sfixed32` value, a signed, fixed-length 32-bit integer.
-   */
-  sfixed32(value: number): IBinaryWriter;
-
-  /**
-   * Write a `float` value, 32-bit floating point number.
-   */
-  float(value: number): IBinaryWriter;
-
-  /**
-   * Write a `double` value, a 64-bit floating point number.
-   */
-  double(value: number): IBinaryWriter;
-
-  /**
-   * Write a `bytes` value, length-delimited arbitrary data.
-   */
-  bytes(value: Uint8Array): IBinaryWriter;
-
-  /**
-   * Write a `string` value, length-delimited data converted to UTF-8 text.
-   */
-  string(value: string): IBinaryWriter;
-}
-
-export class BinaryWriter implements IBinaryWriter {
-  /**
-   * The bytes written so far are buf[0, pos). The buffer doubles when a write
-   * needs more room, so a message encodes into one allocation.
-   */
-  private buf: Uint8Array;
-  private view: DataView;
+/**
+ * BinaryWriter appends protobuf wire values to one growing buffer.
+ *
+ * Generated encoders call it field by field. A length-delimited value opens
+ * with fork, which marks where its body starts, and closes with join, which
+ * inserts the body's length in front of it.
+ */
+export class BinaryWriter implements Writer {
+  // The bytes written so far are buf[0, pos). The buffer doubles when a write
+  // needs more room, so a message encodes into one allocation.
+  private buf = new Uint8Array(64);
+  private view = new DataView(this.buf.buffer);
   private pos = 0;
 
-  /**
-   * Start offsets of the open forks. Join moves a fork's bytes forward to
-   * make room for its length prefix.
-   */
-  private stack: number[] = [];
-
-  /**
-   * Text encoder instance to convert UTF-8 to bytes.
-   */
-  private readonly textEncoder: TextEncoderLike;
-
-  constructor(textEncoder?: TextEncoderLike) {
-    this.textEncoder = textEncoder ?? new TextEncoder();
-    this.buf = new Uint8Array(64);
-    this.view = new DataView(this.buf.buffer);
-  }
-
-  /**
-   * Return all bytes written and reset this writer.
-   */
+  /** Return the bytes written and reset the writer. */
   finish(): Uint8Array {
     const bytes = this.buf.slice(0, this.pos);
     this.pos = 0;
-    this.stack = [];
     return bytes;
   }
 
-  /**
-   * Start a new fork for length-delimited data like a message
-   * or a packed repeated field.
-   *
-   * Must be joined later with `join()`.
-   */
-  fork(): IBinaryWriter {
-    this.stack.push(this.pos);
-    return this;
+  /** Start a length-delimited value. Pass the result to join. */
+  fork(): number {
+    return this.pos;
   }
 
-  /**
-   * Join the last fork. Write its length and bytes, then
-   * return to the previous state.
-   */
-  join(): IBinaryWriter {
-    // Measure the fork and the varint of its length.
-    const start = this.stack.pop();
-    if (start === undefined) throw new Error("invalid state, fork stack empty");
+  /** Close the length-delimited value that started at start. */
+  join(start: number): BinaryWriter {
+    // Measure the body and the varint of its length.
     const length = this.pos - start;
     let size = 1;
-    for (let rest = length >>> 7; rest; rest >>>= 7) size++;
+    for (let rest = length >>> 7; rest > 0; rest >>>= 7) {
+      size += 1;
+    }
 
-    // Move the fork's bytes forward and write the length before them.
+    // Move the body forward and write the length in front of it.
     this.reserve(size);
     this.buf.copyWithin(start + size, start, this.pos);
     this.pos += size;
     let at = start;
     let rest = length;
     while (rest > 0x7f) {
-      this.buf[at++] = (rest & 0x7f) | 0x80;
+      this.buf[at] = (rest & 0x7f) | 0x80;
+      at += 1;
       rest >>>= 7;
     }
     this.buf[at] = rest;
     return this;
   }
 
-  /**
-   * Writes a tag (field number and wire type).
-   *
-   * Equivalent to `uint32( (fieldNo << 3 | type) >>> 0 )`.
-   *
-   * Generated code should compute the tag ahead of time and call `uint32()`.
-   */
-  tag(fieldNo: number, type: WireType): IBinaryWriter {
-    return this.uint32(((fieldNo << 3) | type) >>> 0);
+  /** Write a field's tag: its number and wire type. */
+  tag(fieldNo: number, wireType: WireType): BinaryWriter {
+    return this.uint32(((fieldNo << 3) | wireType) >>> 0);
   }
 
-  /**
-   * Write a chunk of raw bytes.
-   */
-  raw(chunk: Uint8Array): IBinaryWriter {
+  /** Write raw bytes. */
+  raw(chunk: Uint8Array): BinaryWriter {
     this.reserve(chunk.length);
     this.buf.set(chunk, this.pos);
     this.pos += chunk.length;
     return this;
   }
 
-  /**
-   * Append one byte. The varint helpers write through this method.
-   */
-  push(byte: number): void {
-    if (this.pos === this.buf.length) this.reserve(1);
-    this.buf[this.pos++] = byte;
-  }
-
-  /**
-   * Write a `uint32` value, an unsigned 32 bit varint.
-   */
-  uint32(value: number): IBinaryWriter {
-    assertUInt32(value);
-
-    // write value as varint 32, inlined for speed
+  /** Write an unsigned 32-bit varint. */
+  uint32(value: number): BinaryWriter {
     this.reserve(5);
-    while (value > 0x7f) {
-      this.buf[this.pos++] = (value & 0x7f) | 0x80;
-      value = value >>> 7;
+    let rest = value >>> 0;
+    while (rest > 0x7f) {
+      this.buf[this.pos] = (rest & 0x7f) | 0x80;
+      this.pos += 1;
+      rest >>>= 7;
     }
-    this.buf[this.pos++] = value;
-
+    this.buf[this.pos] = rest;
+    this.pos += 1;
     return this;
   }
 
-  /**
-   * Write a `int32` value, a signed 32 bit varint.
-   */
-  int32(value: number): IBinaryWriter {
-    assertInt32(value);
-    varint32write(value, this);
+  /** Write a signed 32-bit varint. A negative value takes ten bytes. */
+  int32(value: number): BinaryWriter {
+    if (value < 0) {
+      this.varint64(value | 0, -1);
+    } else {
+      this.uint32(value);
+    }
     return this;
   }
 
-  /**
-   * Write a `bool` value, a variant.
-   */
-  bool(value: boolean): IBinaryWriter {
-    this.push(value ? 1 : 0);
+  /** Write a zigzag-encoded signed 32-bit varint. */
+  sint32(value: number): BinaryWriter {
+    return this.uint32((value << 1) ^ (value >> 31));
+  }
+
+  /** Write a bool as a one-byte varint. */
+  bool(value: boolean): BinaryWriter {
+    this.reserve(1);
+    this.buf[this.pos] = value ? 1 : 0;
+    this.pos += 1;
     return this;
   }
 
-  /**
-   * Write a `bytes` value, length-delimited arbitrary data.
-   */
-  bytes(value: Uint8Array): IBinaryWriter {
-    this.uint32(value.byteLength); // write length of chunk as varint
-    return this.raw(value);
-  }
-
-  /**
-   * Write a `string` value, length-delimited data converted to UTF-8 text.
-   */
-  string(value: string): IBinaryWriter {
-    let chunk = this.textEncoder.encode(value);
-    this.uint32(chunk.byteLength); // write length of chunk as varint
-    return this.raw(chunk);
-  }
-
-  /**
-   * Write a `float` value, 32-bit floating point number.
-   */
-  float(value: number): IBinaryWriter {
-    assertFloat32(value);
-    this.reserve(4);
-    this.view.setFloat32(this.pos, value, true);
-    this.pos += 4;
+  /** Write a signed 64-bit varint. */
+  int64(value: bigint): BinaryWriter {
+    this.varint64(
+      Number(BigInt.asUintN(32, value)),
+      Number(BigInt.asUintN(32, value >> 32n)),
+    );
     return this;
   }
 
-  /**
-   * Write a `double` value, a 64-bit floating point number.
-   */
-  double(value: number): IBinaryWriter {
-    this.reserve(8);
-    this.view.setFloat64(this.pos, value, true);
-    this.pos += 8;
-    return this;
+  /** Write an unsigned 64-bit varint. */
+  uint64(value: bigint): BinaryWriter {
+    return this.int64(value);
   }
 
-  /**
-   * Write a `fixed32` value, an unsigned, fixed-length 32-bit integer.
-   */
-  fixed32(value: number): IBinaryWriter {
-    assertUInt32(value);
+  /** Write a zigzag-encoded signed 64-bit varint. */
+  sint64(value: bigint): BinaryWriter {
+    return this.int64((value << 1n) ^ (value >> 63n));
+  }
+
+  /** Write an unsigned 32-bit integer in 4 bytes. */
+  fixed32(value: number): BinaryWriter {
     this.reserve(4);
     this.view.setUint32(this.pos, value, true);
     this.pos += 4;
     return this;
   }
 
-  /**
-   * Write a `sfixed32` value, a signed, fixed-length 32-bit integer.
-   */
-  sfixed32(value: number): IBinaryWriter {
-    assertInt32(value);
+  /** Write a signed 32-bit integer in 4 bytes. */
+  sfixed32(value: number): BinaryWriter {
     this.reserve(4);
     this.view.setInt32(this.pos, value, true);
     this.pos += 4;
     return this;
   }
 
-  /**
-   * Write a `sint32` value, a signed, zigzag-encoded 32-bit varint.
-   */
-  sint32(value: number): IBinaryWriter {
-    assertInt32(value);
-    // zigzag encode
-    value = ((value << 1) ^ (value >> 31)) >>> 0;
-    varint32write(value, this);
-    return this;
-  }
-
-  /**
-   * Write a `fixed64` value, a signed, fixed-length 64-bit integer.
-   */
-  sfixed64(value: string | number | bigint): IBinaryWriter {
-    const tc = protoInt64.enc(value);
-    return this.int64Bits(tc.lo, tc.hi);
-  }
-
-  /**
-   * Write a `fixed64` value, an unsigned, fixed-length 64 bit integer.
-   */
-  fixed64(value: string | number | bigint): IBinaryWriter {
-    const tc = protoInt64.uEnc(value);
-    return this.int64Bits(tc.lo, tc.hi);
-  }
-
-  /**
-   * Write a `int64` value, a signed 64-bit varint.
-   */
-  int64(value: string | number | bigint): IBinaryWriter {
-    let tc = protoInt64.enc(value);
-    varint64write(tc.lo, tc.hi, this);
-    return this;
-  }
-
-  /**
-   * Write a `sint64` value, a signed, zig-zag-encoded 64-bit varint.
-   */
-  sint64(value: string | number | bigint): IBinaryWriter {
-    let tc = protoInt64.enc(value),
-      // zigzag encode
-      sign = tc.hi >> 31,
-      lo = (tc.lo << 1) ^ sign,
-      hi = ((tc.hi << 1) | (tc.lo >>> 31)) ^ sign;
-    varint64write(lo, hi, this);
-    return this;
-  }
-
-  /**
-   * Write a `uint64` value, an unsigned 64-bit varint.
-   */
-  uint64(value: string | number | bigint): IBinaryWriter {
-    let tc = protoInt64.uEnc(value);
-    varint64write(tc.lo, tc.hi, this);
-    return this;
-  }
-
-  /**
-   * Write a fixed-length 64-bit integer from its low and high words.
-   */
-  private int64Bits(lo: number, hi: number): IBinaryWriter {
+  /** Write an unsigned 64-bit integer in 8 bytes. */
+  fixed64(value: bigint): BinaryWriter {
     this.reserve(8);
-    this.view.setInt32(this.pos, lo, true);
-    this.view.setInt32(this.pos + 4, hi, true);
+    this.view.setBigUint64(this.pos, BigInt.asUintN(64, value), true);
     this.pos += 8;
     return this;
   }
 
-  /**
-   * Grow the buffer, doubling it, until n more bytes fit.
-   */
+  /** Write a signed 64-bit integer in 8 bytes. */
+  sfixed64(value: bigint): BinaryWriter {
+    this.reserve(8);
+    this.view.setBigInt64(this.pos, BigInt.asIntN(64, value), true);
+    this.pos += 8;
+    return this;
+  }
+
+  /** Write a 32-bit float. */
+  float(value: number): BinaryWriter {
+    this.reserve(4);
+    this.view.setFloat32(this.pos, value, true);
+    this.pos += 4;
+    return this;
+  }
+
+  /** Write a 64-bit float. */
+  double(value: number): BinaryWriter {
+    this.reserve(8);
+    this.view.setFloat64(this.pos, value, true);
+    this.pos += 8;
+    return this;
+  }
+
+  /** Write length-delimited bytes. */
+  bytes(value: Uint8Array): BinaryWriter {
+    this.uint32(value.length);
+    return this.raw(value);
+  }
+
+  /** Write a length-delimited UTF-8 string. */
+  string(value: string): BinaryWriter {
+    return this.bytes(encoder.encode(value));
+  }
+
+  // varint64 writes the 64-bit varint whose low and high words are lo and hi.
+  private varint64(lo: number, hi: number): void {
+    this.reserve(10);
+    let low = lo >>> 0;
+    let high = hi >>> 0;
+    while (high > 0 || low > 0x7f) {
+      this.buf[this.pos] = (low & 0x7f) | 0x80;
+      this.pos += 1;
+      low = ((low >>> 7) | (high << 25)) >>> 0;
+      high >>>= 7;
+    }
+    this.buf[this.pos] = low;
+    this.pos += 1;
+  }
+
+  // reserve grows the buffer, doubling it, until n more bytes fit.
   private reserve(n: number): void {
     const need = this.pos + n;
-    if (need <= this.buf.length) return;
+    if (need <= this.buf.length) {
+      return;
+    }
     let size = this.buf.length * 2;
-    while (size < need) size *= 2;
+    while (size < need) {
+      size *= 2;
+    }
     const buf = new Uint8Array(size);
     buf.set(this.buf.subarray(0, this.pos));
     this.buf = buf;
@@ -560,213 +287,444 @@ export class BinaryWriter implements IBinaryWriter {
   }
 }
 
-export class BinaryReader implements IBinaryReader {
-  /**
-   * Current position.
-   */
-  pos: number;
+// overLimit is thrown by SizeWriter once the count passes its limit.
+const overLimit = new Error("size limit exceeded");
 
-  /**
-   * Number of bytes available in this reader.
-   */
+/**
+ * SizeWriter counts the bytes an encoder would write without writing them.
+ *
+ * Once the count passes limit, the next write throws, so sizeOf stops a large
+ * message early.
+ */
+class SizeWriter implements Writer {
+  /** Number of bytes counted so far. */
+  size = 0;
+
+  private readonly limit: number;
+
+  constructor(limit: number) {
+    this.limit = limit;
+  }
+
+  fork(): number {
+    return this.size;
+  }
+
+  join(start: number): SizeWriter {
+    return this.add(varintSize(this.size - start));
+  }
+
+  tag(fieldNo: number, wireType: WireType): SizeWriter {
+    return this.add(varintSize(((fieldNo << 3) | wireType) >>> 0));
+  }
+
+  raw(chunk: Uint8Array): SizeWriter {
+    return this.add(chunk.length);
+  }
+
+  uint32(value: number): SizeWriter {
+    return this.add(varintSize(value >>> 0));
+  }
+
+  int32(value: number): SizeWriter {
+    return this.add(value < 0 ? 10 : varintSize(value));
+  }
+
+  sint32(value: number): SizeWriter {
+    return this.uint32((value << 1) ^ (value >> 31));
+  }
+
+  bool(): SizeWriter {
+    return this.add(1);
+  }
+
+  int64(value: bigint): SizeWriter {
+    const hi = Number(BigInt.asUintN(32, value >> 32n));
+    if (hi === 0) {
+      return this.add(varintSize(Number(BigInt.asUintN(32, value))));
+    }
+    // Each byte past the first 28 bits carries 7 more of the high word.
+    return this.add(4 + varintSize(hi * 16 + 15));
+  }
+
+  uint64(value: bigint): SizeWriter {
+    return this.int64(value);
+  }
+
+  sint64(value: bigint): SizeWriter {
+    return this.int64((value << 1n) ^ (value >> 63n));
+  }
+
+  fixed32(): SizeWriter {
+    return this.add(4);
+  }
+
+  sfixed32(): SizeWriter {
+    return this.add(4);
+  }
+
+  fixed64(): SizeWriter {
+    return this.add(8);
+  }
+
+  sfixed64(): SizeWriter {
+    return this.add(8);
+  }
+
+  float(): SizeWriter {
+    return this.add(4);
+  }
+
+  double(): SizeWriter {
+    return this.add(8);
+  }
+
+  bytes(value: Uint8Array): SizeWriter {
+    return this.add(varintSize(value.length) + value.length);
+  }
+
+  string(value: string): SizeWriter {
+    const length = utf8Length(value);
+    return this.add(varintSize(length) + length);
+  }
+
+  private add(n: number): SizeWriter {
+    this.size += n;
+    if (this.size > this.limit) {
+      throw overLimit;
+    }
+    return this;
+  }
+}
+
+// varintSize returns the length of the varint of an unsigned 32-bit value, or
+// of a larger value below 2^53.
+function varintSize(value: number): number {
+  let size = 1;
+  for (let rest = value; rest > 0x7f; rest = Math.floor(rest / 128)) {
+    size += 1;
+  }
+  return size;
+}
+
+// utf8Length returns the length of value encoded as UTF-8. A lone surrogate
+// counts as the three bytes of the replacement character TextEncoder writes.
+function utf8Length(value: string): number {
+  let length = 0;
+  for (let i = 0; i < value.length; i++) {
+    const c = value.charCodeAt(i);
+    if (c < 0x80) {
+      length += 1;
+    } else if (c < 0x800) {
+      length += 2;
+    } else if (c >= 0xd800 && c < 0xdc00 && i + 1 < value.length) {
+      const next = value.charCodeAt(i + 1);
+      if (next >= 0xdc00 && next < 0xe000) {
+        length += 4;
+        i += 1;
+      } else {
+        length += 3;
+      }
+    } else {
+      length += 3;
+    }
+  }
+  return length;
+}
+
+/**
+ * sizeOf returns the encoded size of message m, without encoding it.
+ *
+ * With a limit, it stops counting once the size passes the limit and returns
+ * a number above it, so checking a bound costs at most limit bytes of work.
+ */
+export function sizeOf<T>(
+  type: { encode(m: T, w: Writer): void },
+  m: T,
+  limit?: number,
+): number {
+  const w = new SizeWriter(limit ?? Infinity);
+  try {
+    type.encode(m, w);
+  } catch (e) {
+    if (e !== overLimit) {
+      throw e;
+    }
+  }
+  return w.size;
+}
+
+/**
+ * BinaryReader reads protobuf wire values from a byte array.
+ *
+ * Generated decoders read a tag, switch on its field number, and read the
+ * value with the method for the field's type. Bytes values alias the input.
+ */
+export class BinaryReader {
+  /** Offset of the next byte to read. */
+  pos = 0;
+
+  /** Number of bytes in the input. */
   readonly len: number;
 
   private readonly buf: Uint8Array;
   private readonly view: DataView;
-  private readonly textDecoder: TextDecoderLike;
-  private fatalTextDecoder: TextDecoderLike | undefined;
 
-  constructor(
-    buf: Uint8Array,
-    textDecoder?: TextDecoderLike,
-    fatalTextDecoder?: TextDecoderLike,
-  ) {
+  constructor(buf: Uint8Array) {
     this.buf = buf;
     this.len = buf.length;
-    this.pos = 0;
     this.view = new DataView(buf.buffer, buf.byteOffset, buf.byteLength);
-    this.textDecoder = textDecoder ?? new TextDecoder();
-    this.fatalTextDecoder = fatalTextDecoder;
   }
 
   /**
-   * Reads a tag - field number and wire type.
+   * Read a tag. The field number is tag >>> 3 and the wire type is tag & 7.
+   * Field number 0 and wire types 6 and 7 do not exist, so they throw.
    */
-  tag(): [number, WireType] {
-    let tag = this.uint32(),
-      fieldNo = tag >>> 3,
-      wireType = tag & 7;
-    if (fieldNo <= 0 || wireType < 0 || wireType > 5)
-      throw new Error(
-        "illegal tag: field no " + fieldNo + " wire type " + wireType,
-      );
-    return [fieldNo, wireType];
+  tag(): number {
+    const t = this.uint32();
+    if (t >>> 3 === 0 || (t & 7) > 5) {
+      throw new Error(`illegal tag: field no ${t >>> 3} wire type ${t & 7}`);
+    }
+    return t;
   }
 
   /**
-   * Skip one element on the wire and return the skipped data.
-   * Supports WireType.StartGroup since v2.0.0-alpha.23.
+   * Read a length prefix and return the offset where the delimited value
+   * ends.
    */
-  skip(wireType: WireType): Uint8Array {
-    let start = this.pos;
+  delimited(): number {
+    const end = this.uint32() + this.pos;
+    if (end > this.len) {
+      throw new RangeError("premature EOF");
+    }
+    return end;
+  }
+
+  /**
+   * Return the offset where a repeated scalar field's values end. A packed
+   * field holds a delimited run; an unpacked one holds one value, and since
+   * every value takes at least one byte, the offset one past the current
+   * position ends the run after it.
+   */
+  run(tag: number): number {
+    return (tag & 7) === WireType.LengthDelimited ?
+        this.delimited()
+      : this.pos + 1;
+  }
+
+  /**
+   * Skip the value of the field with the given tag. A group is skipped through
+   * its end tag.
+   */
+  skip(tag: number): void {
+    const wireType = tag & 7;
     switch (wireType) {
       case WireType.Varint:
-        while (this.buf[this.pos++] & 0x80) {
-          // ignore
+        while ((this.buf[this.pos] & 0x80) !== 0) {
+          this.pos += 1;
         }
+        this.pos += 1;
         break;
-      // eslint-disable-next-line
-      // @ts-ignore TS7029: Fallthrough case in switch
       case WireType.Bit64:
-        this.pos += 4;
-      // eslint-disable-next-line
-      // @ts-ignore TS7029: Fallthrough case in switch
-      case WireType.Bit32:
-        this.pos += 4;
+        this.pos += 8;
         break;
       case WireType.LengthDelimited:
-        let len = this.uint32();
-        this.pos += len;
+        this.pos = this.delimited();
         break;
       case WireType.StartGroup:
-        // TODO check for matching field numbers in StartGroup / EndGroup tags
-        let t: WireType;
-        while ((t = this.tag()[1]) !== WireType.EndGroup) {
+        for (;;) {
+          const t = this.tag();
+          if ((t & 7) === WireType.EndGroup) {
+            break;
+          }
           this.skip(t);
         }
         break;
+      case WireType.Bit32:
+        this.pos += 4;
+        break;
       default:
-        throw new Error("cant skip wire type " + wireType);
+        throw new Error("cannot skip wire type " + String(wireType));
     }
-    this.assertBounds();
-    return this.buf.subarray(start, this.pos);
-  }
-
-  protected varint64 = varint64read as () => [number, number]; // dirty cast for `this`
-
-  /**
-   * Throws error if position in byte array is out of range.
-   */
-  protected assertBounds(): void {
-    if (this.pos > this.len) throw new RangeError("premature EOF");
+    if (this.pos > this.len) {
+      throw new RangeError("premature EOF");
+    }
   }
 
   /**
-   * Read a `uint32` field, an unsigned 32 bit varint.
+   * Read one delimited map entry and return its key and value. A missing key
+   * or value keeps k or v, the zero values of the map's types.
    */
-  uint32 = varint32read as IBinaryReader["uint32"]; // dirty cast for `this` and access to protected `buf`
+  entry<K, V>(
+    key: (r: BinaryReader) => K,
+    value: (r: BinaryReader) => V,
+    k: K,
+    v: V,
+  ): [K, V] {
+    const end = this.delimited();
+    while (this.pos < end) {
+      const t = this.tag();
+      switch (t >>> 3) {
+        case 1:
+          k = key(this);
+          break;
+        case 2:
+          v = value(this);
+          break;
+        default:
+          this.skip(t);
+      }
+    }
+    return [k, v];
+  }
 
-  /**
-   * Read a `int32` field, a signed 32 bit varint.
-   */
+  /** Read an unsigned 32-bit varint, keeping the low 32 bits. */
+  uint32(): number {
+    let value = 0;
+    for (let shift = 0; shift < 64; shift += 7) {
+      if (this.pos >= this.len) {
+        throw new RangeError("premature EOF");
+      }
+      const b = this.buf[this.pos];
+      this.pos += 1;
+      if (shift < 32) {
+        value |= (b & 0x7f) << shift;
+      }
+      if (b < 0x80) {
+        return value >>> 0;
+      }
+    }
+    throw new Error("invalid varint");
+  }
+
+  /** Read a signed 32-bit varint. */
   int32(): number {
     return this.uint32() | 0;
   }
 
-  /**
-   * Read a `sint32` field, a signed, zigzag-encoded 32-bit varint.
-   */
+  /** Read a zigzag-encoded signed 32-bit varint. */
   sint32(): number {
-    let zze = this.uint32();
-    // decode zigzag
-    return (zze >>> 1) ^ -(zze & 1);
+    const zz = this.uint32();
+    return (zz >>> 1) ^ -(zz & 1);
   }
 
-  /**
-   * Read a `int64` field, a signed 64-bit varint.
-   */
-  int64(): bigint | string {
-    return protoInt64.dec(...this.varint64());
-  }
-
-  /**
-   * Read a `uint64` field, an unsigned 64-bit varint.
-   */
-  uint64(): bigint | string {
-    return protoInt64.uDec(...this.varint64());
-  }
-
-  /**
-   * Read a `sint64` field, a signed, zig-zag-encoded 64-bit varint.
-   */
-  sint64(): bigint | string {
-    let [lo, hi] = this.varint64();
-    // decode zig zag
-    let s = -(lo & 1);
-    lo = ((lo >>> 1) | ((hi & 1) << 31)) ^ s;
-    hi = (hi >>> 1) ^ s;
-    return protoInt64.dec(lo, hi);
-  }
-
-  /**
-   * Read a `bool` field, a variant.
-   */
+  /** Read a bool varint. */
   bool(): boolean {
-    let [lo, hi] = this.varint64();
-    return lo !== 0 || hi !== 0;
+    let bits = 0;
+    for (;;) {
+      if (this.pos >= this.len) {
+        throw new RangeError("premature EOF");
+      }
+      const b = this.buf[this.pos];
+      this.pos += 1;
+      bits |= b & 0x7f;
+      if (b < 0x80) {
+        return bits !== 0;
+      }
+    }
   }
 
-  /**
-   * Read a `fixed32` field, an unsigned, fixed-length 32-bit integer.
-   */
+  /** Read a signed 64-bit varint. */
+  int64(): bigint {
+    return BigInt.asIntN(64, this.uint64());
+  }
+
+  /** Read an unsigned 64-bit varint. */
+  uint64(): bigint {
+    // Gather the low and high words in 32-bit arithmetic.
+    let lo = 0;
+    let hi = 0;
+    for (let shift = 0; shift < 70; shift += 7) {
+      if (this.pos >= this.len) {
+        throw new RangeError("premature EOF");
+      }
+      const b = this.buf[this.pos];
+      this.pos += 1;
+      const bits = b & 0x7f;
+      if (shift < 28) {
+        lo |= bits << shift;
+      } else if (shift === 28) {
+        lo |= bits << 28;
+        hi |= bits >>> 4;
+      } else {
+        hi |= bits << (shift - 32);
+      }
+      if (b < 0x80) {
+        return (BigInt(hi >>> 0) << 32n) | BigInt(lo >>> 0);
+      }
+    }
+    throw new Error("invalid varint");
+  }
+
+  /** Read a zigzag-encoded signed 64-bit varint. */
+  sint64(): bigint {
+    const zz = this.uint64();
+    return (zz >> 1n) ^ -(zz & 1n);
+  }
+
+  /** Read an unsigned 32-bit integer from 4 bytes. */
   fixed32(): number {
-    return this.view.getUint32((this.pos += 4) - 4, true);
+    const value = this.view.getUint32(this.pos, true);
+    this.pos += 4;
+    return value;
   }
 
-  /**
-   * Read a `sfixed32` field, a signed, fixed-length 32-bit integer.
-   */
+  /** Read a signed 32-bit integer from 4 bytes. */
   sfixed32(): number {
-    return this.view.getInt32((this.pos += 4) - 4, true);
+    const value = this.view.getInt32(this.pos, true);
+    this.pos += 4;
+    return value;
   }
 
-  /**
-   * Read a `fixed64` field, an unsigned, fixed-length 64 bit integer.
-   */
-  fixed64(): bigint | string {
-    return protoInt64.uDec(this.sfixed32(), this.sfixed32());
+  /** Read an unsigned 64-bit integer from 8 bytes. */
+  fixed64(): bigint {
+    const value = this.view.getBigUint64(this.pos, true);
+    this.pos += 8;
+    return value;
   }
 
-  /**
-   * Read a `fixed64` field, a signed, fixed-length 64-bit integer.
-   */
-  sfixed64(): bigint | string {
-    return protoInt64.dec(this.sfixed32(), this.sfixed32());
+  /** Read a signed 64-bit integer from 8 bytes. */
+  sfixed64(): bigint {
+    const value = this.view.getBigInt64(this.pos, true);
+    this.pos += 8;
+    return value;
   }
 
-  /**
-   * Read a `float` field, 32-bit floating point number.
-   */
+  /** Read a 32-bit float. */
   float(): number {
-    return this.view.getFloat32((this.pos += 4) - 4, true);
+    const value = this.view.getFloat32(this.pos, true);
+    this.pos += 4;
+    return value;
   }
 
-  /**
-   * Read a `double` field, a 64-bit floating point number.
-   */
+  /** Read a 64-bit float. */
   double(): number {
-    return this.view.getFloat64((this.pos += 8) - 8, true);
+    const value = this.view.getFloat64(this.pos, true);
+    this.pos += 8;
+    return value;
   }
 
-  /**
-   * Read a `bytes` field, length-delimited arbitrary data.
-   */
+  /** Read length-delimited bytes, aliasing the input. */
   bytes(): Uint8Array {
-    let len = this.uint32(),
-      start = this.pos;
-    this.pos += len;
-    this.assertBounds();
-    return this.buf.subarray(start, start + len);
+    const length = this.uint32();
+    const start = this.pos;
+    this.pos += length;
+    if (this.pos > this.len) {
+      throw new RangeError("premature EOF");
+    }
+    return this.buf.subarray(start, this.pos);
   }
 
   /**
-   * Read a `string` field, length-delimited data converted to UTF-8 text.
+   * Read a length-delimited UTF-8 string, replacing invalid sequences with
+   * U+FFFD.
    */
-  string(verifyUtf8 = false): string {
-    const decoder =
-      verifyUtf8 ?
-        (this.fatalTextDecoder ??= new TextDecoder("utf-8", { fatal: true }))
-      : this.textDecoder;
+  string(): string {
     return decoder.decode(this.bytes());
+  }
+
+  /** Read a length-delimited string, and throw if it is not valid UTF-8. */
+  utf8(): string {
+    return strictDecoder.decode(this.bytes());
   }
 }

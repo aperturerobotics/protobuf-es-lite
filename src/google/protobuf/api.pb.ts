@@ -34,11 +34,86 @@
 
 import type { Syntax } from "./type.pb.js";
 import { Option, Syntax_Enum } from "./type.pb.js";
+import { SourceContext } from "./source_context.pb.js";
 import type { MessageType } from "../../message.js";
 import { createMessageType } from "../../message.js";
-import { ScalarType } from "../../scalar.js";
-import type { PartialFieldInfo } from "../../field.js";
-import { SourceContext } from "./source_context.pb.js";
+
+/**
+ * Api is a light-weight descriptor for an API Interface.
+ *
+ * Interfaces are also described as "protocol buffer services" in some contexts,
+ * such as by the "service" keyword in a .proto file, but they are different
+ * from API Services, which represent a concrete implementation of an interface
+ * as opposed to simply a description of methods and bindings. They are also
+ * sometimes simply referred to as "APIs" in other contexts, such as the name of
+ * this message itself. See https://cloud.google.com/apis/design/glossary for
+ * detailed terminology.
+ *
+ * @generated from message google.protobuf.Api
+ */
+export interface Api {
+  /**
+   * The fully qualified name of this interface, including package name
+   * followed by the interface's simple name.
+   */
+  name?: string;
+  /**
+   * The methods of this interface, in unspecified order.
+   */
+  methods?: Method[];
+  /**
+   * Any metadata attached to the interface.
+   */
+  options?: Option[];
+  /**
+   * A version string for this interface. If specified, must have the form
+   * `major-version.minor-version`, as in `1.10`. If the minor version is
+   * omitted, it defaults to zero. If the entire version field is empty, the
+   * major version is derived from the package name, as outlined below. If the
+   * field is not empty, the version in the package name will be verified to be
+   * consistent with what is provided here.
+   *
+   * The versioning schema uses [semantic
+   * versioning](http://semver.org) where the major version number
+   * indicates a breaking change and the minor version an additive,
+   * non-breaking change. Both version numbers are signals to users
+   * what to expect from different versions, and should be carefully
+   * chosen based on the product plan.
+   *
+   * The major version is also reflected in the package name of the
+   * interface, which must end in `v<major-version>`, as in
+   * `google.feature.v1`. For major versions 0 and 1, the suffix can
+   * be omitted. Zero major versions must only be used for
+   * experimental, non-GA interfaces.
+   */
+  version?: string;
+  /**
+   * Source context for the protocol buffer service represented by this
+   * message.
+   */
+  sourceContext?: SourceContext;
+  /**
+   * Included interfaces. See [Mixin][].
+   */
+  mixins?: Mixin[];
+  /**
+   * The source syntax of the service.
+   */
+  syntax?: Syntax;
+}
+
+export const Api: MessageType<Api> = /* @__PURE__ */ createMessageType<Api>(
+  "google.protobuf.Api",
+  () => [
+    [1, "name", 9],
+    [2, "methods", 11, 1, Method.codec],
+    [3, "options", 11, 1, Option.codec],
+    [4, "version", 9],
+    [5, "source_context", 11, 0, SourceContext.codec],
+    [6, "mixins", 11, 1, Mixin.codec],
+    [7, "syntax", 14, 0, Syntax_Enum],
+  ],
+);
 
 /**
  * Method represents a method of an API interface.
@@ -48,66 +123,44 @@ import { SourceContext } from "./source_context.pb.js";
 export interface Method {
   /**
    * The simple name of this method.
-   *
-   * @generated from field: string name = 1;
    */
   name?: string;
   /**
    * A URL of the input message type.
-   *
-   * @generated from field: string request_type_url = 2;
    */
   requestTypeUrl?: string;
   /**
    * If true, the request is streamed.
-   *
-   * @generated from field: bool request_streaming = 3;
    */
   requestStreaming?: boolean;
   /**
    * The URL of the output message type.
-   *
-   * @generated from field: string response_type_url = 4;
    */
   responseTypeUrl?: string;
   /**
    * If true, the response is streamed.
-   *
-   * @generated from field: bool response_streaming = 5;
    */
   responseStreaming?: boolean;
   /**
    * Any metadata attached to the method.
-   *
-   * @generated from field: repeated google.protobuf.Option options = 6;
    */
   options?: Option[];
   /**
    * The source syntax of this method.
-   *
-   * @generated from field: google.protobuf.Syntax syntax = 7;
    */
   syntax?: Syntax;
 }
 
-export const Method: MessageType<Method> = /* @__PURE__ */ createMessageType({
-  typeName: "google.protobuf.Method",
-  fields: [
-    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-    { no: 2, name: "request_type_url", kind: "scalar", T: ScalarType.STRING },
-    { no: 3, name: "request_streaming", kind: "scalar", T: ScalarType.BOOL },
-    { no: 4, name: "response_type_url", kind: "scalar", T: ScalarType.STRING },
-    { no: 5, name: "response_streaming", kind: "scalar", T: ScalarType.BOOL },
-    {
-      no: 6,
-      name: "options",
-      kind: "message",
-      T: () => Option,
-      repeated: true,
-    },
-    { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
-  ] satisfies readonly PartialFieldInfo[],
-});
+export const Method: MessageType<Method> =
+  /* @__PURE__ */ createMessageType<Method>("google.protobuf.Method", () => [
+    [1, "name", 9],
+    [2, "request_type_url", 9],
+    [3, "request_streaming", 8],
+    [4, "response_type_url", 9],
+    [5, "response_streaming", 8],
+    [6, "options", 11, 1, Option.codec],
+    [7, "syntax", 14, 0, Syntax_Enum],
+  ]);
 
 /**
  * Declares an API Interface to be included in this interface. The including
@@ -194,121 +247,17 @@ export const Method: MessageType<Method> = /* @__PURE__ */ createMessageType({
 export interface Mixin {
   /**
    * The fully qualified name of the interface which is included.
-   *
-   * @generated from field: string name = 1;
    */
   name?: string;
   /**
    * If non-empty specifies a path under which inherited HTTP paths
    * are rooted.
-   *
-   * @generated from field: string root = 2;
    */
   root?: string;
 }
 
-export const Mixin: MessageType<Mixin> = /* @__PURE__ */ createMessageType({
-  typeName: "google.protobuf.Mixin",
-  fields: [
-    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-    { no: 2, name: "root", kind: "scalar", T: ScalarType.STRING },
-  ] satisfies readonly PartialFieldInfo[],
-});
-
-/**
- * Api is a light-weight descriptor for an API Interface.
- *
- * Interfaces are also described as "protocol buffer services" in some contexts,
- * such as by the "service" keyword in a .proto file, but they are different
- * from API Services, which represent a concrete implementation of an interface
- * as opposed to simply a description of methods and bindings. They are also
- * sometimes simply referred to as "APIs" in other contexts, such as the name of
- * this message itself. See https://cloud.google.com/apis/design/glossary for
- * detailed terminology.
- *
- * @generated from message google.protobuf.Api
- */
-export interface Api {
-  /**
-   * The fully qualified name of this interface, including package name
-   * followed by the interface's simple name.
-   *
-   * @generated from field: string name = 1;
-   */
-  name?: string;
-  /**
-   * The methods of this interface, in unspecified order.
-   *
-   * @generated from field: repeated google.protobuf.Method methods = 2;
-   */
-  methods?: Method[];
-  /**
-   * Any metadata attached to the interface.
-   *
-   * @generated from field: repeated google.protobuf.Option options = 3;
-   */
-  options?: Option[];
-  /**
-   * A version string for this interface. If specified, must have the form
-   * `major-version.minor-version`, as in `1.10`. If the minor version is
-   * omitted, it defaults to zero. If the entire version field is empty, the
-   * major version is derived from the package name, as outlined below. If the
-   * field is not empty, the version in the package name will be verified to be
-   * consistent with what is provided here.
-   *
-   * The versioning schema uses [semantic
-   * versioning](http://semver.org) where the major version number
-   * indicates a breaking change and the minor version an additive,
-   * non-breaking change. Both version numbers are signals to users
-   * what to expect from different versions, and should be carefully
-   * chosen based on the product plan.
-   *
-   * The major version is also reflected in the package name of the
-   * interface, which must end in `v<major-version>`, as in
-   * `google.feature.v1`. For major versions 0 and 1, the suffix can
-   * be omitted. Zero major versions must only be used for
-   * experimental, non-GA interfaces.
-   *
-   *
-   * @generated from field: string version = 4;
-   */
-  version?: string;
-  /**
-   * Source context for the protocol buffer service represented by this
-   * message.
-   *
-   * @generated from field: google.protobuf.SourceContext source_context = 5;
-   */
-  sourceContext?: SourceContext;
-  /**
-   * Included interfaces. See [Mixin][].
-   *
-   * @generated from field: repeated google.protobuf.Mixin mixins = 6;
-   */
-  mixins?: Mixin[];
-  /**
-   * The source syntax of the service.
-   *
-   * @generated from field: google.protobuf.Syntax syntax = 7;
-   */
-  syntax?: Syntax;
-}
-
-export const Api: MessageType<Api> = /* @__PURE__ */ createMessageType({
-  typeName: "google.protobuf.Api",
-  fields: [
-    { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING },
-    { no: 2, name: "methods", kind: "message", T: Method, repeated: true },
-    {
-      no: 3,
-      name: "options",
-      kind: "message",
-      T: () => Option,
-      repeated: true,
-    },
-    { no: 4, name: "version", kind: "scalar", T: ScalarType.STRING },
-    { no: 5, name: "source_context", kind: "message", T: () => SourceContext },
-    { no: 6, name: "mixins", kind: "message", T: Mixin, repeated: true },
-    { no: 7, name: "syntax", kind: "enum", T: Syntax_Enum },
-  ] satisfies readonly PartialFieldInfo[],
-});
+export const Mixin: MessageType<Mixin> =
+  /* @__PURE__ */ createMessageType<Mixin>("google.protobuf.Mixin", () => [
+    [1, "name", 9],
+    [2, "root", 9],
+  ]);

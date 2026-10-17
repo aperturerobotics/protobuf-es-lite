@@ -183,21 +183,13 @@ function unescapeBytesDefaultValue(str: string): Uint8Array | false {
               if (t === false) {
                 return false;
               }
-              const tc = protoInt64.uEnc(s + t);
               const chunk = new Uint8Array(8);
-              const view = new DataView(chunk.buffer);
-              view.setInt32(0, tc.lo, true);
-              view.setInt32(4, tc.hi, true);
-              b.push(
-                chunk[0],
-                chunk[1],
-                chunk[2],
-                chunk[3],
-                chunk[4],
-                chunk[5],
-                chunk[6],
-                chunk[7],
+              new DataView(chunk.buffer).setBigUint64(
+                0,
+                protoInt64.uParse(s + t),
+                true,
               );
+              b.push(...chunk);
               break;
             }
           }

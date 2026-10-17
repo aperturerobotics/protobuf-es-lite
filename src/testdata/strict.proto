@@ -1,0 +1,11 @@
+// strict is an editions fixture: its strings verify UTF-8 unless a field
+// turns verification off.
+edition = "2023";
+
+package strict;
+
+message Strict {
+  string strict = 1;
+  string loose = 2 [features.utf8_validation = NONE];
+  map<string, string> labels = 3;
+}

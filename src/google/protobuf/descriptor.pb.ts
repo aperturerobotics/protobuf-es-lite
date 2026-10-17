@@ -43,8 +43,6 @@
 import { createEnumType } from "../../enum.js";
 import type { MessageType } from "../../message.js";
 import { createMessageType } from "../../message.js";
-import { ScalarType } from "../../scalar.js";
-import type { PartialFieldInfo } from "../../field.js";
 
 /**
  * The full set of known editions.
@@ -54,8 +52,6 @@ import type { PartialFieldInfo } from "../../field.js";
 export enum Edition {
   /**
    * A placeholder for an unknown edition value.
-   *
-   * @generated from enum value: EDITION_UNKNOWN = 0;
    */
   EDITION_UNKNOWN = 0,
 
@@ -64,72 +60,271 @@ export enum Edition {
    * distinct editions.  These can't be used to specify the edition of proto
    * files, but feature definitions must supply proto2/proto3 defaults for
    * backwards compatibility.
-   *
-   * @generated from enum value: EDITION_PROTO2 = 998;
    */
   EDITION_PROTO2 = 998,
-
-  /**
-   * @generated from enum value: EDITION_PROTO3 = 999;
-   */
   EDITION_PROTO3 = 999,
 
   /**
    * Editions that have been released.  The specific values are arbitrary and
    * should not be depended on, but they will always be time-ordered for easy
    * comparison.
-   *
-   * @generated from enum value: EDITION_2023 = 1000;
    */
   EDITION_2023 = 1000,
-
-  /**
-   * @generated from enum value: EDITION_2024 = 1001;
-   */
   EDITION_2024 = 1001,
 
   /**
    * Placeholder editions for testing feature resolution.  These should not be
    * used or relyed on outside of tests.
-   *
-   * @generated from enum value: EDITION_1_TEST_ONLY = 1;
    */
   EDITION_1_TEST_ONLY = 1,
-
-  /**
-   * @generated from enum value: EDITION_2_TEST_ONLY = 2;
-   */
   EDITION_2_TEST_ONLY = 2,
-
-  /**
-   * @generated from enum value: EDITION_99997_TEST_ONLY = 99997;
-   */
   EDITION_99997_TEST_ONLY = 99997,
-
-  /**
-   * @generated from enum value: EDITION_99998_TEST_ONLY = 99998;
-   */
   EDITION_99998_TEST_ONLY = 99998,
-
-  /**
-   * @generated from enum value: EDITION_99999_TEST_ONLY = 99999;
-   */
   EDITION_99999_TEST_ONLY = 99999,
 
   /**
    * Placeholder for specifying unbounded edition support.  This should only
    * ever be used by plugins that can expect to never require any changes to
    * support a new edition.
-   *
-   * @generated from enum value: EDITION_MAX = 2147483647;
    */
   EDITION_MAX = 2147483647,
 }
 
 export const Edition_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.Edition",
-  Edition,
+  [
+    [0, "EDITION_UNKNOWN"],
+    [998, "EDITION_PROTO2"],
+    [999, "EDITION_PROTO3"],
+    [1000, "EDITION_2023"],
+    [1001, "EDITION_2024"],
+    [1, "EDITION_1_TEST_ONLY"],
+    [2, "EDITION_2_TEST_ONLY"],
+    [99997, "EDITION_99997_TEST_ONLY"],
+    [99998, "EDITION_99998_TEST_ONLY"],
+    [99999, "EDITION_99999_TEST_ONLY"],
+    [2147483647, "EDITION_MAX"],
+  ],
 );
+
+/**
+ * The protocol compiler can output a FileDescriptorSet containing the .proto
+ * files it parses.
+ *
+ * @generated from message google.protobuf.FileDescriptorSet
+ */
+export interface FileDescriptorSet {
+  file?: FileDescriptorProto[];
+}
+
+export const FileDescriptorSet: MessageType<FileDescriptorSet> =
+  /* @__PURE__ */ createMessageType<FileDescriptorSet>(
+    "google.protobuf.FileDescriptorSet",
+    () => [[1, "file", 11, 1, FileDescriptorProto.codec]],
+  );
+
+/**
+ * Describes a complete .proto file.
+ *
+ * @generated from message google.protobuf.FileDescriptorProto
+ */
+export interface FileDescriptorProto {
+  /**
+   * file name, relative to root of source tree
+   */
+  name?: string;
+  /**
+   * e.g. "foo", "foo.bar", etc.
+   */
+  package?: string;
+  /**
+   * Names of files imported by this file.
+   */
+  dependency?: string[];
+  /**
+   * Indexes of the public imported files in the dependency list above.
+   */
+  publicDependency?: number[];
+  /**
+   * Indexes of the weak imported files in the dependency list.
+   * For Google-internal migration only. Do not use.
+   */
+  weakDependency?: number[];
+  /**
+   * All top-level definitions in this file.
+   */
+  messageType?: DescriptorProto[];
+  enumType?: EnumDescriptorProto[];
+  service?: ServiceDescriptorProto[];
+  extension?: FieldDescriptorProto[];
+  options?: FileOptions;
+  /**
+   * This field contains optional information about the original source code.
+   * You may safely remove this entire field without harming runtime
+   * functionality of the descriptors -- the information is needed only by
+   * development tools.
+   */
+  sourceCodeInfo?: SourceCodeInfo;
+  /**
+   * The syntax of the proto file.
+   * The supported values are "proto2", "proto3", and "editions".
+   *
+   * If `edition` is present, this value must be "editions".
+   */
+  syntax?: string;
+  /**
+   * The edition of the proto file.
+   */
+  edition?: Edition;
+}
+
+export const FileDescriptorProto: MessageType<FileDescriptorProto> =
+  /* @__PURE__ */ createMessageType<FileDescriptorProto>(
+    "google.protobuf.FileDescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "package", 9, 4],
+      [3, "dependency", 9, 1],
+      [4, "message_type", 11, 1, DescriptorProto.codec],
+      [5, "enum_type", 11, 1, EnumDescriptorProto.codec],
+      [6, "service", 11, 1, ServiceDescriptorProto.codec],
+      [7, "extension", 11, 1, FieldDescriptorProto.codec],
+      [8, "options", 11, 0, FileOptions.codec],
+      [9, "source_code_info", 11, 0, SourceCodeInfo.codec],
+      [10, "public_dependency", 5, 1],
+      [11, "weak_dependency", 5, 1],
+      [12, "syntax", 9, 4],
+      [14, "edition", 14, 4, Edition_Enum],
+    ],
+  );
+
+/**
+ * Describes a message type.
+ *
+ * @generated from message google.protobuf.DescriptorProto
+ */
+export interface DescriptorProto {
+  name?: string;
+  field?: FieldDescriptorProto[];
+  extension?: FieldDescriptorProto[];
+  nestedType?: DescriptorProto[];
+  enumType?: EnumDescriptorProto[];
+  extensionRange?: DescriptorProto_ExtensionRange[];
+  oneofDecl?: OneofDescriptorProto[];
+  options?: MessageOptions;
+  reservedRange?: DescriptorProto_ReservedRange[];
+  /**
+   * Reserved field names, which may not be used by fields in the same message.
+   * A given name may only be reserved once.
+   */
+  reservedName?: string[];
+}
+
+export const DescriptorProto: MessageType<DescriptorProto> =
+  /* @__PURE__ */ createMessageType<DescriptorProto>(
+    "google.protobuf.DescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "field", 11, 1, FieldDescriptorProto.codec],
+      [3, "nested_type", 11, 1, DescriptorProto.codec],
+      [4, "enum_type", 11, 1, EnumDescriptorProto.codec],
+      [5, "extension_range", 11, 1, DescriptorProto_ExtensionRange.codec],
+      [6, "extension", 11, 1, FieldDescriptorProto.codec],
+      [7, "options", 11, 0, MessageOptions.codec],
+      [8, "oneof_decl", 11, 1, OneofDescriptorProto.codec],
+      [9, "reserved_range", 11, 1, DescriptorProto_ReservedRange.codec],
+      [10, "reserved_name", 9, 1],
+    ],
+  );
+
+/**
+ * @generated from message google.protobuf.DescriptorProto.ExtensionRange
+ */
+export interface DescriptorProto_ExtensionRange {
+  /**
+   * Inclusive.
+   */
+  start?: number;
+  /**
+   * Exclusive.
+   */
+  end?: number;
+  options?: ExtensionRangeOptions;
+}
+
+export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_ExtensionRange> =
+  /* @__PURE__ */ createMessageType<DescriptorProto_ExtensionRange>(
+    "google.protobuf.DescriptorProto.ExtensionRange",
+    () => [
+      [1, "start", 5, 4],
+      [2, "end", 5, 4],
+      [3, "options", 11, 0, ExtensionRangeOptions.codec],
+    ],
+  );
+
+/**
+ * Range of reserved tag numbers. Reserved tag numbers may not be used by
+ * fields or extension ranges in the same message. Reserved ranges may
+ * not overlap.
+ *
+ * @generated from message google.protobuf.DescriptorProto.ReservedRange
+ */
+export interface DescriptorProto_ReservedRange {
+  /**
+   * Inclusive.
+   */
+  start?: number;
+  /**
+   * Exclusive.
+   */
+  end?: number;
+}
+
+export const DescriptorProto_ReservedRange: MessageType<DescriptorProto_ReservedRange> =
+  /* @__PURE__ */ createMessageType<DescriptorProto_ReservedRange>(
+    "google.protobuf.DescriptorProto.ReservedRange",
+    () => [
+      [1, "start", 5, 4],
+      [2, "end", 5, 4],
+    ],
+  );
+
+/**
+ * @generated from message google.protobuf.ExtensionRangeOptions
+ */
+export interface ExtensionRangeOptions {
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  uninterpretedOption?: UninterpretedOption[];
+  /**
+   * For external users: DO NOT USE. We are in the process of open sourcing
+   * extension declaration and executing internal cleanups before it can be
+   * used externally.
+   */
+  declaration?: ExtensionRangeOptions_Declaration[];
+  /**
+   * Any features defined in the specific edition.
+   */
+  features?: FeatureSet;
+  /**
+   * The verification state of the range.
+   * TODO: flip the default to DECLARATION once all empty ranges
+   * are marked as UNVERIFIED.
+   */
+  verification?: ExtensionRangeOptions_VerificationState;
+}
+
+export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> =
+  /* @__PURE__ */ createMessageType<ExtensionRangeOptions>(
+    "google.protobuf.ExtensionRangeOptions",
+    () => [
+      [2, "declaration", 11, 1, ExtensionRangeOptions_Declaration.codec],
+      [3, "verification", 14, 4, ExtensionRangeOptions_VerificationState_Enum],
+      [50, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
 
 /**
  * The verification state of the extension range.
@@ -139,21 +334,153 @@ export const Edition_Enum = /* @__PURE__ */ createEnumType(
 export enum ExtensionRangeOptions_VerificationState {
   /**
    * All the extensions of the range must be declared.
-   *
-   * @generated from enum value: DECLARATION = 0;
    */
   DECLARATION = 0,
-
-  /**
-   * @generated from enum value: UNVERIFIED = 1;
-   */
   UNVERIFIED = 1,
 }
 
 export const ExtensionRangeOptions_VerificationState_Enum =
   /* @__PURE__ */ createEnumType(
     "google.protobuf.ExtensionRangeOptions.VerificationState",
-    ExtensionRangeOptions_VerificationState,
+    [
+      [0, "DECLARATION"],
+      [1, "UNVERIFIED"],
+    ],
+  );
+
+/**
+ * @generated from message google.protobuf.ExtensionRangeOptions.Declaration
+ */
+export interface ExtensionRangeOptions_Declaration {
+  /**
+   * The extension number declared within the extension range.
+   */
+  number?: number;
+  /**
+   * The fully-qualified name of the extension field. There must be a leading
+   * dot in front of the full name.
+   */
+  fullName?: string;
+  /**
+   * The fully-qualified type name of the extension field. Unlike
+   * Metadata.type, Declaration.type must have a leading dot for messages
+   * and enums.
+   */
+  type?: string;
+  /**
+   * If true, indicates that the number is reserved in the extension range,
+   * and any extension field with the number will fail to compile. Set this
+   * when a declared extension field is deleted.
+   */
+  reserved?: boolean;
+  /**
+   * If true, indicates that the extension must be defined as repeated.
+   * Otherwise the extension must be defined as optional.
+   */
+  repeated?: boolean;
+}
+
+export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOptions_Declaration> =
+  /* @__PURE__ */ createMessageType<ExtensionRangeOptions_Declaration>(
+    "google.protobuf.ExtensionRangeOptions.Declaration",
+    () => [
+      [1, "number", 5, 4],
+      [2, "full_name", 9, 4],
+      [3, "type", 9, 4],
+      [5, "reserved", 8, 4],
+      [6, "repeated", 8, 4],
+    ],
+  );
+
+/**
+ * Describes a field within a message.
+ *
+ * @generated from message google.protobuf.FieldDescriptorProto
+ */
+export interface FieldDescriptorProto {
+  name?: string;
+  number?: number;
+  label?: FieldDescriptorProto_Label;
+  /**
+   * If type_name is set, this need not be set.  If both this and type_name
+   * are set, this must be one of TYPE_ENUM, TYPE_MESSAGE or TYPE_GROUP.
+   */
+  type?: FieldDescriptorProto_Type;
+  /**
+   * For message and enum types, this is the name of the type.  If the name
+   * starts with a '.', it is fully-qualified.  Otherwise, C++-like scoping
+   * rules are used to find the type (i.e. first the nested types within this
+   * message are searched, then within the parent, on up to the root
+   * namespace).
+   */
+  typeName?: string;
+  /**
+   * For extensions, this is the name of the type being extended.  It is
+   * resolved in the same manner as type_name.
+   */
+  extendee?: string;
+  /**
+   * For numeric types, contains the original text representation of the value.
+   * For booleans, "true" or "false".
+   * For strings, contains the default text contents (not escaped in any way).
+   * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
+   */
+  defaultValue?: string;
+  /**
+   * If set, gives the index of a oneof in the containing type's oneof_decl
+   * list.  This field is a member of that oneof.
+   */
+  oneofIndex?: number;
+  /**
+   * JSON name of this field. The value is set by protocol compiler. If the
+   * user has set a "json_name" option on this field, that option's value
+   * will be used. Otherwise, it's deduced from the field's name by converting
+   * it to camelCase.
+   */
+  jsonName?: string;
+  options?: FieldOptions;
+  /**
+   * If true, this is a proto3 "optional". When a proto3 field is optional, it
+   * tracks presence regardless of field type.
+   *
+   * When proto3_optional is true, this field must belong to a oneof to signal
+   * to old proto3 clients that presence is tracked for this field. This oneof
+   * is known as a "synthetic" oneof, and this field must be its sole member
+   * (each proto3 optional field gets its own synthetic oneof). Synthetic oneofs
+   * exist in the descriptor only, and do not generate any API. Synthetic oneofs
+   * must be ordered after all "real" oneofs.
+   *
+   * For message fields, proto3_optional doesn't create any semantic change,
+   * since non-repeated message fields always track presence. However it still
+   * indicates the semantic detail of whether the user wrote "optional" or not.
+   * This can be useful for round-tripping the .proto file. For consistency we
+   * give message fields a synthetic oneof also, even though it is not required
+   * to track presence. This is especially important because the parser can't
+   * tell if a field is a message or an enum, so it must always create a
+   * synthetic oneof.
+   *
+   * Proto2 optional fields do not set this flag, because they already indicate
+   * optional with `LABEL_OPTIONAL`.
+   */
+  proto3Optional?: boolean;
+}
+
+export const FieldDescriptorProto: MessageType<FieldDescriptorProto> =
+  /* @__PURE__ */ createMessageType<FieldDescriptorProto>(
+    "google.protobuf.FieldDescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "extendee", 9, 4],
+      [3, "number", 5, 4],
+      [4, "label", 14, 4, FieldDescriptorProto_Label_Enum],
+      [5, "type", 14, 4, FieldDescriptorProto_Type_Enum],
+      [6, "type_name", 9, 4],
+      [7, "default_value", 9, 4],
+      [8, "options", 11, 0, FieldOptions.codec],
+      [9, "oneof_index", 5, 4],
+      [10, "json_name", 9, 4],
+      [17, "proto3_optional", 8, 4],
+    ],
   );
 
 /**
@@ -163,55 +490,25 @@ export enum FieldDescriptorProto_Type {
   /**
    * 0 is reserved for errors.
    * Order is weird for historical reasons.
-   *
-   * @generated from enum value: TYPE_DOUBLE = 1;
    */
   DOUBLE = 1,
-
-  /**
-   * @generated from enum value: TYPE_FLOAT = 2;
-   */
   FLOAT = 2,
 
   /**
    * Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT64 if
    * negative values are likely.
-   *
-   * @generated from enum value: TYPE_INT64 = 3;
    */
   INT64 = 3,
-
-  /**
-   * @generated from enum value: TYPE_UINT64 = 4;
-   */
   UINT64 = 4,
 
   /**
    * Not ZigZag encoded.  Negative numbers take 10 bytes.  Use TYPE_SINT32 if
    * negative values are likely.
-   *
-   * @generated from enum value: TYPE_INT32 = 5;
    */
   INT32 = 5,
-
-  /**
-   * @generated from enum value: TYPE_FIXED64 = 6;
-   */
   FIXED64 = 6,
-
-  /**
-   * @generated from enum value: TYPE_FIXED32 = 7;
-   */
   FIXED32 = 7,
-
-  /**
-   * @generated from enum value: TYPE_BOOL = 8;
-   */
   BOOL = 8,
-
-  /**
-   * @generated from enum value: TYPE_STRING = 9;
-   */
   STRING = 9,
 
   /**
@@ -220,64 +517,56 @@ export enum FieldDescriptorProto_Type {
    * implementations should still be able to parse the group wire format and
    * treat group fields as unknown fields.  In Editions, the group wire format
    * can be enabled via the `message_encoding` feature.
-   *
-   * @generated from enum value: TYPE_GROUP = 10;
    */
   GROUP = 10,
 
   /**
    * Length-delimited aggregate.
-   *
-   * @generated from enum value: TYPE_MESSAGE = 11;
    */
   MESSAGE = 11,
 
   /**
    * New in version 2.
-   *
-   * @generated from enum value: TYPE_BYTES = 12;
    */
   BYTES = 12,
-
-  /**
-   * @generated from enum value: TYPE_UINT32 = 13;
-   */
   UINT32 = 13,
-
-  /**
-   * @generated from enum value: TYPE_ENUM = 14;
-   */
   ENUM = 14,
-
-  /**
-   * @generated from enum value: TYPE_SFIXED32 = 15;
-   */
   SFIXED32 = 15,
-
-  /**
-   * @generated from enum value: TYPE_SFIXED64 = 16;
-   */
   SFIXED64 = 16,
 
   /**
    * Uses ZigZag encoding.
-   *
-   * @generated from enum value: TYPE_SINT32 = 17;
    */
   SINT32 = 17,
 
   /**
    * Uses ZigZag encoding.
-   *
-   * @generated from enum value: TYPE_SINT64 = 18;
    */
   SINT64 = 18,
 }
 
 export const FieldDescriptorProto_Type_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Type",
-  FieldDescriptorProto_Type,
-  "TYPE_",
+  [
+    [1, "TYPE_DOUBLE"],
+    [2, "TYPE_FLOAT"],
+    [3, "TYPE_INT64"],
+    [4, "TYPE_UINT64"],
+    [5, "TYPE_INT32"],
+    [6, "TYPE_FIXED64"],
+    [7, "TYPE_FIXED32"],
+    [8, "TYPE_BOOL"],
+    [9, "TYPE_STRING"],
+    [10, "TYPE_GROUP"],
+    [11, "TYPE_MESSAGE"],
+    [12, "TYPE_BYTES"],
+    [13, "TYPE_UINT32"],
+    [14, "TYPE_ENUM"],
+    [15, "TYPE_SFIXED32"],
+    [16, "TYPE_SFIXED64"],
+    [17, "TYPE_SINT32"],
+    [18, "TYPE_SINT64"],
+  ],
 );
 
 /**
@@ -286,31 +575,344 @@ export const FieldDescriptorProto_Type_Enum = /* @__PURE__ */ createEnumType(
 export enum FieldDescriptorProto_Label {
   /**
    * 0 is reserved for errors
-   *
-   * @generated from enum value: LABEL_OPTIONAL = 1;
    */
   OPTIONAL = 1,
-
-  /**
-   * @generated from enum value: LABEL_REPEATED = 3;
-   */
   REPEATED = 3,
 
   /**
    * The required label is only allowed in google.protobuf.  In proto3 and Editions
    * it's explicitly prohibited.  In Editions, the `field_presence` feature
    * can be used to get this behavior.
-   *
-   * @generated from enum value: LABEL_REQUIRED = 2;
    */
   REQUIRED = 2,
 }
 
 export const FieldDescriptorProto_Label_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FieldDescriptorProto.Label",
-  FieldDescriptorProto_Label,
-  "LABEL_",
+  [
+    [1, "LABEL_OPTIONAL"],
+    [3, "LABEL_REPEATED"],
+    [2, "LABEL_REQUIRED"],
+  ],
 );
+
+/**
+ * Describes a oneof.
+ *
+ * @generated from message google.protobuf.OneofDescriptorProto
+ */
+export interface OneofDescriptorProto {
+  name?: string;
+  options?: OneofOptions;
+}
+
+export const OneofDescriptorProto: MessageType<OneofDescriptorProto> =
+  /* @__PURE__ */ createMessageType<OneofDescriptorProto>(
+    "google.protobuf.OneofDescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "options", 11, 0, OneofOptions.codec],
+    ],
+  );
+
+/**
+ * Describes an enum type.
+ *
+ * @generated from message google.protobuf.EnumDescriptorProto
+ */
+export interface EnumDescriptorProto {
+  name?: string;
+  value?: EnumValueDescriptorProto[];
+  options?: EnumOptions;
+  /**
+   * Range of reserved numeric values. Reserved numeric values may not be used
+   * by enum values in the same enum declaration. Reserved ranges may not
+   * overlap.
+   */
+  reservedRange?: EnumDescriptorProto_EnumReservedRange[];
+  /**
+   * Reserved enum value names, which may not be reused. A given name may only
+   * be reserved once.
+   */
+  reservedName?: string[];
+}
+
+export const EnumDescriptorProto: MessageType<EnumDescriptorProto> =
+  /* @__PURE__ */ createMessageType<EnumDescriptorProto>(
+    "google.protobuf.EnumDescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "value", 11, 1, EnumValueDescriptorProto.codec],
+      [3, "options", 11, 0, EnumOptions.codec],
+      [4, "reserved_range", 11, 1, EnumDescriptorProto_EnumReservedRange.codec],
+      [5, "reserved_name", 9, 1],
+    ],
+  );
+
+/**
+ * Range of reserved numeric values. Reserved values may not be used by
+ * entries in the same enum. Reserved ranges may not overlap.
+ *
+ * Note that this is distinct from DescriptorProto.ReservedRange in that it
+ * is inclusive such that it can appropriately represent the entire int32
+ * domain.
+ *
+ * @generated from message google.protobuf.EnumDescriptorProto.EnumReservedRange
+ */
+export interface EnumDescriptorProto_EnumReservedRange {
+  /**
+   * Inclusive.
+   */
+  start?: number;
+  /**
+   * Inclusive.
+   */
+  end?: number;
+}
+
+export const EnumDescriptorProto_EnumReservedRange: MessageType<EnumDescriptorProto_EnumReservedRange> =
+  /* @__PURE__ */ createMessageType<EnumDescriptorProto_EnumReservedRange>(
+    "google.protobuf.EnumDescriptorProto.EnumReservedRange",
+    () => [
+      [1, "start", 5, 4],
+      [2, "end", 5, 4],
+    ],
+  );
+
+/**
+ * Describes a value within an enum.
+ *
+ * @generated from message google.protobuf.EnumValueDescriptorProto
+ */
+export interface EnumValueDescriptorProto {
+  name?: string;
+  number?: number;
+  options?: EnumValueOptions;
+}
+
+export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> =
+  /* @__PURE__ */ createMessageType<EnumValueDescriptorProto>(
+    "google.protobuf.EnumValueDescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "number", 5, 4],
+      [3, "options", 11, 0, EnumValueOptions.codec],
+    ],
+  );
+
+/**
+ * Describes a service.
+ *
+ * @generated from message google.protobuf.ServiceDescriptorProto
+ */
+export interface ServiceDescriptorProto {
+  name?: string;
+  method?: MethodDescriptorProto[];
+  options?: ServiceOptions;
+}
+
+export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> =
+  /* @__PURE__ */ createMessageType<ServiceDescriptorProto>(
+    "google.protobuf.ServiceDescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "method", 11, 1, MethodDescriptorProto.codec],
+      [3, "options", 11, 0, ServiceOptions.codec],
+    ],
+  );
+
+/**
+ * Describes a method of a service.
+ *
+ * @generated from message google.protobuf.MethodDescriptorProto
+ */
+export interface MethodDescriptorProto {
+  name?: string;
+  /**
+   * Input and output type names.  These are resolved in the same way as
+   * FieldDescriptorProto.type_name, but must refer to a message type.
+   */
+  inputType?: string;
+  outputType?: string;
+  options?: MethodOptions;
+  /**
+   * Identifies if client streams multiple client messages
+   */
+  clientStreaming?: boolean;
+  /**
+   * Identifies if server streams multiple server messages
+   */
+  serverStreaming?: boolean;
+}
+
+export const MethodDescriptorProto: MessageType<MethodDescriptorProto> =
+  /* @__PURE__ */ createMessageType<MethodDescriptorProto>(
+    "google.protobuf.MethodDescriptorProto",
+    () => [
+      [1, "name", 9, 4],
+      [2, "input_type", 9, 4],
+      [3, "output_type", 9, 4],
+      [4, "options", 11, 0, MethodOptions.codec],
+      [5, "client_streaming", 8, 4],
+      [6, "server_streaming", 8, 4],
+    ],
+  );
+
+/**
+ * @generated from message google.protobuf.FileOptions
+ */
+export interface FileOptions {
+  /**
+   * Sets the Java package where classes generated from this .proto will be
+   * placed.  By default, the proto package is used, but this is often
+   * inappropriate because proto packages do not normally start with backwards
+   * domain names.
+   */
+  javaPackage?: string;
+  /**
+   * Controls the name of the wrapper Java class generated for the .proto file.
+   * That class will always contain the .proto file's getDescriptor() method as
+   * well as any top-level extensions defined in the .proto file.
+   * If java_multiple_files is disabled, then all the other classes from the
+   * .proto file will be nested inside the single wrapper outer class.
+   */
+  javaOuterClassname?: string;
+  /**
+   * If enabled, then the Java code generator will generate a separate .java
+   * file for each top-level message, enum, and service defined in the .proto
+   * file.  Thus, these types will *not* be nested inside the wrapper class
+   * named by java_outer_classname.  However, the wrapper class will still be
+   * generated to contain the file's getDescriptor() method as well as any
+   * top-level extensions defined in the file.
+   */
+  javaMultipleFiles?: boolean;
+  /**
+   * This option does nothing.
+   * @deprecated
+   */
+  javaGenerateEqualsAndHash?: boolean;
+  /**
+   * If set true, then the Java2 code generator will generate code that
+   * throws an exception whenever an attempt is made to assign a non-UTF-8
+   * byte sequence to a string field.
+   * Message reflection will do the same.
+   * However, an extension field still accepts non-UTF-8 byte sequences.
+   * This option has no effect on when used with the lite runtime.
+   */
+  javaStringCheckUtf8?: boolean;
+  optimizeFor?: FileOptions_OptimizeMode;
+  /**
+   * Sets the Go package where structs generated from this .proto will be
+   * placed. If omitted, the Go package will be derived from the following:
+   *   - The basename of the package import path, if provided.
+   *   - Otherwise, the package statement in the .proto file, if present.
+   *   - Otherwise, the basename of the .proto file, without extension.
+   */
+  goPackage?: string;
+  /**
+   * Should generic services be generated in each language?  "Generic" services
+   * are not specific to any particular RPC system.  They are generated by the
+   * main code generators in each language (without additional plugins).
+   * Generic services were the only kind of service generation supported by
+   * early versions of google.protobuf.
+   *
+   * Generic services are now considered deprecated in favor of using plugins
+   * that generate code specific to your particular RPC system.  Therefore,
+   * these default to false.  Old code which depends on generic services should
+   * explicitly set them to true.
+   */
+  ccGenericServices?: boolean;
+  javaGenericServices?: boolean;
+  pyGenericServices?: boolean;
+  /**
+   * Is this file deprecated?
+   * Depending on the target platform, this can emit Deprecated annotations
+   * for everything in the file, or it will be completely ignored; in the very
+   * least, this is a formalization for deprecating files.
+   */
+  deprecated?: boolean;
+  /**
+   * Enables the use of arenas for the proto messages in this file. This applies
+   * only to generated classes for C++.
+   */
+  ccEnableArenas?: boolean;
+  /**
+   * Sets the objective c class prefix which is prepended to all objective c
+   * generated classes from this .proto. There is no default.
+   */
+  objcClassPrefix?: string;
+  /**
+   * Namespace for generated classes; defaults to the package.
+   */
+  csharpNamespace?: string;
+  /**
+   * By default Swift generators will take the proto package and CamelCase it
+   * replacing '.' with underscore and use that to prefix the types/symbols
+   * defined. When this options is provided, they will use this value instead
+   * to prefix the types/symbols defined.
+   */
+  swiftPrefix?: string;
+  /**
+   * Sets the php class prefix which is prepended to all php generated classes
+   * from this .proto. Default is empty.
+   */
+  phpClassPrefix?: string;
+  /**
+   * Use this option to change the namespace of php generated classes. Default
+   * is empty. When this option is empty, the package name will be used for
+   * determining the namespace.
+   */
+  phpNamespace?: string;
+  /**
+   * Use this option to change the namespace of php generated metadata classes.
+   * Default is empty. When this option is empty, the proto file name will be
+   * used for determining the namespace.
+   */
+  phpMetadataNamespace?: string;
+  /**
+   * Use this option to change the package of ruby generated classes. Default
+   * is empty. When this option is not set, the package name will be used for
+   * determining the ruby package.
+   */
+  rubyPackage?: string;
+  /**
+   * Any features defined in the specific edition.
+   */
+  features?: FeatureSet;
+  /**
+   * The parser stores options it doesn't recognize here.
+   * See the documentation for the "Options" section above.
+   */
+  uninterpretedOption?: UninterpretedOption[];
+}
+
+export const FileOptions: MessageType<FileOptions> =
+  /* @__PURE__ */ createMessageType<FileOptions>(
+    "google.protobuf.FileOptions",
+    () => [
+      [1, "java_package", 9, 4],
+      [8, "java_outer_classname", 9, 4],
+      [9, "optimize_for", 14, 4, FileOptions_OptimizeMode_Enum],
+      [10, "java_multiple_files", 8, 4],
+      [11, "go_package", 9, 4],
+      [16, "cc_generic_services", 8, 4],
+      [17, "java_generic_services", 8, 4],
+      [18, "py_generic_services", 8, 4],
+      [20, "java_generate_equals_and_hash", 8, 4],
+      [23, "deprecated", 8, 4],
+      [27, "java_string_check_utf8", 8, 4],
+      [31, "cc_enable_arenas", 8, 4],
+      [36, "objc_class_prefix", 9, 4],
+      [37, "csharp_namespace", 9, 4],
+      [39, "swift_prefix", 9, 4],
+      [40, "php_class_prefix", 9, 4],
+      [41, "php_namespace", 9, 4],
+      [44, "php_metadata_namespace", 9, 4],
+      [45, "ruby_package", 9, 4],
+      [50, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
 
 /**
  * Generated classes can be optimized for speed or code size.
@@ -320,8 +922,6 @@ export const FieldDescriptorProto_Label_Enum = /* @__PURE__ */ createEnumType(
 export enum FileOptions_OptimizeMode {
   /**
    * Generate complete code for parsing, serialization,
-   *
-   * @generated from enum value: SPEED = 1;
    */
   SPEED = 1,
 
@@ -329,664 +929,123 @@ export enum FileOptions_OptimizeMode {
    * etc.
    *
    * Use ReflectionOps to implement these methods.
-   *
-   * @generated from enum value: CODE_SIZE = 2;
    */
   CODE_SIZE = 2,
 
   /**
    * Generate code using MessageLite and the lite runtime.
-   *
-   * @generated from enum value: LITE_RUNTIME = 3;
    */
   LITE_RUNTIME = 3,
 }
 
 export const FileOptions_OptimizeMode_Enum = /* @__PURE__ */ createEnumType(
   "google.protobuf.FileOptions.OptimizeMode",
-  FileOptions_OptimizeMode,
+  [
+    [1, "SPEED"],
+    [2, "CODE_SIZE"],
+    [3, "LITE_RUNTIME"],
+  ],
 );
 
 /**
- * @generated from enum google.protobuf.FieldOptions.CType
+ * @generated from message google.protobuf.MessageOptions
  */
-export enum FieldOptions_CType {
+export interface MessageOptions {
   /**
-   * Default mode.
+   * Set true to use the old proto1 MessageSet wire format for extensions.
+   * This is provided for backwards-compatibility with the MessageSet wire
+   * format.  You should not use this for any other reason:  It's less
+   * efficient, has fewer features, and is more complicated.
    *
-   * @generated from enum value: STRING = 0;
-   */
-  STRING = 0,
-
-  /**
-   * The option [ctype=CORD] may be applied to a non-repeated field of type
-   * "bytes". It indicates that in C++, the data should be stored in a Cord
-   * instead of a string.  For very large strings, this may reduce memory
-   * fragmentation. It may also allow better performance when parsing from a
-   * Cord, or when parsing with aliasing enabled, as the parsed Cord may then
-   * alias the original buffer.
+   * The message must be defined exactly as follows:
+   *   message Foo {
+   *     option message_set_wire_format = true;
+   *     extensions 4 to max;
+   *   }
+   * Note that the message cannot have any defined fields; MessageSets only
+   * have extensions.
    *
-   * @generated from enum value: CORD = 1;
+   * All extensions of your type must be singular messages; e.g. they cannot
+   * be int32s, enums, or repeated messages.
+   *
+   * Because this is an option, the above two restrictions are not enforced by
+   * the protocol compiler.
    */
-  CORD = 1,
-
+  messageSetWireFormat?: boolean;
   /**
-   * @generated from enum value: STRING_PIECE = 2;
+   * Disables the generation of the standard "descriptor()" accessor, which can
+   * conflict with a field of the same name.  This is meant to make migration
+   * from proto1 easier; new code should avoid fields named "descriptor".
    */
-  STRING_PIECE = 2,
+  noStandardDescriptorAccessor?: boolean;
+  /**
+   * Is this message deprecated?
+   * Depending on the target platform, this can emit Deprecated annotations
+   * for the message, or it will be completely ignored; in the very least,
+   * this is a formalization for deprecating messages.
+   */
+  deprecated?: boolean;
+  /**
+   * Whether the message is an automatically generated map entry type for the
+   * maps field.
+   *
+   * For maps fields:
+   *     map<KeyType, ValueType> map_field = 1;
+   * The parsed descriptor looks like:
+   *     message MapFieldEntry {
+   *         option map_entry = true;
+   *         optional KeyType key = 1;
+   *         optional ValueType value = 2;
+   *     }
+   *     repeated MapFieldEntry map_field = 1;
+   *
+   * Implementations may choose not to generate the map_entry=true message, but
+   * use a native map in the target language to hold the keys and values.
+   * The reflection APIs in such implementations still need to work as
+   * if the field is a repeated message field.
+   *
+   * NOTE: Do not set the option in .proto files. Always use the maps syntax
+   * instead. The option should only be implicitly set by the proto compiler
+   * parser.
+   */
+  mapEntry?: boolean;
+  /**
+   * Enable the legacy handling of JSON field name conflicts.  This lowercases
+   * and strips underscored from the fields before comparison in proto3 only.
+   * The new behavior takes `json_name` into account and applies to proto2 as
+   * well.
+   *
+   * This should only be used as a temporary measure against broken builds due
+   * to the change in behavior for JSON field name conflicts.
+   *
+   * TODO This is legacy behavior we plan to remove once downstream
+   * teams have had time to migrate.
+   * @deprecated
+   */
+  deprecatedLegacyJsonFieldConflicts?: boolean;
+  /**
+   * Any features defined in the specific edition.
+   */
+  features?: FeatureSet;
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  uninterpretedOption?: UninterpretedOption[];
 }
 
-export const FieldOptions_CType_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FieldOptions.CType",
-  FieldOptions_CType,
-);
-
-/**
- * @generated from enum google.protobuf.FieldOptions.JSType
- */
-export enum FieldOptions_JSType {
-  /**
-   * Use the default type.
-   *
-   * @generated from enum value: JS_NORMAL = 0;
-   */
-  JS_NORMAL = 0,
-
-  /**
-   * Use JavaScript strings.
-   *
-   * @generated from enum value: JS_STRING = 1;
-   */
-  JS_STRING = 1,
-
-  /**
-   * Use JavaScript numbers.
-   *
-   * @generated from enum value: JS_NUMBER = 2;
-   */
-  JS_NUMBER = 2,
-}
-
-export const FieldOptions_JSType_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FieldOptions.JSType",
-  FieldOptions_JSType,
-);
-
-/**
- * If set to RETENTION_SOURCE, the option will be omitted from the binary.
- * Note: as of January 2023, support for this is in progress and does not yet
- * have an effect (b/264593489).
- *
- * @generated from enum google.protobuf.FieldOptions.OptionRetention
- */
-export enum FieldOptions_OptionRetention {
-  /**
-   * @generated from enum value: RETENTION_UNKNOWN = 0;
-   */
-  RETENTION_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: RETENTION_RUNTIME = 1;
-   */
-  RETENTION_RUNTIME = 1,
-
-  /**
-   * @generated from enum value: RETENTION_SOURCE = 2;
-   */
-  RETENTION_SOURCE = 2,
-}
-
-export const FieldOptions_OptionRetention_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FieldOptions.OptionRetention",
-  FieldOptions_OptionRetention,
-);
-
-/**
- * This indicates the types of entities that the field may apply to when used
- * as an option. If it is unset, then the field may be freely used as an
- * option on any kind of entity. Note: as of January 2023, support for this is
- * in progress and does not yet have an effect (b/264593489).
- *
- * @generated from enum google.protobuf.FieldOptions.OptionTargetType
- */
-export enum FieldOptions_OptionTargetType {
-  /**
-   * @generated from enum value: TARGET_TYPE_UNKNOWN = 0;
-   */
-  TARGET_TYPE_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_FILE = 1;
-   */
-  TARGET_TYPE_FILE = 1,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_EXTENSION_RANGE = 2;
-   */
-  TARGET_TYPE_EXTENSION_RANGE = 2,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_MESSAGE = 3;
-   */
-  TARGET_TYPE_MESSAGE = 3,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_FIELD = 4;
-   */
-  TARGET_TYPE_FIELD = 4,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_ONEOF = 5;
-   */
-  TARGET_TYPE_ONEOF = 5,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_ENUM = 6;
-   */
-  TARGET_TYPE_ENUM = 6,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_ENUM_ENTRY = 7;
-   */
-  TARGET_TYPE_ENUM_ENTRY = 7,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_SERVICE = 8;
-   */
-  TARGET_TYPE_SERVICE = 8,
-
-  /**
-   * @generated from enum value: TARGET_TYPE_METHOD = 9;
-   */
-  TARGET_TYPE_METHOD = 9,
-}
-
-export const FieldOptions_OptionTargetType_Enum =
-  /* @__PURE__ */ createEnumType(
-    "google.protobuf.FieldOptions.OptionTargetType",
-    FieldOptions_OptionTargetType,
+export const MessageOptions: MessageType<MessageOptions> =
+  /* @__PURE__ */ createMessageType<MessageOptions>(
+    "google.protobuf.MessageOptions",
+    () => [
+      [1, "message_set_wire_format", 8, 4],
+      [2, "no_standard_descriptor_accessor", 8, 4],
+      [3, "deprecated", 8, 4],
+      [7, "map_entry", 8, 4],
+      [11, "deprecated_legacy_json_field_conflicts", 8, 4],
+      [12, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
   );
-
-/**
- * Is this method side-effect-free (or safe in HTTP parlance), or idempotent,
- * or neither? HTTP based RPC implementation may choose GET verb for safe
- * methods, and PUT verb for idempotent methods instead of the default POST.
- *
- * @generated from enum google.protobuf.MethodOptions.IdempotencyLevel
- */
-export enum MethodOptions_IdempotencyLevel {
-  /**
-   * @generated from enum value: IDEMPOTENCY_UNKNOWN = 0;
-   */
-  IDEMPOTENCY_UNKNOWN = 0,
-
-  /**
-   * implies idempotent
-   *
-   * @generated from enum value: NO_SIDE_EFFECTS = 1;
-   */
-  NO_SIDE_EFFECTS = 1,
-
-  /**
-   * idempotent, but may have side effects
-   *
-   * @generated from enum value: IDEMPOTENT = 2;
-   */
-  IDEMPOTENT = 2,
-}
-
-export const MethodOptions_IdempotencyLevel_Enum =
-  /* @__PURE__ */ createEnumType(
-    "google.protobuf.MethodOptions.IdempotencyLevel",
-    MethodOptions_IdempotencyLevel,
-  );
-
-/**
- * @generated from enum google.protobuf.FeatureSet.FieldPresence
- */
-export enum FeatureSet_FieldPresence {
-  /**
-   * @generated from enum value: FIELD_PRESENCE_UNKNOWN = 0;
-   */
-  FIELD_PRESENCE_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: EXPLICIT = 1;
-   */
-  EXPLICIT = 1,
-
-  /**
-   * @generated from enum value: IMPLICIT = 2;
-   */
-  IMPLICIT = 2,
-
-  /**
-   * @generated from enum value: LEGACY_REQUIRED = 3;
-   */
-  LEGACY_REQUIRED = 3,
-}
-
-export const FeatureSet_FieldPresence_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FeatureSet.FieldPresence",
-  FeatureSet_FieldPresence,
-);
-
-/**
- * @generated from enum google.protobuf.FeatureSet.EnumType
- */
-export enum FeatureSet_EnumType {
-  /**
-   * @generated from enum value: ENUM_TYPE_UNKNOWN = 0;
-   */
-  ENUM_TYPE_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: OPEN = 1;
-   */
-  OPEN = 1,
-
-  /**
-   * @generated from enum value: CLOSED = 2;
-   */
-  CLOSED = 2,
-}
-
-export const FeatureSet_EnumType_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FeatureSet.EnumType",
-  FeatureSet_EnumType,
-);
-
-/**
- * @generated from enum google.protobuf.FeatureSet.RepeatedFieldEncoding
- */
-export enum FeatureSet_RepeatedFieldEncoding {
-  /**
-   * @generated from enum value: REPEATED_FIELD_ENCODING_UNKNOWN = 0;
-   */
-  REPEATED_FIELD_ENCODING_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: PACKED = 1;
-   */
-  PACKED = 1,
-
-  /**
-   * @generated from enum value: EXPANDED = 2;
-   */
-  EXPANDED = 2,
-}
-
-export const FeatureSet_RepeatedFieldEncoding_Enum =
-  /* @__PURE__ */ createEnumType(
-    "google.protobuf.FeatureSet.RepeatedFieldEncoding",
-    FeatureSet_RepeatedFieldEncoding,
-  );
-
-/**
- * @generated from enum google.protobuf.FeatureSet.Utf8Validation
- */
-export enum FeatureSet_Utf8Validation {
-  /**
-   * @generated from enum value: UTF8_VALIDATION_UNKNOWN = 0;
-   */
-  UTF8_VALIDATION_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: VERIFY = 2;
-   */
-  VERIFY = 2,
-
-  /**
-   * @generated from enum value: NONE = 3;
-   */
-  NONE = 3,
-}
-
-export const FeatureSet_Utf8Validation_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FeatureSet.Utf8Validation",
-  FeatureSet_Utf8Validation,
-);
-
-/**
- * @generated from enum google.protobuf.FeatureSet.MessageEncoding
- */
-export enum FeatureSet_MessageEncoding {
-  /**
-   * @generated from enum value: MESSAGE_ENCODING_UNKNOWN = 0;
-   */
-  MESSAGE_ENCODING_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: LENGTH_PREFIXED = 1;
-   */
-  LENGTH_PREFIXED = 1,
-
-  /**
-   * @generated from enum value: DELIMITED = 2;
-   */
-  DELIMITED = 2,
-}
-
-export const FeatureSet_MessageEncoding_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FeatureSet.MessageEncoding",
-  FeatureSet_MessageEncoding,
-);
-
-/**
- * @generated from enum google.protobuf.FeatureSet.JsonFormat
- */
-export enum FeatureSet_JsonFormat {
-  /**
-   * @generated from enum value: JSON_FORMAT_UNKNOWN = 0;
-   */
-  JSON_FORMAT_UNKNOWN = 0,
-
-  /**
-   * @generated from enum value: ALLOW = 1;
-   */
-  ALLOW = 1,
-
-  /**
-   * @generated from enum value: LEGACY_BEST_EFFORT = 2;
-   */
-  LEGACY_BEST_EFFORT = 2,
-}
-
-export const FeatureSet_JsonFormat_Enum = /* @__PURE__ */ createEnumType(
-  "google.protobuf.FeatureSet.JsonFormat",
-  FeatureSet_JsonFormat,
-);
-
-/**
- * Represents the identified object's effect on the element in the original
- * .proto file.
- *
- * @generated from enum google.protobuf.GeneratedCodeInfo.Annotation.Semantic
- */
-export enum GeneratedCodeInfo_Annotation_Semantic {
-  /**
-   * There is no effect or the effect is indescribable.
-   *
-   * @generated from enum value: NONE = 0;
-   */
-  NONE = 0,
-
-  /**
-   * The element is set or otherwise mutated.
-   *
-   * @generated from enum value: SET = 1;
-   */
-  SET = 1,
-
-  /**
-   * An alias to the element is returned.
-   *
-   * @generated from enum value: ALIAS = 2;
-   */
-  ALIAS = 2,
-}
-
-export const GeneratedCodeInfo_Annotation_Semantic_Enum =
-  /* @__PURE__ */ createEnumType(
-    "google.protobuf.GeneratedCodeInfo.Annotation.Semantic",
-    GeneratedCodeInfo_Annotation_Semantic,
-  );
-
-/**
- * @generated from message google.protobuf.FieldOptions.EditionDefault
- */
-export interface FieldOptions_EditionDefault {
-  /**
-   * @generated from field: optional google.protobuf.Edition edition = 3;
-   */
-  edition?: Edition;
-  /**
-   * Textproto value.
-   *
-   * @generated from field: optional string value = 2;
-   */
-  value?: string;
-}
-
-export const FieldOptions_EditionDefault: MessageType<FieldOptions_EditionDefault> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FieldOptions.EditionDefault",
-    fields: [
-      { no: 3, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
-      { no: 2, name: "value", kind: "scalar", T: ScalarType.STRING, opt: true },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * TODO Enums in C++ gencode (and potentially other languages) are
- * not well scoped.  This means that each of the feature enums below can clash
- * with each other.  The short names we've chosen maximize call-site
- * readability, but leave us very open to this scenario.  A future feature will
- * be designed and implemented to handle this, hopefully before we ever hit a
- * conflict here.
- *
- * @generated from message google.protobuf.FeatureSet
- */
-export interface FeatureSet {
-  /**
-   * @generated from field: optional google.protobuf.FeatureSet.FieldPresence field_presence = 1;
-   */
-  fieldPresence?: FeatureSet_FieldPresence;
-  /**
-   * @generated from field: optional google.protobuf.FeatureSet.EnumType enum_type = 2;
-   */
-  enumType?: FeatureSet_EnumType;
-  /**
-   * @generated from field: optional google.protobuf.FeatureSet.RepeatedFieldEncoding repeated_field_encoding = 3;
-   */
-  repeatedFieldEncoding?: FeatureSet_RepeatedFieldEncoding;
-  /**
-   * @generated from field: optional google.protobuf.FeatureSet.Utf8Validation utf8_validation = 4;
-   */
-  utf8Validation?: FeatureSet_Utf8Validation;
-  /**
-   * @generated from field: optional google.protobuf.FeatureSet.MessageEncoding message_encoding = 5;
-   */
-  messageEncoding?: FeatureSet_MessageEncoding;
-  /**
-   * @generated from field: optional google.protobuf.FeatureSet.JsonFormat json_format = 6;
-   */
-  jsonFormat?: FeatureSet_JsonFormat;
-}
-
-export const FeatureSet: MessageType<FeatureSet> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FeatureSet",
-    fields: [
-      {
-        no: 1,
-        name: "field_presence",
-        kind: "enum",
-        T: FeatureSet_FieldPresence_Enum,
-        opt: true,
-      },
-      {
-        no: 2,
-        name: "enum_type",
-        kind: "enum",
-        T: FeatureSet_EnumType_Enum,
-        opt: true,
-      },
-      {
-        no: 3,
-        name: "repeated_field_encoding",
-        kind: "enum",
-        T: FeatureSet_RepeatedFieldEncoding_Enum,
-        opt: true,
-      },
-      {
-        no: 4,
-        name: "utf8_validation",
-        kind: "enum",
-        T: FeatureSet_Utf8Validation_Enum,
-        opt: true,
-      },
-      {
-        no: 5,
-        name: "message_encoding",
-        kind: "enum",
-        T: FeatureSet_MessageEncoding_Enum,
-        opt: true,
-      },
-      {
-        no: 6,
-        name: "json_format",
-        kind: "enum",
-        T: FeatureSet_JsonFormat_Enum,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * The name of the uninterpreted option.  Each string represents a segment in
- * a dot-separated name.  is_extension is true iff a segment represents an
- * extension (denoted with parentheses in options specs in .proto files).
- * E.g.,{ ["foo", false], ["bar.baz", true], ["moo", false] } represents
- * "foo.(bar.baz).moo".
- *
- * @generated from message google.protobuf.UninterpretedOption.NamePart
- */
-export interface UninterpretedOption_NamePart {
-  /**
-   * @generated from field: required string name_part = 1;
-   */
-  namePart?: string;
-  /**
-   * @generated from field: required bool is_extension = 2;
-   */
-  isExtension?: boolean;
-}
-
-export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NamePart> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.UninterpretedOption.NamePart",
-    fields: [
-      {
-        no: 1,
-        name: "name_part",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        req: true,
-      },
-      {
-        no: 2,
-        name: "is_extension",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        req: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * A message representing a option the parser does not recognize. This only
- * appears in options protos created by the compiler::Parser class.
- * DescriptorPool resolves these when building Descriptor objects. Therefore,
- * options protos in descriptor objects (e.g. returned by Descriptor::options(),
- * or produced by Descriptor::CopyTo()) will never have UninterpretedOptions
- * in them.
- *
- * @generated from message google.protobuf.UninterpretedOption
- */
-export interface UninterpretedOption {
-  /**
-   * @generated from field: repeated google.protobuf.UninterpretedOption.NamePart name = 2;
-   */
-  name?: UninterpretedOption_NamePart[];
-  /**
-   * The value of the uninterpreted option, in whatever type the tokenizer
-   * identified it as during parsing. Exactly one of these should be set.
-   *
-   * @generated from field: optional string identifier_value = 3;
-   */
-  identifierValue?: string;
-  /**
-   * @generated from field: optional uint64 positive_int_value = 4;
-   */
-  positiveIntValue?: bigint;
-  /**
-   * @generated from field: optional int64 negative_int_value = 5;
-   */
-  negativeIntValue?: bigint;
-  /**
-   * @generated from field: optional double double_value = 6;
-   */
-  doubleValue?: number;
-  /**
-   * @generated from field: optional bytes string_value = 7;
-   */
-  stringValue?: Uint8Array;
-  /**
-   * @generated from field: optional string aggregate_value = 8;
-   */
-  aggregateValue?: string;
-}
-
-export const UninterpretedOption: MessageType<UninterpretedOption> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.UninterpretedOption",
-    fields: [
-      {
-        no: 2,
-        name: "name",
-        kind: "message",
-        T: UninterpretedOption_NamePart,
-        repeated: true,
-      },
-      {
-        no: 3,
-        name: "identifier_value",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 4,
-        name: "positive_int_value",
-        kind: "scalar",
-        T: ScalarType.UINT64,
-        opt: true,
-      },
-      {
-        no: 5,
-        name: "negative_int_value",
-        kind: "scalar",
-        T: ScalarType.INT64,
-        opt: true,
-      },
-      {
-        no: 6,
-        name: "double_value",
-        kind: "scalar",
-        T: ScalarType.DOUBLE,
-        opt: true,
-      },
-      {
-        no: 7,
-        name: "string_value",
-        kind: "scalar",
-        T: ScalarType.BYTES,
-        opt: true,
-      },
-      {
-        no: 8,
-        name: "aggregate_value",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
 
 /**
  * @generated from message google.protobuf.FieldOptions
@@ -999,8 +1058,6 @@ export interface FieldOptions {
    * [ctype=CORD] and [ctype=STRING] (the default) on non-repeated fields of
    * type "bytes" in the open source release -- sorry, we'll try to include
    * other types in a future version!
-   *
-   * @generated from field: optional google.protobuf.FieldOptions.CType ctype = 1 [default = STRING];
    */
   ctype?: FieldOptions_CType;
   /**
@@ -1011,8 +1068,6 @@ export interface FieldOptions {
    * false will avoid using packed encoding.  This option is prohibited in
    * Editions, but the `repeated_field_encoding` feature can be used to control
    * the behavior.
-   *
-   * @generated from field: optional bool packed = 2;
    */
   packed?: boolean;
   /**
@@ -1027,8 +1082,6 @@ export interface FieldOptions {
    *
    * This option is an enum to permit additional types to be added, e.g.
    * goog.math.Integer.
-   *
-   * @generated from field: optional google.protobuf.FieldOptions.JSType jstype = 6 [default = JS_NORMAL];
    */
   jstype?: FieldOptions_JSType;
   /**
@@ -1054,16 +1107,12 @@ export interface FieldOptions {
    * on the outer message would fail if the inner message has missing required
    * fields. Failed verification would result in parsing failure (except when
    * uninitialized messages are acceptable).
-   *
-   * @generated from field: optional bool lazy = 5 [default = false];
    */
   lazy?: boolean;
   /**
    * unverified_lazy does no correctness checks on the byte stream. This should
    * only be used where lazy with verification is prohibitive for performance
    * reasons.
-   *
-   * @generated from field: optional bool unverified_lazy = 15 [default = false];
    */
   unverifiedLazy?: boolean;
   /**
@@ -1071,308 +1120,259 @@ export interface FieldOptions {
    * Depending on the target platform, this can emit Deprecated annotations
    * for accessors, or it will be completely ignored; in the very least, this
    * is a formalization for deprecating fields.
-   *
-   * @generated from field: optional bool deprecated = 3 [default = false];
    */
   deprecated?: boolean;
   /**
    * For Google-internal migration only. Do not use.
-   *
-   * @generated from field: optional bool weak = 10 [default = false];
    */
   weak?: boolean;
   /**
    * Indicate that the field value should not be printed out when using debug
    * formats, e.g. when the field contains sensitive credentials.
-   *
-   * @generated from field: optional bool debug_redact = 16 [default = false];
    */
   debugRedact?: boolean;
-  /**
-   * @generated from field: optional google.protobuf.FieldOptions.OptionRetention retention = 17;
-   */
   retention?: FieldOptions_OptionRetention;
-  /**
-   * @generated from field: repeated google.protobuf.FieldOptions.OptionTargetType targets = 19;
-   */
   targets?: FieldOptions_OptionTargetType[];
-  /**
-   * @generated from field: repeated google.protobuf.FieldOptions.EditionDefault edition_defaults = 20;
-   */
   editionDefaults?: FieldOptions_EditionDefault[];
   /**
    * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 21;
    */
   features?: FeatureSet;
   /**
    * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
 }
 
 export const FieldOptions: MessageType<FieldOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FieldOptions",
-    fields: [
-      {
-        no: 1,
-        name: "ctype",
-        kind: "enum",
-        T: FieldOptions_CType_Enum,
-        opt: true,
-        default: FieldOptions_CType.STRING,
-      },
-      { no: 2, name: "packed", kind: "scalar", T: ScalarType.BOOL, opt: true },
-      {
-        no: 6,
-        name: "jstype",
-        kind: "enum",
-        T: FieldOptions_JSType_Enum,
-        opt: true,
-        default: FieldOptions_JSType.JS_NORMAL,
-      },
-      {
-        no: 5,
-        name: "lazy",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 15,
-        name: "unverified_lazy",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 3,
-        name: "deprecated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 10,
-        name: "weak",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 16,
-        name: "debug_redact",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 17,
-        name: "retention",
-        kind: "enum",
-        T: FieldOptions_OptionRetention_Enum,
-        opt: true,
-      },
-      {
-        no: 19,
-        name: "targets",
-        kind: "enum",
-        T: FieldOptions_OptionTargetType_Enum,
-        repeated: true,
-      },
-      {
-        no: 20,
-        name: "edition_defaults",
-        kind: "message",
-        T: FieldOptions_EditionDefault,
-        repeated: true,
-      },
-      { no: 21, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+  /* @__PURE__ */ createMessageType<FieldOptions>(
+    "google.protobuf.FieldOptions",
+    () => [
+      [1, "ctype", 14, 4, FieldOptions_CType_Enum],
+      [2, "packed", 8, 4],
+      [3, "deprecated", 8, 4],
+      [5, "lazy", 8, 4],
+      [6, "jstype", 14, 4, FieldOptions_JSType_Enum],
+      [10, "weak", 8, 4],
+      [15, "unverified_lazy", 8, 4],
+      [16, "debug_redact", 8, 4],
+      [17, "retention", 14, 4, FieldOptions_OptionRetention_Enum],
+      [19, "targets", 14, 1, FieldOptions_OptionTargetType_Enum],
+      [20, "edition_defaults", 11, 1, FieldOptions_EditionDefault.codec],
+      [21, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
 
 /**
- * Describes a field within a message.
- *
- * @generated from message google.protobuf.FieldDescriptorProto
+ * @generated from enum google.protobuf.FieldOptions.CType
  */
-export interface FieldDescriptorProto {
+export enum FieldOptions_CType {
   /**
-   * @generated from field: optional string name = 1;
+   * Default mode.
    */
-  name?: string;
+  STRING = 0,
+
   /**
-   * @generated from field: optional int32 number = 3;
+   * The option [ctype=CORD] may be applied to a non-repeated field of type
+   * "bytes". It indicates that in C++, the data should be stored in a Cord
+   * instead of a string.  For very large strings, this may reduce memory
+   * fragmentation. It may also allow better performance when parsing from a
+   * Cord, or when parsing with aliasing enabled, as the parsed Cord may then
+   * alias the original buffer.
    */
-  number?: number;
-  /**
-   * @generated from field: optional google.protobuf.FieldDescriptorProto.Label label = 4;
-   */
-  label?: FieldDescriptorProto_Label;
-  /**
-   * If type_name is set, this need not be set.  If both this and type_name
-   * are set, this must be one of TYPE_ENUM, TYPE_MESSAGE or TYPE_GROUP.
-   *
-   * @generated from field: optional google.protobuf.FieldDescriptorProto.Type type = 5;
-   */
-  type?: FieldDescriptorProto_Type;
-  /**
-   * For message and enum types, this is the name of the type.  If the name
-   * starts with a '.', it is fully-qualified.  Otherwise, C++-like scoping
-   * rules are used to find the type (i.e. first the nested types within this
-   * message are searched, then within the parent, on up to the root
-   * namespace).
-   *
-   * @generated from field: optional string type_name = 6;
-   */
-  typeName?: string;
-  /**
-   * For extensions, this is the name of the type being extended.  It is
-   * resolved in the same manner as type_name.
-   *
-   * @generated from field: optional string extendee = 2;
-   */
-  extendee?: string;
-  /**
-   * For numeric types, contains the original text representation of the value.
-   * For booleans, "true" or "false".
-   * For strings, contains the default text contents (not escaped in any way).
-   * For bytes, contains the C escaped value.  All bytes >= 128 are escaped.
-   *
-   * @generated from field: optional string default_value = 7;
-   */
-  defaultValue?: string;
-  /**
-   * If set, gives the index of a oneof in the containing type's oneof_decl
-   * list.  This field is a member of that oneof.
-   *
-   * @generated from field: optional int32 oneof_index = 9;
-   */
-  oneofIndex?: number;
-  /**
-   * JSON name of this field. The value is set by protocol compiler. If the
-   * user has set a "json_name" option on this field, that option's value
-   * will be used. Otherwise, it's deduced from the field's name by converting
-   * it to camelCase.
-   *
-   * @generated from field: optional string json_name = 10;
-   */
-  jsonName?: string;
-  /**
-   * @generated from field: optional google.protobuf.FieldOptions options = 8;
-   */
-  options?: FieldOptions;
-  /**
-   * If true, this is a proto3 "optional". When a proto3 field is optional, it
-   * tracks presence regardless of field type.
-   *
-   * When proto3_optional is true, this field must belong to a oneof to signal
-   * to old proto3 clients that presence is tracked for this field. This oneof
-   * is known as a "synthetic" oneof, and this field must be its sole member
-   * (each proto3 optional field gets its own synthetic oneof). Synthetic oneofs
-   * exist in the descriptor only, and do not generate any API. Synthetic oneofs
-   * must be ordered after all "real" oneofs.
-   *
-   * For message fields, proto3_optional doesn't create any semantic change,
-   * since non-repeated message fields always track presence. However it still
-   * indicates the semantic detail of whether the user wrote "optional" or not.
-   * This can be useful for round-tripping the .proto file. For consistency we
-   * give message fields a synthetic oneof also, even though it is not required
-   * to track presence. This is especially important because the parser can't
-   * tell if a field is a message or an enum, so it must always create a
-   * synthetic oneof.
-   *
-   * Proto2 optional fields do not set this flag, because they already indicate
-   * optional with `LABEL_OPTIONAL`.
-   *
-   * @generated from field: optional bool proto3_optional = 17;
-   */
-  proto3Optional?: boolean;
+  CORD = 1,
+  STRING_PIECE = 2,
 }
 
-export const FieldDescriptorProto: MessageType<FieldDescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FieldDescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      { no: 3, name: "number", kind: "scalar", T: ScalarType.INT32, opt: true },
-      {
-        no: 4,
-        name: "label",
-        kind: "enum",
-        T: FieldDescriptorProto_Label_Enum,
-        opt: true,
-      },
-      {
-        no: 5,
-        name: "type",
-        kind: "enum",
-        T: FieldDescriptorProto_Type_Enum,
-        opt: true,
-      },
-      {
-        no: 6,
-        name: "type_name",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 2,
-        name: "extendee",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 7,
-        name: "default_value",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 9,
-        name: "oneof_index",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        opt: true,
-      },
-      {
-        no: 10,
-        name: "json_name",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      { no: 8, name: "options", kind: "message", T: FieldOptions, opt: true },
-      {
-        no: 17,
-        name: "proto3_optional",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+export const FieldOptions_CType_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FieldOptions.CType",
+  [
+    [0, "STRING"],
+    [1, "CORD"],
+    [2, "STRING_PIECE"],
+  ],
+);
+
+/**
+ * @generated from enum google.protobuf.FieldOptions.JSType
+ */
+export enum FieldOptions_JSType {
+  /**
+   * Use the default type.
+   */
+  JS_NORMAL = 0,
+
+  /**
+   * Use JavaScript strings.
+   */
+  JS_STRING = 1,
+
+  /**
+   * Use JavaScript numbers.
+   */
+  JS_NUMBER = 2,
+}
+
+export const FieldOptions_JSType_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FieldOptions.JSType",
+  [
+    [0, "JS_NORMAL"],
+    [1, "JS_STRING"],
+    [2, "JS_NUMBER"],
+  ],
+);
+
+/**
+ * If set to RETENTION_SOURCE, the option will be omitted from the binary.
+ * Note: as of January 2023, support for this is in progress and does not yet
+ * have an effect (b/264593489).
+ *
+ * @generated from enum google.protobuf.FieldOptions.OptionRetention
+ */
+export enum FieldOptions_OptionRetention {
+  RETENTION_UNKNOWN = 0,
+  RETENTION_RUNTIME = 1,
+  RETENTION_SOURCE = 2,
+}
+
+export const FieldOptions_OptionRetention_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FieldOptions.OptionRetention",
+  [
+    [0, "RETENTION_UNKNOWN"],
+    [1, "RETENTION_RUNTIME"],
+    [2, "RETENTION_SOURCE"],
+  ],
+);
+
+/**
+ * This indicates the types of entities that the field may apply to when used
+ * as an option. If it is unset, then the field may be freely used as an
+ * option on any kind of entity. Note: as of January 2023, support for this is
+ * in progress and does not yet have an effect (b/264593489).
+ *
+ * @generated from enum google.protobuf.FieldOptions.OptionTargetType
+ */
+export enum FieldOptions_OptionTargetType {
+  TARGET_TYPE_UNKNOWN = 0,
+  TARGET_TYPE_FILE = 1,
+  TARGET_TYPE_EXTENSION_RANGE = 2,
+  TARGET_TYPE_MESSAGE = 3,
+  TARGET_TYPE_FIELD = 4,
+  TARGET_TYPE_ONEOF = 5,
+  TARGET_TYPE_ENUM = 6,
+  TARGET_TYPE_ENUM_ENTRY = 7,
+  TARGET_TYPE_SERVICE = 8,
+  TARGET_TYPE_METHOD = 9,
+}
+
+export const FieldOptions_OptionTargetType_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.FieldOptions.OptionTargetType",
+    [
+      [0, "TARGET_TYPE_UNKNOWN"],
+      [1, "TARGET_TYPE_FILE"],
+      [2, "TARGET_TYPE_EXTENSION_RANGE"],
+      [3, "TARGET_TYPE_MESSAGE"],
+      [4, "TARGET_TYPE_FIELD"],
+      [5, "TARGET_TYPE_ONEOF"],
+      [6, "TARGET_TYPE_ENUM"],
+      [7, "TARGET_TYPE_ENUM_ENTRY"],
+      [8, "TARGET_TYPE_SERVICE"],
+      [9, "TARGET_TYPE_METHOD"],
+    ],
+  );
+
+/**
+ * @generated from message google.protobuf.FieldOptions.EditionDefault
+ */
+export interface FieldOptions_EditionDefault {
+  edition?: Edition;
+  /**
+   * Textproto value.
+   */
+  value?: string;
+}
+
+export const FieldOptions_EditionDefault: MessageType<FieldOptions_EditionDefault> =
+  /* @__PURE__ */ createMessageType<FieldOptions_EditionDefault>(
+    "google.protobuf.FieldOptions.EditionDefault",
+    () => [
+      [2, "value", 9, 4],
+      [3, "edition", 14, 4, Edition_Enum],
+    ],
+  );
+
+/**
+ * @generated from message google.protobuf.OneofOptions
+ */
+export interface OneofOptions {
+  /**
+   * Any features defined in the specific edition.
+   */
+  features?: FeatureSet;
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  uninterpretedOption?: UninterpretedOption[];
+}
+
+export const OneofOptions: MessageType<OneofOptions> =
+  /* @__PURE__ */ createMessageType<OneofOptions>(
+    "google.protobuf.OneofOptions",
+    () => [
+      [1, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
+
+/**
+ * @generated from message google.protobuf.EnumOptions
+ */
+export interface EnumOptions {
+  /**
+   * Set this option to true to allow mapping different tag names to the same
+   * value.
+   */
+  allowAlias?: boolean;
+  /**
+   * Is this enum deprecated?
+   * Depending on the target platform, this can emit Deprecated annotations
+   * for the enum, or it will be completely ignored; in the very least, this
+   * is a formalization for deprecating enums.
+   */
+  deprecated?: boolean;
+  /**
+   * Enable the legacy handling of JSON field name conflicts.  This lowercases
+   * and strips underscored from the fields before comparison in proto3 only.
+   * The new behavior takes `json_name` into account and applies to proto2 as
+   * well.
+   * TODO Remove this legacy behavior once downstream teams have
+   * had time to migrate.
+   * @deprecated
+   */
+  deprecatedLegacyJsonFieldConflicts?: boolean;
+  /**
+   * Any features defined in the specific edition.
+   */
+  features?: FeatureSet;
+  /**
+   * The parser stores options it doesn't recognize here. See above.
+   */
+  uninterpretedOption?: UninterpretedOption[];
+}
+
+export const EnumOptions: MessageType<EnumOptions> =
+  /* @__PURE__ */ createMessageType<EnumOptions>(
+    "google.protobuf.EnumOptions",
+    () => [
+      [2, "allow_alias", 8, 4],
+      [3, "deprecated", 8, 4],
+      [6, "deprecated_legacy_json_field_conflicts", 8, 4],
+      [7, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
 
 /**
  * @generated from message google.protobuf.EnumValueOptions
@@ -1383,825 +1383,65 @@ export interface EnumValueOptions {
    * Depending on the target platform, this can emit Deprecated annotations
    * for the enum value, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating enum values.
-   *
-   * @generated from field: optional bool deprecated = 1 [default = false];
    */
   deprecated?: boolean;
   /**
    * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 2;
    */
   features?: FeatureSet;
   /**
    * Indicate that fields annotated with this enum value should not be printed
    * out when using debug formats, e.g. when the field contains sensitive
    * credentials.
-   *
-   * @generated from field: optional bool debug_redact = 3 [default = false];
    */
   debugRedact?: boolean;
   /**
    * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
 }
 
 export const EnumValueOptions: MessageType<EnumValueOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.EnumValueOptions",
-    fields: [
-      {
-        no: 1,
-        name: "deprecated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      { no: 2, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 3,
-        name: "debug_redact",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+  /* @__PURE__ */ createMessageType<EnumValueOptions>(
+    "google.protobuf.EnumValueOptions",
+    () => [
+      [1, "deprecated", 8, 4],
+      [2, "features", 11, 0, FeatureSet.codec],
+      [3, "debug_redact", 8, 4],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
 
 /**
- * Describes a value within an enum.
- *
- * @generated from message google.protobuf.EnumValueDescriptorProto
+ * @generated from message google.protobuf.ServiceOptions
  */
-export interface EnumValueDescriptorProto {
+export interface ServiceOptions {
   /**
-   * @generated from field: optional string name = 1;
+   * Any features defined in the specific edition.
    */
-  name?: string;
+  features?: FeatureSet;
   /**
-   * @generated from field: optional int32 number = 2;
-   */
-  number?: number;
-  /**
-   * @generated from field: optional google.protobuf.EnumValueOptions options = 3;
-   */
-  options?: EnumValueOptions;
-}
-
-export const EnumValueDescriptorProto: MessageType<EnumValueDescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.EnumValueDescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      { no: 2, name: "number", kind: "scalar", T: ScalarType.INT32, opt: true },
-      {
-        no: 3,
-        name: "options",
-        kind: "message",
-        T: EnumValueOptions,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.EnumOptions
- */
-export interface EnumOptions {
-  /**
-   * Set this option to true to allow mapping different tag names to the same
-   * value.
-   *
-   * @generated from field: optional bool allow_alias = 2;
-   */
-  allowAlias?: boolean;
-  /**
-   * Is this enum deprecated?
+   * Is this service deprecated?
    * Depending on the target platform, this can emit Deprecated annotations
-   * for the enum, or it will be completely ignored; in the very least, this
-   * is a formalization for deprecating enums.
-   *
-   * @generated from field: optional bool deprecated = 3 [default = false];
+   * for the service, or it will be completely ignored; in the very least,
+   * this is a formalization for deprecating services.
    */
   deprecated?: boolean;
   /**
-   * Enable the legacy handling of JSON field name conflicts.  This lowercases
-   * and strips underscored from the fields before comparison in proto3 only.
-   * The new behavior takes `json_name` into account and applies to proto2 as
-   * well.
-   * TODO Remove this legacy behavior once downstream teams have
-   * had time to migrate.
-   *
-   * @generated from field: optional bool deprecated_legacy_json_field_conflicts = 6 [deprecated = true];
-   * @deprecated
-   */
-  deprecatedLegacyJsonFieldConflicts?: boolean;
-  /**
-   * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 7;
-   */
-  features?: FeatureSet;
-  /**
    * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
 }
 
-export const EnumOptions: MessageType<EnumOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.EnumOptions",
-    fields: [
-      {
-        no: 2,
-        name: "allow_alias",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-      {
-        no: 3,
-        name: "deprecated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 6,
-        name: "deprecated_legacy_json_field_conflicts",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-      { no: 7, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * Range of reserved numeric values. Reserved values may not be used by
- * entries in the same enum. Reserved ranges may not overlap.
- *
- * Note that this is distinct from DescriptorProto.ReservedRange in that it
- * is inclusive such that it can appropriately represent the entire int32
- * domain.
- *
- * @generated from message google.protobuf.EnumDescriptorProto.EnumReservedRange
- */
-export interface EnumDescriptorProto_EnumReservedRange {
-  /**
-   * Inclusive.
-   *
-   * @generated from field: optional int32 start = 1;
-   */
-  start?: number;
-  /**
-   * Inclusive.
-   *
-   * @generated from field: optional int32 end = 2;
-   */
-  end?: number;
-}
-
-export const EnumDescriptorProto_EnumReservedRange: MessageType<EnumDescriptorProto_EnumReservedRange> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.EnumDescriptorProto.EnumReservedRange",
-    fields: [
-      { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
-      { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * Describes an enum type.
- *
- * @generated from message google.protobuf.EnumDescriptorProto
- */
-export interface EnumDescriptorProto {
-  /**
-   * @generated from field: optional string name = 1;
-   */
-  name?: string;
-  /**
-   * @generated from field: repeated google.protobuf.EnumValueDescriptorProto value = 2;
-   */
-  value?: EnumValueDescriptorProto[];
-  /**
-   * @generated from field: optional google.protobuf.EnumOptions options = 3;
-   */
-  options?: EnumOptions;
-  /**
-   * Range of reserved numeric values. Reserved numeric values may not be used
-   * by enum values in the same enum declaration. Reserved ranges may not
-   * overlap.
-   *
-   * @generated from field: repeated google.protobuf.EnumDescriptorProto.EnumReservedRange reserved_range = 4;
-   */
-  reservedRange?: EnumDescriptorProto_EnumReservedRange[];
-  /**
-   * Reserved enum value names, which may not be reused. A given name may only
-   * be reserved once.
-   *
-   * @generated from field: repeated string reserved_name = 5;
-   */
-  reservedName?: string[];
-}
-
-export const EnumDescriptorProto: MessageType<EnumDescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.EnumDescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 2,
-        name: "value",
-        kind: "message",
-        T: EnumValueDescriptorProto,
-        repeated: true,
-      },
-      { no: 3, name: "options", kind: "message", T: EnumOptions, opt: true },
-      {
-        no: 4,
-        name: "reserved_range",
-        kind: "message",
-        T: EnumDescriptorProto_EnumReservedRange,
-        repeated: true,
-      },
-      {
-        no: 5,
-        name: "reserved_name",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.ExtensionRangeOptions.Declaration
- */
-export interface ExtensionRangeOptions_Declaration {
-  /**
-   * The extension number declared within the extension range.
-   *
-   * @generated from field: optional int32 number = 1;
-   */
-  number?: number;
-  /**
-   * The fully-qualified name of the extension field. There must be a leading
-   * dot in front of the full name.
-   *
-   * @generated from field: optional string full_name = 2;
-   */
-  fullName?: string;
-  /**
-   * The fully-qualified type name of the extension field. Unlike
-   * Metadata.type, Declaration.type must have a leading dot for messages
-   * and enums.
-   *
-   * @generated from field: optional string type = 3;
-   */
-  type?: string;
-  /**
-   * If true, indicates that the number is reserved in the extension range,
-   * and any extension field with the number will fail to compile. Set this
-   * when a declared extension field is deleted.
-   *
-   * @generated from field: optional bool reserved = 5;
-   */
-  reserved?: boolean;
-  /**
-   * If true, indicates that the extension must be defined as repeated.
-   * Otherwise the extension must be defined as optional.
-   *
-   * @generated from field: optional bool repeated = 6;
-   */
-  repeated?: boolean;
-}
-
-export const ExtensionRangeOptions_Declaration: MessageType<ExtensionRangeOptions_Declaration> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.ExtensionRangeOptions.Declaration",
-    fields: [
-      { no: 1, name: "number", kind: "scalar", T: ScalarType.INT32, opt: true },
-      {
-        no: 2,
-        name: "full_name",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      { no: 3, name: "type", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 5,
-        name: "reserved",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-      {
-        no: 6,
-        name: "repeated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.ExtensionRangeOptions
- */
-export interface ExtensionRangeOptions {
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
-   */
-  uninterpretedOption?: UninterpretedOption[];
-  /**
-   * For external users: DO NOT USE. We are in the process of open sourcing
-   * extension declaration and executing internal cleanups before it can be
-   * used externally.
-   *
-   * @generated from field: repeated google.protobuf.ExtensionRangeOptions.Declaration declaration = 2;
-   */
-  declaration?: ExtensionRangeOptions_Declaration[];
-  /**
-   * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 50;
-   */
-  features?: FeatureSet;
-  /**
-   * The verification state of the range.
-   * TODO: flip the default to DECLARATION once all empty ranges
-   * are marked as UNVERIFIED.
-   *
-   * @generated from field: optional google.protobuf.ExtensionRangeOptions.VerificationState verification = 3 [default = UNVERIFIED];
-   */
-  verification?: ExtensionRangeOptions_VerificationState;
-}
-
-export const ExtensionRangeOptions: MessageType<ExtensionRangeOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.ExtensionRangeOptions",
-    fields: [
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-      {
-        no: 2,
-        name: "declaration",
-        kind: "message",
-        T: ExtensionRangeOptions_Declaration,
-        repeated: true,
-      },
-      { no: 50, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 3,
-        name: "verification",
-        kind: "enum",
-        T: ExtensionRangeOptions_VerificationState_Enum,
-        opt: true,
-        default: ExtensionRangeOptions_VerificationState.UNVERIFIED,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.DescriptorProto.ExtensionRange
- */
-export interface DescriptorProto_ExtensionRange {
-  /**
-   * Inclusive.
-   *
-   * @generated from field: optional int32 start = 1;
-   */
-  start?: number;
-  /**
-   * Exclusive.
-   *
-   * @generated from field: optional int32 end = 2;
-   */
-  end?: number;
-  /**
-   * @generated from field: optional google.protobuf.ExtensionRangeOptions options = 3;
-   */
-  options?: ExtensionRangeOptions;
-}
-
-export const DescriptorProto_ExtensionRange: MessageType<DescriptorProto_ExtensionRange> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.DescriptorProto.ExtensionRange",
-    fields: [
-      { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
-      { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
-      {
-        no: 3,
-        name: "options",
-        kind: "message",
-        T: ExtensionRangeOptions,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.OneofOptions
- */
-export interface OneofOptions {
-  /**
-   * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 1;
-   */
-  features?: FeatureSet;
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
-   */
-  uninterpretedOption?: UninterpretedOption[];
-}
-
-export const OneofOptions: MessageType<OneofOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.OneofOptions",
-    fields: [
-      { no: 1, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * Describes a oneof.
- *
- * @generated from message google.protobuf.OneofDescriptorProto
- */
-export interface OneofDescriptorProto {
-  /**
-   * @generated from field: optional string name = 1;
-   */
-  name?: string;
-  /**
-   * @generated from field: optional google.protobuf.OneofOptions options = 2;
-   */
-  options?: OneofOptions;
-}
-
-export const OneofDescriptorProto: MessageType<OneofDescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.OneofDescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      { no: 2, name: "options", kind: "message", T: OneofOptions, opt: true },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.MessageOptions
- */
-export interface MessageOptions {
-  /**
-   * Set true to use the old proto1 MessageSet wire format for extensions.
-   * This is provided for backwards-compatibility with the MessageSet wire
-   * format.  You should not use this for any other reason:  It's less
-   * efficient, has fewer features, and is more complicated.
-   *
-   * The message must be defined exactly as follows:
-   *   message Foo {
-   *     option message_set_wire_format = true;
-   *     extensions 4 to max;
-   *   }
-   * Note that the message cannot have any defined fields; MessageSets only
-   * have extensions.
-   *
-   * All extensions of your type must be singular messages; e.g. they cannot
-   * be int32s, enums, or repeated messages.
-   *
-   * Because this is an option, the above two restrictions are not enforced by
-   * the protocol compiler.
-   *
-   * @generated from field: optional bool message_set_wire_format = 1 [default = false];
-   */
-  messageSetWireFormat?: boolean;
-  /**
-   * Disables the generation of the standard "descriptor()" accessor, which can
-   * conflict with a field of the same name.  This is meant to make migration
-   * from proto1 easier; new code should avoid fields named "descriptor".
-   *
-   * @generated from field: optional bool no_standard_descriptor_accessor = 2 [default = false];
-   */
-  noStandardDescriptorAccessor?: boolean;
-  /**
-   * Is this message deprecated?
-   * Depending on the target platform, this can emit Deprecated annotations
-   * for the message, or it will be completely ignored; in the very least,
-   * this is a formalization for deprecating messages.
-   *
-   * @generated from field: optional bool deprecated = 3 [default = false];
-   */
-  deprecated?: boolean;
-  /**
-   * Whether the message is an automatically generated map entry type for the
-   * maps field.
-   *
-   * For maps fields:
-   *     map<KeyType, ValueType> map_field = 1;
-   * The parsed descriptor looks like:
-   *     message MapFieldEntry {
-   *         option map_entry = true;
-   *         optional KeyType key = 1;
-   *         optional ValueType value = 2;
-   *     }
-   *     repeated MapFieldEntry map_field = 1;
-   *
-   * Implementations may choose not to generate the map_entry=true message, but
-   * use a native map in the target language to hold the keys and values.
-   * The reflection APIs in such implementations still need to work as
-   * if the field is a repeated message field.
-   *
-   * NOTE: Do not set the option in .proto files. Always use the maps syntax
-   * instead. The option should only be implicitly set by the proto compiler
-   * parser.
-   *
-   * @generated from field: optional bool map_entry = 7;
-   */
-  mapEntry?: boolean;
-  /**
-   * Enable the legacy handling of JSON field name conflicts.  This lowercases
-   * and strips underscored from the fields before comparison in proto3 only.
-   * The new behavior takes `json_name` into account and applies to proto2 as
-   * well.
-   *
-   * This should only be used as a temporary measure against broken builds due
-   * to the change in behavior for JSON field name conflicts.
-   *
-   * TODO This is legacy behavior we plan to remove once downstream
-   * teams have had time to migrate.
-   *
-   * @generated from field: optional bool deprecated_legacy_json_field_conflicts = 11 [deprecated = true];
-   * @deprecated
-   */
-  deprecatedLegacyJsonFieldConflicts?: boolean;
-  /**
-   * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 12;
-   */
-  features?: FeatureSet;
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
-   */
-  uninterpretedOption?: UninterpretedOption[];
-}
-
-export const MessageOptions: MessageType<MessageOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.MessageOptions",
-    fields: [
-      {
-        no: 1,
-        name: "message_set_wire_format",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 2,
-        name: "no_standard_descriptor_accessor",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 3,
-        name: "deprecated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 7,
-        name: "map_entry",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-      {
-        no: 11,
-        name: "deprecated_legacy_json_field_conflicts",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-      { no: 12, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * Range of reserved tag numbers. Reserved tag numbers may not be used by
- * fields or extension ranges in the same message. Reserved ranges may
- * not overlap.
- *
- * @generated from message google.protobuf.DescriptorProto.ReservedRange
- */
-export interface DescriptorProto_ReservedRange {
-  /**
-   * Inclusive.
-   *
-   * @generated from field: optional int32 start = 1;
-   */
-  start?: number;
-  /**
-   * Exclusive.
-   *
-   * @generated from field: optional int32 end = 2;
-   */
-  end?: number;
-}
-
-export const DescriptorProto_ReservedRange: MessageType<DescriptorProto_ReservedRange> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.DescriptorProto.ReservedRange",
-    fields: [
-      { no: 1, name: "start", kind: "scalar", T: ScalarType.INT32, opt: true },
-      { no: 2, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * Describes a message type.
- *
- * @generated from message google.protobuf.DescriptorProto
- */
-export interface DescriptorProto {
-  /**
-   * @generated from field: optional string name = 1;
-   */
-  name?: string;
-  /**
-   * @generated from field: repeated google.protobuf.FieldDescriptorProto field = 2;
-   */
-  field?: FieldDescriptorProto[];
-  /**
-   * @generated from field: repeated google.protobuf.FieldDescriptorProto extension = 6;
-   */
-  extension?: FieldDescriptorProto[];
-  /**
-   * @generated from field: repeated google.protobuf.DescriptorProto nested_type = 3;
-   */
-  nestedType?: DescriptorProto[];
-  /**
-   * @generated from field: repeated google.protobuf.EnumDescriptorProto enum_type = 4;
-   */
-  enumType?: EnumDescriptorProto[];
-  /**
-   * @generated from field: repeated google.protobuf.DescriptorProto.ExtensionRange extension_range = 5;
-   */
-  extensionRange?: DescriptorProto_ExtensionRange[];
-  /**
-   * @generated from field: repeated google.protobuf.OneofDescriptorProto oneof_decl = 8;
-   */
-  oneofDecl?: OneofDescriptorProto[];
-  /**
-   * @generated from field: optional google.protobuf.MessageOptions options = 7;
-   */
-  options?: MessageOptions;
-  /**
-   * @generated from field: repeated google.protobuf.DescriptorProto.ReservedRange reserved_range = 9;
-   */
-  reservedRange?: DescriptorProto_ReservedRange[];
-  /**
-   * Reserved field names, which may not be used by fields in the same message.
-   * A given name may only be reserved once.
-   *
-   * @generated from field: repeated string reserved_name = 10;
-   */
-  reservedName?: string[];
-}
-
-export const DescriptorProto: MessageType<DescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.DescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 2,
-        name: "field",
-        kind: "message",
-        T: FieldDescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 6,
-        name: "extension",
-        kind: "message",
-        T: FieldDescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 3,
-        name: "nested_type",
-        kind: "message",
-        T: () => DescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 4,
-        name: "enum_type",
-        kind: "message",
-        T: EnumDescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 5,
-        name: "extension_range",
-        kind: "message",
-        T: DescriptorProto_ExtensionRange,
-        repeated: true,
-      },
-      {
-        no: 8,
-        name: "oneof_decl",
-        kind: "message",
-        T: OneofDescriptorProto,
-        repeated: true,
-      },
-      { no: 7, name: "options", kind: "message", T: MessageOptions, opt: true },
-      {
-        no: 9,
-        name: "reserved_range",
-        kind: "message",
-        T: DescriptorProto_ReservedRange,
-        repeated: true,
-      },
-      {
-        no: 10,
-        name: "reserved_name",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+export const ServiceOptions: MessageType<ServiceOptions> =
+  /* @__PURE__ */ createMessageType<ServiceOptions>(
+    "google.protobuf.ServiceOptions",
+    () => [
+      [33, "deprecated", 8, 4],
+      [34, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
 
 /**
  * @generated from message google.protobuf.MethodOptions
@@ -2212,705 +1452,324 @@ export interface MethodOptions {
    * Depending on the target platform, this can emit Deprecated annotations
    * for the method, or it will be completely ignored; in the very least,
    * this is a formalization for deprecating methods.
-   *
-   * @generated from field: optional bool deprecated = 33 [default = false];
    */
   deprecated?: boolean;
-  /**
-   * @generated from field: optional google.protobuf.MethodOptions.IdempotencyLevel idempotency_level = 34 [default = IDEMPOTENCY_UNKNOWN];
-   */
   idempotencyLevel?: MethodOptions_IdempotencyLevel;
   /**
    * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 35;
    */
   features?: FeatureSet;
   /**
    * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
    */
   uninterpretedOption?: UninterpretedOption[];
 }
 
 export const MethodOptions: MessageType<MethodOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.MethodOptions",
-    fields: [
-      {
-        no: 33,
-        name: "deprecated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 34,
-        name: "idempotency_level",
-        kind: "enum",
-        T: MethodOptions_IdempotencyLevel_Enum,
-        opt: true,
-        default: MethodOptions_IdempotencyLevel.IDEMPOTENCY_UNKNOWN,
-      },
-      { no: 35, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+  /* @__PURE__ */ createMessageType<MethodOptions>(
+    "google.protobuf.MethodOptions",
+    () => [
+      [33, "deprecated", 8, 4],
+      [34, "idempotency_level", 14, 4, MethodOptions_IdempotencyLevel_Enum],
+      [35, "features", 11, 0, FeatureSet.codec],
+      [999, "uninterpreted_option", 11, 1, UninterpretedOption.codec],
+    ],
+  );
 
 /**
- * Describes a method of a service.
+ * Is this method side-effect-free (or safe in HTTP parlance), or idempotent,
+ * or neither? HTTP based RPC implementation may choose GET verb for safe
+ * methods, and PUT verb for idempotent methods instead of the default POST.
  *
- * @generated from message google.protobuf.MethodDescriptorProto
+ * @generated from enum google.protobuf.MethodOptions.IdempotencyLevel
  */
-export interface MethodDescriptorProto {
+export enum MethodOptions_IdempotencyLevel {
+  IDEMPOTENCY_UNKNOWN = 0,
+
   /**
-   * @generated from field: optional string name = 1;
+   * implies idempotent
    */
-  name?: string;
+  NO_SIDE_EFFECTS = 1,
+
   /**
-   * Input and output type names.  These are resolved in the same way as
-   * FieldDescriptorProto.type_name, but must refer to a message type.
-   *
-   * @generated from field: optional string input_type = 2;
+   * idempotent, but may have side effects
    */
-  inputType?: string;
-  /**
-   * @generated from field: optional string output_type = 3;
-   */
-  outputType?: string;
-  /**
-   * @generated from field: optional google.protobuf.MethodOptions options = 4;
-   */
-  options?: MethodOptions;
-  /**
-   * Identifies if client streams multiple client messages
-   *
-   * @generated from field: optional bool client_streaming = 5 [default = false];
-   */
-  clientStreaming?: boolean;
-  /**
-   * Identifies if server streams multiple server messages
-   *
-   * @generated from field: optional bool server_streaming = 6 [default = false];
-   */
-  serverStreaming?: boolean;
+  IDEMPOTENT = 2,
 }
 
-export const MethodDescriptorProto: MessageType<MethodDescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.MethodDescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 2,
-        name: "input_type",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 3,
-        name: "output_type",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      { no: 4, name: "options", kind: "message", T: MethodOptions, opt: true },
-      {
-        no: 5,
-        name: "client_streaming",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 6,
-        name: "server_streaming",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+export const MethodOptions_IdempotencyLevel_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.MethodOptions.IdempotencyLevel",
+    [
+      [0, "IDEMPOTENCY_UNKNOWN"],
+      [1, "NO_SIDE_EFFECTS"],
+      [2, "IDEMPOTENT"],
+    ],
+  );
 
 /**
- * @generated from message google.protobuf.ServiceOptions
- */
-export interface ServiceOptions {
-  /**
-   * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 34;
-   */
-  features?: FeatureSet;
-  /**
-   * Is this service deprecated?
-   * Depending on the target platform, this can emit Deprecated annotations
-   * for the service, or it will be completely ignored; in the very least,
-   * this is a formalization for deprecating services.
-   *
-   * @generated from field: optional bool deprecated = 33 [default = false];
-   */
-  deprecated?: boolean;
-  /**
-   * The parser stores options it doesn't recognize here. See above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
-   */
-  uninterpretedOption?: UninterpretedOption[];
-}
-
-export const ServiceOptions: MessageType<ServiceOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.ServiceOptions",
-    fields: [
-      { no: 34, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 33,
-        name: "deprecated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * Describes a service.
+ * A message representing a option the parser does not recognize. This only
+ * appears in options protos created by the compiler::Parser class.
+ * DescriptorPool resolves these when building Descriptor objects. Therefore,
+ * options protos in descriptor objects (e.g. returned by Descriptor::options(),
+ * or produced by Descriptor::CopyTo()) will never have UninterpretedOptions
+ * in them.
  *
- * @generated from message google.protobuf.ServiceDescriptorProto
+ * @generated from message google.protobuf.UninterpretedOption
  */
-export interface ServiceDescriptorProto {
+export interface UninterpretedOption {
+  name?: UninterpretedOption_NamePart[];
   /**
-   * @generated from field: optional string name = 1;
+   * The value of the uninterpreted option, in whatever type the tokenizer
+   * identified it as during parsing. Exactly one of these should be set.
    */
-  name?: string;
-  /**
-   * @generated from field: repeated google.protobuf.MethodDescriptorProto method = 2;
-   */
-  method?: MethodDescriptorProto[];
-  /**
-   * @generated from field: optional google.protobuf.ServiceOptions options = 3;
-   */
-  options?: ServiceOptions;
+  identifierValue?: string;
+  positiveIntValue?: bigint;
+  negativeIntValue?: bigint;
+  doubleValue?: number;
+  stringValue?: Uint8Array;
+  aggregateValue?: string;
 }
 
-export const ServiceDescriptorProto: MessageType<ServiceDescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.ServiceDescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 2,
-        name: "method",
-        kind: "message",
-        T: MethodDescriptorProto,
-        repeated: true,
-      },
-      { no: 3, name: "options", kind: "message", T: ServiceOptions, opt: true },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+export const UninterpretedOption: MessageType<UninterpretedOption> =
+  /* @__PURE__ */ createMessageType<UninterpretedOption>(
+    "google.protobuf.UninterpretedOption",
+    () => [
+      [2, "name", 11, 1, UninterpretedOption_NamePart.codec],
+      [3, "identifier_value", 9, 4],
+      [4, "positive_int_value", 4, 4],
+      [5, "negative_int_value", 3, 4],
+      [6, "double_value", 1, 4],
+      [7, "string_value", 12, 4],
+      [8, "aggregate_value", 9, 4],
+    ],
+  );
 
 /**
- * @generated from message google.protobuf.FileOptions
+ * The name of the uninterpreted option.  Each string represents a segment in
+ * a dot-separated name.  is_extension is true iff a segment represents an
+ * extension (denoted with parentheses in options specs in .proto files).
+ * E.g.,{ ["foo", false], ["bar.baz", true], ["moo", false] } represents
+ * "foo.(bar.baz).moo".
+ *
+ * @generated from message google.protobuf.UninterpretedOption.NamePart
  */
-export interface FileOptions {
+export interface UninterpretedOption_NamePart {
+  namePart?: string;
+  isExtension?: boolean;
+}
+
+export const UninterpretedOption_NamePart: MessageType<UninterpretedOption_NamePart> =
+  /* @__PURE__ */ createMessageType<UninterpretedOption_NamePart>(
+    "google.protobuf.UninterpretedOption.NamePart",
+    () => [
+      [1, "name_part", 9, 4],
+      [2, "is_extension", 8, 4],
+    ],
+  );
+
+/**
+ * TODO Enums in C++ gencode (and potentially other languages) are
+ * not well scoped.  This means that each of the feature enums below can clash
+ * with each other.  The short names we've chosen maximize call-site
+ * readability, but leave us very open to this scenario.  A future feature will
+ * be designed and implemented to handle this, hopefully before we ever hit a
+ * conflict here.
+ *
+ * @generated from message google.protobuf.FeatureSet
+ */
+export interface FeatureSet {
+  fieldPresence?: FeatureSet_FieldPresence;
+  enumType?: FeatureSet_EnumType;
+  repeatedFieldEncoding?: FeatureSet_RepeatedFieldEncoding;
+  utf8Validation?: FeatureSet_Utf8Validation;
+  messageEncoding?: FeatureSet_MessageEncoding;
+  jsonFormat?: FeatureSet_JsonFormat;
+}
+
+export const FeatureSet: MessageType<FeatureSet> =
+  /* @__PURE__ */ createMessageType<FeatureSet>(
+    "google.protobuf.FeatureSet",
+    () => [
+      [1, "field_presence", 14, 4, FeatureSet_FieldPresence_Enum],
+      [2, "enum_type", 14, 4, FeatureSet_EnumType_Enum],
+      [
+        3,
+        "repeated_field_encoding",
+        14,
+        4,
+        FeatureSet_RepeatedFieldEncoding_Enum,
+      ],
+      [4, "utf8_validation", 14, 4, FeatureSet_Utf8Validation_Enum],
+      [5, "message_encoding", 14, 4, FeatureSet_MessageEncoding_Enum],
+      [6, "json_format", 14, 4, FeatureSet_JsonFormat_Enum],
+    ],
+  );
+
+/**
+ * @generated from enum google.protobuf.FeatureSet.FieldPresence
+ */
+export enum FeatureSet_FieldPresence {
+  FIELD_PRESENCE_UNKNOWN = 0,
+  EXPLICIT = 1,
+  IMPLICIT = 2,
+  LEGACY_REQUIRED = 3,
+}
+
+export const FeatureSet_FieldPresence_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FeatureSet.FieldPresence",
+  [
+    [0, "FIELD_PRESENCE_UNKNOWN"],
+    [1, "EXPLICIT"],
+    [2, "IMPLICIT"],
+    [3, "LEGACY_REQUIRED"],
+  ],
+);
+
+/**
+ * @generated from enum google.protobuf.FeatureSet.EnumType
+ */
+export enum FeatureSet_EnumType {
+  ENUM_TYPE_UNKNOWN = 0,
+  OPEN = 1,
+  CLOSED = 2,
+}
+
+export const FeatureSet_EnumType_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FeatureSet.EnumType",
+  [
+    [0, "ENUM_TYPE_UNKNOWN"],
+    [1, "OPEN"],
+    [2, "CLOSED"],
+  ],
+);
+
+/**
+ * @generated from enum google.protobuf.FeatureSet.RepeatedFieldEncoding
+ */
+export enum FeatureSet_RepeatedFieldEncoding {
+  REPEATED_FIELD_ENCODING_UNKNOWN = 0,
+  PACKED = 1,
+  EXPANDED = 2,
+}
+
+export const FeatureSet_RepeatedFieldEncoding_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.FeatureSet.RepeatedFieldEncoding",
+    [
+      [0, "REPEATED_FIELD_ENCODING_UNKNOWN"],
+      [1, "PACKED"],
+      [2, "EXPANDED"],
+    ],
+  );
+
+/**
+ * @generated from enum google.protobuf.FeatureSet.Utf8Validation
+ */
+export enum FeatureSet_Utf8Validation {
+  UTF8_VALIDATION_UNKNOWN = 0,
+  VERIFY = 2,
+  NONE = 3,
+}
+
+export const FeatureSet_Utf8Validation_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FeatureSet.Utf8Validation",
+  [
+    [0, "UTF8_VALIDATION_UNKNOWN"],
+    [2, "VERIFY"],
+    [3, "NONE"],
+  ],
+);
+
+/**
+ * @generated from enum google.protobuf.FeatureSet.MessageEncoding
+ */
+export enum FeatureSet_MessageEncoding {
+  MESSAGE_ENCODING_UNKNOWN = 0,
+  LENGTH_PREFIXED = 1,
+  DELIMITED = 2,
+}
+
+export const FeatureSet_MessageEncoding_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FeatureSet.MessageEncoding",
+  [
+    [0, "MESSAGE_ENCODING_UNKNOWN"],
+    [1, "LENGTH_PREFIXED"],
+    [2, "DELIMITED"],
+  ],
+);
+
+/**
+ * @generated from enum google.protobuf.FeatureSet.JsonFormat
+ */
+export enum FeatureSet_JsonFormat {
+  JSON_FORMAT_UNKNOWN = 0,
+  ALLOW = 1,
+  LEGACY_BEST_EFFORT = 2,
+}
+
+export const FeatureSet_JsonFormat_Enum = /* @__PURE__ */ createEnumType(
+  "google.protobuf.FeatureSet.JsonFormat",
+  [
+    [0, "JSON_FORMAT_UNKNOWN"],
+    [1, "ALLOW"],
+    [2, "LEGACY_BEST_EFFORT"],
+  ],
+);
+
+/**
+ * A compiled specification for the defaults of a set of features.  These
+ * messages are generated from FeatureSet extensions and can be used to seed
+ * feature resolution. The resolution with this object becomes a simple search
+ * for the closest matching edition, followed by proto merges.
+ *
+ * @generated from message google.protobuf.FeatureSetDefaults
+ */
+export interface FeatureSetDefaults {
+  defaults?: FeatureSetDefaults_FeatureSetEditionDefault[];
   /**
-   * Sets the Java package where classes generated from this .proto will be
-   * placed.  By default, the proto package is used, but this is often
-   * inappropriate because proto packages do not normally start with backwards
-   * domain names.
-   *
-   * @generated from field: optional string java_package = 1;
+   * The minimum supported edition (inclusive) when this was constructed.
+   * Editions before this will not have defaults.
    */
-  javaPackage?: string;
+  minimumEdition?: Edition;
   /**
-   * Controls the name of the wrapper Java class generated for the .proto file.
-   * That class will always contain the .proto file's getDescriptor() method as
-   * well as any top-level extensions defined in the .proto file.
-   * If java_multiple_files is disabled, then all the other classes from the
-   * .proto file will be nested inside the single wrapper outer class.
-   *
-   * @generated from field: optional string java_outer_classname = 8;
+   * The maximum known edition (inclusive) when this was constructed. Editions
+   * after this will not have reliable defaults.
    */
-  javaOuterClassname?: string;
-  /**
-   * If enabled, then the Java code generator will generate a separate .java
-   * file for each top-level message, enum, and service defined in the .proto
-   * file.  Thus, these types will *not* be nested inside the wrapper class
-   * named by java_outer_classname.  However, the wrapper class will still be
-   * generated to contain the file's getDescriptor() method as well as any
-   * top-level extensions defined in the file.
-   *
-   * @generated from field: optional bool java_multiple_files = 10 [default = false];
-   */
-  javaMultipleFiles?: boolean;
-  /**
-   * This option does nothing.
-   *
-   * @generated from field: optional bool java_generate_equals_and_hash = 20 [deprecated = true];
-   * @deprecated
-   */
-  javaGenerateEqualsAndHash?: boolean;
-  /**
-   * If set true, then the Java2 code generator will generate code that
-   * throws an exception whenever an attempt is made to assign a non-UTF-8
-   * byte sequence to a string field.
-   * Message reflection will do the same.
-   * However, an extension field still accepts non-UTF-8 byte sequences.
-   * This option has no effect on when used with the lite runtime.
-   *
-   * @generated from field: optional bool java_string_check_utf8 = 27 [default = false];
-   */
-  javaStringCheckUtf8?: boolean;
-  /**
-   * @generated from field: optional google.protobuf.FileOptions.OptimizeMode optimize_for = 9 [default = SPEED];
-   */
-  optimizeFor?: FileOptions_OptimizeMode;
-  /**
-   * Sets the Go package where structs generated from this .proto will be
-   * placed. If omitted, the Go package will be derived from the following:
-   *   - The basename of the package import path, if provided.
-   *   - Otherwise, the package statement in the .proto file, if present.
-   *   - Otherwise, the basename of the .proto file, without extension.
-   *
-   * @generated from field: optional string go_package = 11;
-   */
-  goPackage?: string;
-  /**
-   * Should generic services be generated in each language?  "Generic" services
-   * are not specific to any particular RPC system.  They are generated by the
-   * main code generators in each language (without additional plugins).
-   * Generic services were the only kind of service generation supported by
-   * early versions of google.protobuf.
-   *
-   * Generic services are now considered deprecated in favor of using plugins
-   * that generate code specific to your particular RPC system.  Therefore,
-   * these default to false.  Old code which depends on generic services should
-   * explicitly set them to true.
-   *
-   * @generated from field: optional bool cc_generic_services = 16 [default = false];
-   */
-  ccGenericServices?: boolean;
-  /**
-   * @generated from field: optional bool java_generic_services = 17 [default = false];
-   */
-  javaGenericServices?: boolean;
-  /**
-   * @generated from field: optional bool py_generic_services = 18 [default = false];
-   */
-  pyGenericServices?: boolean;
-  /**
-   * Is this file deprecated?
-   * Depending on the target platform, this can emit Deprecated annotations
-   * for everything in the file, or it will be completely ignored; in the very
-   * least, this is a formalization for deprecating files.
-   *
-   * @generated from field: optional bool deprecated = 23 [default = false];
-   */
-  deprecated?: boolean;
-  /**
-   * Enables the use of arenas for the proto messages in this file. This applies
-   * only to generated classes for C++.
-   *
-   * @generated from field: optional bool cc_enable_arenas = 31 [default = true];
-   */
-  ccEnableArenas?: boolean;
-  /**
-   * Sets the objective c class prefix which is prepended to all objective c
-   * generated classes from this .proto. There is no default.
-   *
-   * @generated from field: optional string objc_class_prefix = 36;
-   */
-  objcClassPrefix?: string;
-  /**
-   * Namespace for generated classes; defaults to the package.
-   *
-   * @generated from field: optional string csharp_namespace = 37;
-   */
-  csharpNamespace?: string;
-  /**
-   * By default Swift generators will take the proto package and CamelCase it
-   * replacing '.' with underscore and use that to prefix the types/symbols
-   * defined. When this options is provided, they will use this value instead
-   * to prefix the types/symbols defined.
-   *
-   * @generated from field: optional string swift_prefix = 39;
-   */
-  swiftPrefix?: string;
-  /**
-   * Sets the php class prefix which is prepended to all php generated classes
-   * from this .proto. Default is empty.
-   *
-   * @generated from field: optional string php_class_prefix = 40;
-   */
-  phpClassPrefix?: string;
-  /**
-   * Use this option to change the namespace of php generated classes. Default
-   * is empty. When this option is empty, the package name will be used for
-   * determining the namespace.
-   *
-   * @generated from field: optional string php_namespace = 41;
-   */
-  phpNamespace?: string;
-  /**
-   * Use this option to change the namespace of php generated metadata classes.
-   * Default is empty. When this option is empty, the proto file name will be
-   * used for determining the namespace.
-   *
-   * @generated from field: optional string php_metadata_namespace = 44;
-   */
-  phpMetadataNamespace?: string;
-  /**
-   * Use this option to change the package of ruby generated classes. Default
-   * is empty. When this option is not set, the package name will be used for
-   * determining the ruby package.
-   *
-   * @generated from field: optional string ruby_package = 45;
-   */
-  rubyPackage?: string;
-  /**
-   * Any features defined in the specific edition.
-   *
-   * @generated from field: optional google.protobuf.FeatureSet features = 50;
-   */
+  maximumEdition?: Edition;
+}
+
+export const FeatureSetDefaults: MessageType<FeatureSetDefaults> =
+  /* @__PURE__ */ createMessageType<FeatureSetDefaults>(
+    "google.protobuf.FeatureSetDefaults",
+    () => [
+      [1, "defaults", 11, 1, FeatureSetDefaults_FeatureSetEditionDefault.codec],
+      [4, "minimum_edition", 14, 4, Edition_Enum],
+      [5, "maximum_edition", 14, 4, Edition_Enum],
+    ],
+  );
+
+/**
+ * A map from every known edition with a unique set of defaults to its
+ * defaults. Not all editions may be contained here.  For a given edition,
+ * the defaults at the closest matching edition ordered at or before it should
+ * be used.  This field must be in strict ascending order by edition.
+ *
+ * @generated from message google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault
+ */
+export interface FeatureSetDefaults_FeatureSetEditionDefault {
+  edition?: Edition;
   features?: FeatureSet;
-  /**
-   * The parser stores options it doesn't recognize here.
-   * See the documentation for the "Options" section above.
-   *
-   * @generated from field: repeated google.protobuf.UninterpretedOption uninterpreted_option = 999;
-   */
-  uninterpretedOption?: UninterpretedOption[];
 }
 
-export const FileOptions: MessageType<FileOptions> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FileOptions",
-    fields: [
-      {
-        no: 1,
-        name: "java_package",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 8,
-        name: "java_outer_classname",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 10,
-        name: "java_multiple_files",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 20,
-        name: "java_generate_equals_and_hash",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-      },
-      {
-        no: 27,
-        name: "java_string_check_utf8",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 9,
-        name: "optimize_for",
-        kind: "enum",
-        T: FileOptions_OptimizeMode_Enum,
-        opt: true,
-        default: FileOptions_OptimizeMode.SPEED,
-      },
-      {
-        no: 11,
-        name: "go_package",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 16,
-        name: "cc_generic_services",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 17,
-        name: "java_generic_services",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 18,
-        name: "py_generic_services",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 23,
-        name: "deprecated",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: false,
-      },
-      {
-        no: 31,
-        name: "cc_enable_arenas",
-        kind: "scalar",
-        T: ScalarType.BOOL,
-        opt: true,
-        default: true,
-      },
-      {
-        no: 36,
-        name: "objc_class_prefix",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 37,
-        name: "csharp_namespace",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 39,
-        name: "swift_prefix",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 40,
-        name: "php_class_prefix",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 41,
-        name: "php_namespace",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 44,
-        name: "php_metadata_namespace",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 45,
-        name: "ruby_package",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      { no: 50, name: "features", kind: "message", T: FeatureSet, opt: true },
-      {
-        no: 999,
-        name: "uninterpreted_option",
-        kind: "message",
-        T: UninterpretedOption,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.SourceCodeInfo.Location
- */
-export interface SourceCodeInfo_Location {
-  /**
-   * Identifies which part of the FileDescriptorProto was defined at this
-   * location.
-   *
-   * Each element is a field number or an index.  They form a path from
-   * the root FileDescriptorProto to the place where the definition appears.
-   * For example, this path:
-   *   [ 4, 3, 2, 7, 1 ]
-   * refers to:
-   *   file.message_type(3)  // 4, 3
-   *       .field(7)         // 2, 7
-   *       .name()           // 1
-   * This is because FileDescriptorProto.message_type has field number 4:
-   *   repeated DescriptorProto message_type = 4;
-   * and DescriptorProto.field has field number 2:
-   *   repeated FieldDescriptorProto field = 2;
-   * and FieldDescriptorProto.name has field number 1:
-   *   optional string name = 1;
-   *
-   * Thus, the above path gives the location of a field name.  If we removed
-   * the last element:
-   *   [ 4, 3, 2, 7 ]
-   * this path refers to the whole field declaration (from the beginning
-   * of the label to the terminating semicolon).
-   *
-   * @generated from field: repeated int32 path = 1 [packed = true];
-   */
-  path?: number[];
-  /**
-   * Always has exactly three or four elements: start line, start column,
-   * end line (optional, otherwise assumed same as start line), end column.
-   * These are packed into a single field for efficiency.  Note that line
-   * and column numbers are zero-based -- typically you will want to add
-   * 1 to each before displaying to a user.
-   *
-   * @generated from field: repeated int32 span = 2 [packed = true];
-   */
-  span?: number[];
-  /**
-   * If this SourceCodeInfo represents a complete declaration, these are any
-   * comments appearing before and after the declaration which appear to be
-   * attached to the declaration.
-   *
-   * A series of line comments appearing on consecutive lines, with no other
-   * tokens appearing on those lines, will be treated as a single comment.
-   *
-   * leading_detached_comments will keep paragraphs of comments that appear
-   * before (but not connected to) the current element. Each paragraph,
-   * separated by empty lines, will be one comment element in the repeated
-   * field.
-   *
-   * Only the comment content is provided; comment markers (e.g. //) are
-   * stripped out.  For block comments, leading whitespace and an asterisk
-   * will be stripped from the beginning of each line other than the first.
-   * Newlines are included in the output.
-   *
-   * Examples:
-   *
-   *   optional int32 foo = 1;  // Comment attached to foo.
-   *   // Comment attached to bar.
-   *   optional int32 bar = 2;
-   *
-   *   optional string baz = 3;
-   *   // Comment attached to baz.
-   *   // Another line attached to baz.
-   *
-   *   // Comment attached to moo.
-   *   //
-   *   // Another line attached to moo.
-   *   optional double moo = 4;
-   *
-   *   // Detached comment for corge. This is not leading or trailing comments
-   *   // to moo or corge because there are blank lines separating it from
-   *   // both.
-   *
-   *   // Detached comment for corge paragraph 2.
-   *
-   *   optional string corge = 5;
-   *   /* Block comment attached
-   *    * to corge.  Leading asterisks
-   *    * will be removed. *\/
-   *   /* Block comment attached to
-   *    * grault. *\/
-   *   optional int32 grault = 6;
-   *
-   *   // ignored detached comments.
-   *
-   * @generated from field: optional string leading_comments = 3;
-   */
-  leadingComments?: string;
-  /**
-   * @generated from field: optional string trailing_comments = 4;
-   */
-  trailingComments?: string;
-  /**
-   * @generated from field: repeated string leading_detached_comments = 6;
-   */
-  leadingDetachedComments?: string[];
-}
-
-export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.SourceCodeInfo.Location",
-    fields: [
-      {
-        no: 1,
-        name: "path",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        repeated: true,
-        packed: true,
-      },
-      {
-        no: 2,
-        name: "span",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        repeated: true,
-        packed: true,
-      },
-      {
-        no: 3,
-        name: "leading_comments",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 4,
-        name: "trailing_comments",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 6,
-        name: "leading_detached_comments",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSetDefaults_FeatureSetEditionDefault> =
+  /* @__PURE__ */ createMessageType<FeatureSetDefaults_FeatureSetEditionDefault>(
+    "google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault",
+    () => [
+      [2, "features", 11, 0, FeatureSet.codec],
+      [3, "edition", 14, 4, Edition_Enum],
+    ],
+  );
 
 /**
  * Encapsulates information about the original source file from which a
@@ -2963,377 +1822,119 @@ export interface SourceCodeInfo {
    * - Code which tries to interpret locations should probably be designed to
    *   ignore those that it doesn't understand, as more types of locations could
    *   be recorded in the future.
-   *
-   * @generated from field: repeated google.protobuf.SourceCodeInfo.Location location = 1;
    */
   location?: SourceCodeInfo_Location[];
 }
 
 export const SourceCodeInfo: MessageType<SourceCodeInfo> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.SourceCodeInfo",
-    fields: [
-      {
-        no: 1,
-        name: "location",
-        kind: "message",
-        T: SourceCodeInfo_Location,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+  /* @__PURE__ */ createMessageType<SourceCodeInfo>(
+    "google.protobuf.SourceCodeInfo",
+    () => [[1, "location", 11, 1, SourceCodeInfo_Location.codec]],
+  );
 
 /**
- * Describes a complete .proto file.
- *
- * @generated from message google.protobuf.FileDescriptorProto
+ * @generated from message google.protobuf.SourceCodeInfo.Location
  */
-export interface FileDescriptorProto {
+export interface SourceCodeInfo_Location {
   /**
-   * file name, relative to root of source tree
+   * Identifies which part of the FileDescriptorProto was defined at this
+   * location.
    *
-   * @generated from field: optional string name = 1;
-   */
-  name?: string;
-  /**
-   * e.g. "foo", "foo.bar", etc.
+   * Each element is a field number or an index.  They form a path from
+   * the root FileDescriptorProto to the place where the definition appears.
+   * For example, this path:
+   *   [ 4, 3, 2, 7, 1 ]
+   * refers to:
+   *   file.message_type(3)  // 4, 3
+   *       .field(7)         // 2, 7
+   *       .name()           // 1
+   * This is because FileDescriptorProto.message_type has field number 4:
+   *   repeated DescriptorProto message_type = 4;
+   * and DescriptorProto.field has field number 2:
+   *   repeated FieldDescriptorProto field = 2;
+   * and FieldDescriptorProto.name has field number 1:
+   *   optional string name = 1;
    *
-   * @generated from field: optional string package = 2;
-   */
-  package?: string;
-  /**
-   * Names of files imported by this file.
-   *
-   * @generated from field: repeated string dependency = 3;
-   */
-  dependency?: string[];
-  /**
-   * Indexes of the public imported files in the dependency list above.
-   *
-   * @generated from field: repeated int32 public_dependency = 10;
-   */
-  publicDependency?: number[];
-  /**
-   * Indexes of the weak imported files in the dependency list.
-   * For Google-internal migration only. Do not use.
-   *
-   * @generated from field: repeated int32 weak_dependency = 11;
-   */
-  weakDependency?: number[];
-  /**
-   * All top-level definitions in this file.
-   *
-   * @generated from field: repeated google.protobuf.DescriptorProto message_type = 4;
-   */
-  messageType?: DescriptorProto[];
-  /**
-   * @generated from field: repeated google.protobuf.EnumDescriptorProto enum_type = 5;
-   */
-  enumType?: EnumDescriptorProto[];
-  /**
-   * @generated from field: repeated google.protobuf.ServiceDescriptorProto service = 6;
-   */
-  service?: ServiceDescriptorProto[];
-  /**
-   * @generated from field: repeated google.protobuf.FieldDescriptorProto extension = 7;
-   */
-  extension?: FieldDescriptorProto[];
-  /**
-   * @generated from field: optional google.protobuf.FileOptions options = 8;
-   */
-  options?: FileOptions;
-  /**
-   * This field contains optional information about the original source code.
-   * You may safely remove this entire field without harming runtime
-   * functionality of the descriptors -- the information is needed only by
-   * development tools.
-   *
-   * @generated from field: optional google.protobuf.SourceCodeInfo source_code_info = 9;
-   */
-  sourceCodeInfo?: SourceCodeInfo;
-  /**
-   * The syntax of the proto file.
-   * The supported values are "proto2", "proto3", and "editions".
-   *
-   * If `edition` is present, this value must be "editions".
-   *
-   * @generated from field: optional string syntax = 12;
-   */
-  syntax?: string;
-  /**
-   * The edition of the proto file.
-   *
-   * @generated from field: optional google.protobuf.Edition edition = 14;
-   */
-  edition?: Edition;
-}
-
-export const FileDescriptorProto: MessageType<FileDescriptorProto> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FileDescriptorProto",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 2,
-        name: "package",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 3,
-        name: "dependency",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        repeated: true,
-      },
-      {
-        no: 10,
-        name: "public_dependency",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        repeated: true,
-      },
-      {
-        no: 11,
-        name: "weak_dependency",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        repeated: true,
-      },
-      {
-        no: 4,
-        name: "message_type",
-        kind: "message",
-        T: DescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 5,
-        name: "enum_type",
-        kind: "message",
-        T: EnumDescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 6,
-        name: "service",
-        kind: "message",
-        T: ServiceDescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 7,
-        name: "extension",
-        kind: "message",
-        T: FieldDescriptorProto,
-        repeated: true,
-      },
-      { no: 8, name: "options", kind: "message", T: FileOptions, opt: true },
-      {
-        no: 9,
-        name: "source_code_info",
-        kind: "message",
-        T: SourceCodeInfo,
-        opt: true,
-      },
-      {
-        no: 12,
-        name: "syntax",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      { no: 14, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * The protocol compiler can output a FileDescriptorSet containing the .proto
- * files it parses.
- *
- * @generated from message google.protobuf.FileDescriptorSet
- */
-export interface FileDescriptorSet {
-  /**
-   * @generated from field: repeated google.protobuf.FileDescriptorProto file = 1;
-   */
-  file?: FileDescriptorProto[];
-}
-
-export const FileDescriptorSet: MessageType<FileDescriptorSet> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FileDescriptorSet",
-    fields: [
-      {
-        no: 1,
-        name: "file",
-        kind: "message",
-        T: FileDescriptorProto,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * A map from every known edition with a unique set of defaults to its
- * defaults. Not all editions may be contained here.  For a given edition,
- * the defaults at the closest matching edition ordered at or before it should
- * be used.  This field must be in strict ascending order by edition.
- *
- * @generated from message google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault
- */
-export interface FeatureSetDefaults_FeatureSetEditionDefault {
-  /**
-   * @generated from field: optional google.protobuf.Edition edition = 3;
-   */
-  edition?: Edition;
-  /**
-   * @generated from field: optional google.protobuf.FeatureSet features = 2;
-   */
-  features?: FeatureSet;
-}
-
-export const FeatureSetDefaults_FeatureSetEditionDefault: MessageType<FeatureSetDefaults_FeatureSetEditionDefault> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault",
-    fields: [
-      { no: 3, name: "edition", kind: "enum", T: Edition_Enum, opt: true },
-      { no: 2, name: "features", kind: "message", T: FeatureSet, opt: true },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * A compiled specification for the defaults of a set of features.  These
- * messages are generated from FeatureSet extensions and can be used to seed
- * feature resolution. The resolution with this object becomes a simple search
- * for the closest matching edition, followed by proto merges.
- *
- * @generated from message google.protobuf.FeatureSetDefaults
- */
-export interface FeatureSetDefaults {
-  /**
-   * @generated from field: repeated google.protobuf.FeatureSetDefaults.FeatureSetEditionDefault defaults = 1;
-   */
-  defaults?: FeatureSetDefaults_FeatureSetEditionDefault[];
-  /**
-   * The minimum supported edition (inclusive) when this was constructed.
-   * Editions before this will not have defaults.
-   *
-   * @generated from field: optional google.protobuf.Edition minimum_edition = 4;
-   */
-  minimumEdition?: Edition;
-  /**
-   * The maximum known edition (inclusive) when this was constructed. Editions
-   * after this will not have reliable defaults.
-   *
-   * @generated from field: optional google.protobuf.Edition maximum_edition = 5;
-   */
-  maximumEdition?: Edition;
-}
-
-export const FeatureSetDefaults: MessageType<FeatureSetDefaults> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.FeatureSetDefaults",
-    fields: [
-      {
-        no: 1,
-        name: "defaults",
-        kind: "message",
-        T: FeatureSetDefaults_FeatureSetEditionDefault,
-        repeated: true,
-      },
-      {
-        no: 4,
-        name: "minimum_edition",
-        kind: "enum",
-        T: Edition_Enum,
-        opt: true,
-      },
-      {
-        no: 5,
-        name: "maximum_edition",
-        kind: "enum",
-        T: Edition_Enum,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * @generated from message google.protobuf.GeneratedCodeInfo.Annotation
- */
-export interface GeneratedCodeInfo_Annotation {
-  /**
-   * Identifies the element in the original source .proto file. This field
-   * is formatted the same as SourceCodeInfo.Location.path.
-   *
-   * @generated from field: repeated int32 path = 1 [packed = true];
+   * Thus, the above path gives the location of a field name.  If we removed
+   * the last element:
+   *   [ 4, 3, 2, 7 ]
+   * this path refers to the whole field declaration (from the beginning
+   * of the label to the terminating semicolon).
    */
   path?: number[];
   /**
-   * Identifies the filesystem path to the original source .proto.
-   *
-   * @generated from field: optional string source_file = 2;
+   * Always has exactly three or four elements: start line, start column,
+   * end line (optional, otherwise assumed same as start line), end column.
+   * These are packed into a single field for efficiency.  Note that line
+   * and column numbers are zero-based -- typically you will want to add
+   * 1 to each before displaying to a user.
    */
-  sourceFile?: string;
+  span?: number[];
   /**
-   * Identifies the starting offset in bytes in the generated code
-   * that relates to the identified object.
+   * If this SourceCodeInfo represents a complete declaration, these are any
+   * comments appearing before and after the declaration which appear to be
+   * attached to the declaration.
    *
-   * @generated from field: optional int32 begin = 3;
-   */
-  begin?: number;
-  /**
-   * Identifies the ending offset in bytes in the generated code that
-   * relates to the identified object. The end offset should be one past
-   * the last relevant byte (so the length of the text = end - begin).
+   * A series of line comments appearing on consecutive lines, with no other
+   * tokens appearing on those lines, will be treated as a single comment.
    *
-   * @generated from field: optional int32 end = 4;
+   * leading_detached_comments will keep paragraphs of comments that appear
+   * before (but not connected to) the current element. Each paragraph,
+   * separated by empty lines, will be one comment element in the repeated
+   * field.
+   *
+   * Only the comment content is provided; comment markers (e.g. //) are
+   * stripped out.  For block comments, leading whitespace and an asterisk
+   * will be stripped from the beginning of each line other than the first.
+   * Newlines are included in the output.
+   *
+   * Examples:
+   *
+   *   optional int32 foo = 1;  // Comment attached to foo.
+   *   // Comment attached to bar.
+   *   optional int32 bar = 2;
+   *
+   *   optional string baz = 3;
+   *   // Comment attached to baz.
+   *   // Another line attached to baz.
+   *
+   *   // Comment attached to moo.
+   *   //
+   *   // Another line attached to moo.
+   *   optional double moo = 4;
+   *
+   *   // Detached comment for corge. This is not leading or trailing comments
+   *   // to moo or corge because there are blank lines separating it from
+   *   // both.
+   *
+   *   // Detached comment for corge paragraph 2.
+   *
+   *   optional string corge = 5;
+   *   /* Block comment attached
+   *    * to corge.  Leading asterisks
+   *    * will be removed. *\/
+   *   /* Block comment attached to
+   *    * grault. *\/
+   *   optional int32 grault = 6;
+   *
+   *   // ignored detached comments.
    */
-  end?: number;
-  /**
-   * @generated from field: optional google.protobuf.GeneratedCodeInfo.Annotation.Semantic semantic = 5;
-   */
-  semantic?: GeneratedCodeInfo_Annotation_Semantic;
+  leadingComments?: string;
+  trailingComments?: string;
+  leadingDetachedComments?: string[];
 }
 
-export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotation> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.GeneratedCodeInfo.Annotation",
-    fields: [
-      {
-        no: 1,
-        name: "path",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        repeated: true,
-        packed: true,
-      },
-      {
-        no: 2,
-        name: "source_file",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      { no: 3, name: "begin", kind: "scalar", T: ScalarType.INT32, opt: true },
-      { no: 4, name: "end", kind: "scalar", T: ScalarType.INT32, opt: true },
-      {
-        no: 5,
-        name: "semantic",
-        kind: "enum",
-        T: GeneratedCodeInfo_Annotation_Semantic_Enum,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+export const SourceCodeInfo_Location: MessageType<SourceCodeInfo_Location> =
+  /* @__PURE__ */ createMessageType<SourceCodeInfo_Location>(
+    "google.protobuf.SourceCodeInfo.Location",
+    () => [
+      [1, "path", 5, 3],
+      [2, "span", 5, 3],
+      [3, "leading_comments", 9, 4],
+      [4, "trailing_comments", 9, 4],
+      [6, "leading_detached_comments", 9, 1],
+    ],
+  );
 
 /**
  * Describes the relationship between generated code and its original source
@@ -3346,23 +1947,84 @@ export interface GeneratedCodeInfo {
   /**
    * An Annotation connects some span of text in generated code to an element
    * of its generating .proto file.
-   *
-   * @generated from field: repeated google.protobuf.GeneratedCodeInfo.Annotation annotation = 1;
    */
   annotation?: GeneratedCodeInfo_Annotation[];
 }
 
 export const GeneratedCodeInfo: MessageType<GeneratedCodeInfo> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.GeneratedCodeInfo",
-    fields: [
-      {
-        no: 1,
-        name: "annotation",
-        kind: "message",
-        T: GeneratedCodeInfo_Annotation,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+  /* @__PURE__ */ createMessageType<GeneratedCodeInfo>(
+    "google.protobuf.GeneratedCodeInfo",
+    () => [[1, "annotation", 11, 1, GeneratedCodeInfo_Annotation.codec]],
+  );
+
+/**
+ * @generated from message google.protobuf.GeneratedCodeInfo.Annotation
+ */
+export interface GeneratedCodeInfo_Annotation {
+  /**
+   * Identifies the element in the original source .proto file. This field
+   * is formatted the same as SourceCodeInfo.Location.path.
+   */
+  path?: number[];
+  /**
+   * Identifies the filesystem path to the original source .proto.
+   */
+  sourceFile?: string;
+  /**
+   * Identifies the starting offset in bytes in the generated code
+   * that relates to the identified object.
+   */
+  begin?: number;
+  /**
+   * Identifies the ending offset in bytes in the generated code that
+   * relates to the identified object. The end offset should be one past
+   * the last relevant byte (so the length of the text = end - begin).
+   */
+  end?: number;
+  semantic?: GeneratedCodeInfo_Annotation_Semantic;
+}
+
+export const GeneratedCodeInfo_Annotation: MessageType<GeneratedCodeInfo_Annotation> =
+  /* @__PURE__ */ createMessageType<GeneratedCodeInfo_Annotation>(
+    "google.protobuf.GeneratedCodeInfo.Annotation",
+    () => [
+      [1, "path", 5, 3],
+      [2, "source_file", 9, 4],
+      [3, "begin", 5, 4],
+      [4, "end", 5, 4],
+      [5, "semantic", 14, 4, GeneratedCodeInfo_Annotation_Semantic_Enum],
+    ],
+  );
+
+/**
+ * Represents the identified object's effect on the element in the original
+ * .proto file.
+ *
+ * @generated from enum google.protobuf.GeneratedCodeInfo.Annotation.Semantic
+ */
+export enum GeneratedCodeInfo_Annotation_Semantic {
+  /**
+   * There is no effect or the effect is indescribable.
+   */
+  NONE = 0,
+
+  /**
+   * The element is set or otherwise mutated.
+   */
+  SET = 1,
+
+  /**
+   * An alias to the element is returned.
+   */
+  ALIAS = 2,
+}
+
+export const GeneratedCodeInfo_Annotation_Semantic_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.GeneratedCodeInfo.Annotation.Semantic",
+    [
+      [0, "NONE"],
+      [1, "SET"],
+      [2, "ALIAS"],
+    ],
+  );

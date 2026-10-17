@@ -17,9 +17,31 @@ import { createEcmaScriptPlugin } from "../protoplugin/index.js";
 import { generateTs } from "./typescript.js";
 // import { version } from "../package.json";
 
+// typedDecode holds the typed_decode option, which generates a typed decoder
+// for every message.
+let typedDecode = false;
+
 export const protocGenEsLite = createEcmaScriptPlugin({
   name: "protoc-gen-es-lite",
   version: `unknown`,
   supportsEditions: true,
-  generateTs,
+  parseOption(key: string, value: string) {
+    if (key !== "typed_decode") {
+      throw new Error("unknown option");
+    }
+    switch (value) {
+      case "":
+      case "true":
+      case "1":
+        typedDecode = true;
+        break;
+      case "false":
+      case "0":
+        typedDecode = false;
+        break;
+      default:
+        throw new Error("must be true or false");
+    }
+  },
+  generateTs: (schema) => generateTs(schema, { typedDecode }),
 });

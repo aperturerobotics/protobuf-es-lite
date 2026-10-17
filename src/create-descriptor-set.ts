@@ -13,7 +13,6 @@
 // limitations under the License.
 
 import { assert } from "./assert.js";
-import type { BinaryReadOptions, BinaryWriteOptions } from "./binary.js";
 import type {
   DescComments,
   DescEnum,
@@ -28,7 +27,6 @@ import type {
 } from "./descriptor-set.js";
 import type { FeatureResolverFn, MergedFeatureSet } from "./feature-set.js";
 import { createFeatureResolver } from "./feature-set.js";
-import { fieldJsonName } from "./field.js";
 import {
   DescriptorProto,
   Edition,
@@ -49,7 +47,7 @@ import {
   ServiceDescriptorProto,
   SourceCodeInfo,
 } from "./google/protobuf/descriptor.pb.js";
-import { findEnumSharedPrefix } from "./names.js";
+import { findEnumSharedPrefix, protoCamelCase } from "./names.js";
 import { LongType, ScalarType } from "./scalar.js";
 import { MethodIdempotency, MethodKind } from "./service-type.js";
 import {
@@ -91,7 +89,6 @@ export function createDescriptorSet(
       resolveFeatures = createFeatureResolver(
         edition,
         options?.featureSetDefaults,
-        options?.serializationOptions,
       );
       resolverByEdition.set(edition, resolveFeatures);
     }
@@ -117,12 +114,6 @@ interface CreateDescriptorSetOptions {
    * `--experimental_edition_defaults_out`.
    */
   featureSetDefaults?: FeatureSetDefaults;
-
-  /**
-   * Internally, data is serialized when features are resolved. The
-   * serialization options given here will be used for feature resolution.
-   */
-  serializationOptions?: Partial<BinaryReadOptions & BinaryWriteOptions>;
 }
 
 /**
@@ -609,7 +600,9 @@ function newField(
     packedByDefault: isPackedFieldByDefault(proto, parentFeatures),
     packed: isPackedField(file, parent, proto, resolveFeatures),
     jsonName:
-      proto.jsonName === fieldJsonName(proto.name) ? undefined : proto.jsonName,
+      proto.jsonName === protoCamelCase(proto.name) ?
+        undefined
+      : proto.jsonName,
     scalar: undefined,
     longType: undefined,
     message: undefined,

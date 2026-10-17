@@ -22,41 +22,10 @@
 // @generated from file google/protobuf/compiler/plugin.proto (package google.protobuf.compiler, syntax proto2)
 /* eslint-disable */
 
-import { createEnumType } from "../../../enum.js";
 import type { MessageType } from "../../../message.js";
 import { createMessageType } from "../../../message.js";
-import { ScalarType } from "../../../scalar.js";
-import type { PartialFieldInfo } from "../../../field.js";
 import { FileDescriptorProto, GeneratedCodeInfo } from "../descriptor.pb.js";
-
-/**
- * Sync with code_generator.h.
- *
- * @generated from enum google.protobuf.compiler.CodeGeneratorResponse.Feature
- */
-export enum CodeGeneratorResponse_Feature {
-  /**
-   * @generated from enum value: FEATURE_NONE = 0;
-   */
-  NONE = 0,
-
-  /**
-   * @generated from enum value: FEATURE_PROTO3_OPTIONAL = 1;
-   */
-  PROTO3_OPTIONAL = 1,
-
-  /**
-   * @generated from enum value: FEATURE_SUPPORTS_EDITIONS = 2;
-   */
-  SUPPORTS_EDITIONS = 2,
-}
-
-export const CodeGeneratorResponse_Feature_Enum =
-  /* @__PURE__ */ createEnumType(
-    "google.protobuf.compiler.CodeGeneratorResponse.Feature",
-    CodeGeneratorResponse_Feature,
-    "FEATURE_",
-  );
+import { createEnumType } from "../../../enum.js";
 
 /**
  * The version number of protocol compiler.
@@ -64,37 +33,26 @@ export const CodeGeneratorResponse_Feature_Enum =
  * @generated from message google.protobuf.compiler.Version
  */
 export interface Version {
-  /**
-   * @generated from field: optional int32 major = 1;
-   */
   major?: number;
-  /**
-   * @generated from field: optional int32 minor = 2;
-   */
   minor?: number;
-  /**
-   * @generated from field: optional int32 patch = 3;
-   */
   patch?: number;
   /**
    * A suffix for alpha, beta or rc release, e.g., "alpha-1", "rc2". It should
    * be empty for mainline stable releases.
-   *
-   * @generated from field: optional string suffix = 4;
    */
   suffix?: string;
 }
 
-export const Version: MessageType<Version> = /* @__PURE__ */ createMessageType({
-  typeName: "google.protobuf.compiler.Version",
-  fields: [
-    { no: 1, name: "major", kind: "scalar", T: ScalarType.INT32, opt: true },
-    { no: 2, name: "minor", kind: "scalar", T: ScalarType.INT32, opt: true },
-    { no: 3, name: "patch", kind: "scalar", T: ScalarType.INT32, opt: true },
-    { no: 4, name: "suffix", kind: "scalar", T: ScalarType.STRING, opt: true },
-  ] satisfies readonly PartialFieldInfo[],
-  packedByDefault: false,
-});
+export const Version: MessageType<Version> =
+  /* @__PURE__ */ createMessageType<Version>(
+    "google.protobuf.compiler.Version",
+    () => [
+      [1, "major", 5, 4],
+      [2, "minor", 5, 4],
+      [3, "patch", 5, 4],
+      [4, "suffix", 9, 4],
+    ],
+  );
 
 /**
  * An encoded CodeGeneratorRequest is written to the plugin's stdin.
@@ -106,14 +64,10 @@ export interface CodeGeneratorRequest {
    * The .proto files that were explicitly listed on the command-line.  The
    * code generator should generate code only for these files.  Each file's
    * descriptor will be included in proto_file, below.
-   *
-   * @generated from field: repeated string file_to_generate = 1;
    */
   fileToGenerate?: string[];
   /**
    * The generator parameter passed on the command-line.
-   *
-   * @generated from field: optional string parameter = 2;
    */
   parameter?: string;
   /**
@@ -136,68 +90,103 @@ export interface CodeGeneratorRequest {
    *
    * Type names of fields and extensions in the FileDescriptorProto are always
    * fully qualified.
-   *
-   * @generated from field: repeated google.protobuf.FileDescriptorProto proto_file = 15;
    */
   protoFile?: FileDescriptorProto[];
   /**
    * File descriptors with all options, including source-retention options.
    * These descriptors are only provided for the files listed in
    * files_to_generate.
-   *
-   * @generated from field: repeated google.protobuf.FileDescriptorProto source_file_descriptors = 17;
    */
   sourceFileDescriptors?: FileDescriptorProto[];
   /**
    * The version number of protocol compiler.
-   *
-   * @generated from field: optional google.protobuf.compiler.Version compiler_version = 3;
    */
   compilerVersion?: Version;
 }
 
 export const CodeGeneratorRequest: MessageType<CodeGeneratorRequest> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.compiler.CodeGeneratorRequest",
-    fields: [
-      {
-        no: 1,
-        name: "file_to_generate",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        repeated: true,
-      },
-      {
-        no: 2,
-        name: "parameter",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 15,
-        name: "proto_file",
-        kind: "message",
-        T: () => FileDescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 17,
-        name: "source_file_descriptors",
-        kind: "message",
-        T: () => FileDescriptorProto,
-        repeated: true,
-      },
-      {
-        no: 3,
-        name: "compiler_version",
-        kind: "message",
-        T: Version,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+  /* @__PURE__ */ createMessageType<CodeGeneratorRequest>(
+    "google.protobuf.compiler.CodeGeneratorRequest",
+    () => [
+      [1, "file_to_generate", 9, 1],
+      [2, "parameter", 9, 4],
+      [3, "compiler_version", 11, 0, Version.codec],
+      [15, "proto_file", 11, 1, FileDescriptorProto.codec],
+      [17, "source_file_descriptors", 11, 1, FileDescriptorProto.codec],
+    ],
+  );
+
+/**
+ * The plugin writes an encoded CodeGeneratorResponse to stdout.
+ *
+ * @generated from message google.protobuf.compiler.CodeGeneratorResponse
+ */
+export interface CodeGeneratorResponse {
+  /**
+   * Error message.  If non-empty, code generation failed.  The plugin process
+   * should exit with status code zero even if it reports an error in this way.
+   *
+   * This should be used to indicate errors in .proto files which prevent the
+   * code generator from generating correct code.  Errors which indicate a
+   * problem in protoc itself -- such as the input CodeGeneratorRequest being
+   * unparseable -- should be reported by writing a message to stderr and
+   * exiting with a non-zero status code.
+   */
+  error?: string;
+  /**
+   * A bitmask of supported features that the code generator supports.
+   * This is a bitwise "or" of values from the Feature enum.
+   */
+  supportedFeatures?: bigint;
+  /**
+   * The minimum edition this plugin supports.  This will be treated as an
+   * Edition enum, but we want to allow unknown values.  It should be specified
+   * according the edition enum value, *not* the edition number.  Only takes
+   * effect for plugins that have FEATURE_SUPPORTS_EDITIONS set.
+   */
+  minimumEdition?: number;
+  /**
+   * The maximum edition this plugin supports.  This will be treated as an
+   * Edition enum, but we want to allow unknown values.  It should be specified
+   * according the edition enum value, *not* the edition number.  Only takes
+   * effect for plugins that have FEATURE_SUPPORTS_EDITIONS set.
+   */
+  maximumEdition?: number;
+  file?: CodeGeneratorResponse_File[];
+}
+
+export const CodeGeneratorResponse: MessageType<CodeGeneratorResponse> =
+  /* @__PURE__ */ createMessageType<CodeGeneratorResponse>(
+    "google.protobuf.compiler.CodeGeneratorResponse",
+    () => [
+      [1, "error", 9, 4],
+      [2, "supported_features", 4, 4],
+      [3, "minimum_edition", 5, 4],
+      [4, "maximum_edition", 5, 4],
+      [15, "file", 11, 1, CodeGeneratorResponse_File.codec],
+    ],
+  );
+
+/**
+ * Sync with code_generator.h.
+ *
+ * @generated from enum google.protobuf.compiler.CodeGeneratorResponse.Feature
+ */
+export enum CodeGeneratorResponse_Feature {
+  NONE = 0,
+  PROTO3_OPTIONAL = 1,
+  SUPPORTS_EDITIONS = 2,
+}
+
+export const CodeGeneratorResponse_Feature_Enum =
+  /* @__PURE__ */ createEnumType(
+    "google.protobuf.compiler.CodeGeneratorResponse.Feature",
+    [
+      [0, "FEATURE_NONE"],
+      [1, "FEATURE_PROTO3_OPTIONAL"],
+      [2, "FEATURE_SUPPORTS_EDITIONS"],
+    ],
+  );
 
 /**
  * Represents a single generated file.
@@ -217,8 +206,6 @@ export interface CodeGeneratorResponse_File {
    * files need not reside completely in memory at one time.  Note that as of
    * this writing protoc does not optimize for this -- it will read the entire
    * CodeGeneratorResponse before writing files to disk.
-   *
-   * @generated from field: optional string name = 1;
    */
   name?: string;
   /**
@@ -259,139 +246,27 @@ export interface CodeGeneratorResponse_File {
    * command line.
    *
    * If |insertion_point| is present, |name| must also be present.
-   *
-   * @generated from field: optional string insertion_point = 2;
    */
   insertionPoint?: string;
   /**
    * The file contents.
-   *
-   * @generated from field: optional string content = 15;
    */
   content?: string;
   /**
    * Information describing the file content being inserted. If an insertion
    * point is used, this information will be appropriately offset and inserted
    * into the code generation metadata for the generated files.
-   *
-   * @generated from field: optional google.protobuf.GeneratedCodeInfo generated_code_info = 16;
    */
   generatedCodeInfo?: GeneratedCodeInfo;
 }
 
 export const CodeGeneratorResponse_File: MessageType<CodeGeneratorResponse_File> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.compiler.CodeGeneratorResponse.File",
-    fields: [
-      { no: 1, name: "name", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 2,
-        name: "insertion_point",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 15,
-        name: "content",
-        kind: "scalar",
-        T: ScalarType.STRING,
-        opt: true,
-      },
-      {
-        no: 16,
-        name: "generated_code_info",
-        kind: "message",
-        T: () => GeneratedCodeInfo,
-        opt: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
-
-/**
- * The plugin writes an encoded CodeGeneratorResponse to stdout.
- *
- * @generated from message google.protobuf.compiler.CodeGeneratorResponse
- */
-export interface CodeGeneratorResponse {
-  /**
-   * Error message.  If non-empty, code generation failed.  The plugin process
-   * should exit with status code zero even if it reports an error in this way.
-   *
-   * This should be used to indicate errors in .proto files which prevent the
-   * code generator from generating correct code.  Errors which indicate a
-   * problem in protoc itself -- such as the input CodeGeneratorRequest being
-   * unparseable -- should be reported by writing a message to stderr and
-   * exiting with a non-zero status code.
-   *
-   * @generated from field: optional string error = 1;
-   */
-  error?: string;
-  /**
-   * A bitmask of supported features that the code generator supports.
-   * This is a bitwise "or" of values from the Feature enum.
-   *
-   * @generated from field: optional uint64 supported_features = 2;
-   */
-  supportedFeatures?: bigint;
-  /**
-   * The minimum edition this plugin supports.  This will be treated as an
-   * Edition enum, but we want to allow unknown values.  It should be specified
-   * according the edition enum value, *not* the edition number.  Only takes
-   * effect for plugins that have FEATURE_SUPPORTS_EDITIONS set.
-   *
-   * @generated from field: optional int32 minimum_edition = 3;
-   */
-  minimumEdition?: number;
-  /**
-   * The maximum edition this plugin supports.  This will be treated as an
-   * Edition enum, but we want to allow unknown values.  It should be specified
-   * according the edition enum value, *not* the edition number.  Only takes
-   * effect for plugins that have FEATURE_SUPPORTS_EDITIONS set.
-   *
-   * @generated from field: optional int32 maximum_edition = 4;
-   */
-  maximumEdition?: number;
-  /**
-   * @generated from field: repeated google.protobuf.compiler.CodeGeneratorResponse.File file = 15;
-   */
-  file?: CodeGeneratorResponse_File[];
-}
-
-export const CodeGeneratorResponse: MessageType<CodeGeneratorResponse> =
-  /* @__PURE__ */ createMessageType({
-    typeName: "google.protobuf.compiler.CodeGeneratorResponse",
-    fields: [
-      { no: 1, name: "error", kind: "scalar", T: ScalarType.STRING, opt: true },
-      {
-        no: 2,
-        name: "supported_features",
-        kind: "scalar",
-        T: ScalarType.UINT64,
-        opt: true,
-      },
-      {
-        no: 3,
-        name: "minimum_edition",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        opt: true,
-      },
-      {
-        no: 4,
-        name: "maximum_edition",
-        kind: "scalar",
-        T: ScalarType.INT32,
-        opt: true,
-      },
-      {
-        no: 15,
-        name: "file",
-        kind: "message",
-        T: CodeGeneratorResponse_File,
-        repeated: true,
-      },
-    ] satisfies readonly PartialFieldInfo[],
-    packedByDefault: false,
-  });
+  /* @__PURE__ */ createMessageType<CodeGeneratorResponse_File>(
+    "google.protobuf.compiler.CodeGeneratorResponse.File",
+    () => [
+      [1, "name", 9, 4],
+      [2, "insertion_point", 9, 4],
+      [15, "content", 9, 4],
+      [16, "generated_code_info", 11, 0, GeneratedCodeInfo.codec],
+    ],
+  );

@@ -13,11 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import type {
-  GeneratedFile,
-  Printable,
-  Schema,
-} from "../protoplugin/ecmascript/index.js";
+import type { GeneratedFile, Schema } from "../protoplugin/ecmascript/index.js";
 import type { DescEnum } from "../descriptor-set.js";
 import { localName } from "../names.js";
 
@@ -29,10 +25,13 @@ export function generateEnum(
   f.print(f.jsDoc(enumeration));
   f.print(f.exportDecl("enum", enumeration), " {");
   for (const value of enumeration.values) {
-    if (enumeration.values.indexOf(value) > 0) {
-      f.print();
+    const doc = f.jsDoc(value, "  ");
+    if (String(doc) !== "") {
+      if (enumeration.values.indexOf(value) > 0) {
+        f.print();
+      }
+      f.print(doc);
     }
-    f.print(f.jsDoc(value, "  "));
     f.print("  ", localName(value), " = ", value.number, ",");
   }
   f.print("}");
@@ -46,29 +45,16 @@ export function generateEnum(
     "(",
     f.string(enumeration.typeName),
     ", ",
-    ...enumValues(f, enumeration),
+    enumValues(f, enumeration),
     ");",
   );
   f.print();
 }
 
-// enumValues renders the value source of createEnumType. The enum object
-// suffices when each protobuf name is the shared prefix followed by the
-// member name; an escaped member name needs the explicit [number, name] list.
-function enumValues(f: GeneratedFile, enumeration: DescEnum): Printable[] {
-  // sharedPrefix is lower case; the value names carry its protobuf spelling.
-  const prefix =
-    enumeration.values[0]?.name.substring(
-      0,
-      enumeration.sharedPrefix?.length ?? 0,
-    ) ?? "";
-  if (
-    enumeration.values.every((value) => value.name == prefix + localName(value))
-  ) {
-    return prefix == "" ? [enumeration] : [enumeration, ", ", f.string(prefix)];
-  }
+// enumValues renders the [number, name] pairs of createEnumType.
+function enumValues(f: GeneratedFile, enumeration: DescEnum): string {
   const tuples = enumeration.values.map(
     (value) => `[${value.number}, ${f.string(value.name)}]`,
   );
-  return ["[", tuples.join(", "), "]"];
+  return "[" + tuples.join(", ") + "]";
 }
