@@ -17,7 +17,10 @@
     "example/example.proto",
     "example/example.pb.ts",
     "tsconfig.json",
-    "dist"
+    "dist",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/testdata"
   ],
   "bin": {
     "protoc-gen-es-lite": "bin/protoc-gen-es-lite"
