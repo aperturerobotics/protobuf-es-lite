@@ -7,8 +7,8 @@ export type {
   Field,
 } from "./message.js";
 export { createMessageType, newMap } from "./message.js";
-export type { FieldDesc, MessageCodec } from "./codec.js";
-export { FieldFlag } from "./codec.js";
+export type { FieldDesc, FieldInfo, Fields, MessageCodec } from "./codec.js";
+export { FieldFlag, FieldKind, FieldShape } from "./codec.js";
 export type {
   ServiceType,
   MethodInfo,

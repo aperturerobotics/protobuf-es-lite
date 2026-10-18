@@ -158,6 +158,7 @@ export function createMessageType<T>(
   };
   const codec: MessageCodec = {
     typeName,
+    fields: fs,
     unwrap:
       overrides?.unwrap ?
         (m: Obj): unknown => overrides.unwrap!(m as T)

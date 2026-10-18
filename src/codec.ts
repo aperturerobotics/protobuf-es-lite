@@ -63,6 +63,11 @@ export interface MessageCodec {
   clone(m: Obj): Obj;
   writeJson(m: Obj, o: JsonWriteOptions): JsonValue;
   readJson(j: JsonValue, o: JsonReadOptions, m: Obj): Obj;
+  /**
+   * fields returns the message's fields, resolved from their descriptions on
+   * first use, for code that converts messages to another representation.
+   */
+  fields(): Fields;
 }
 
 /** FieldFlag holds the bits of a FieldDesc's flags. */
@@ -84,20 +89,34 @@ export const FieldFlag = {
 /** The bit where a map key's scalar type starts in a FieldDesc's flags. */
 export const MAP_KEY_SHIFT = 6;
 
-// Shapes: how a message holds the values of a field.
-const IMPLICIT = 0;
-const EXPLICIT = 1;
-const LIST = 2;
-const MAP = 3;
-const ONEOF = 4;
+/** FieldShape is how a message holds the values of a field. */
+export const FieldShape = {
+  /** A singular field whose zero value means unset. */
+  IMPLICIT: 0,
+  /** A singular field that distinguishes unset from zero. */
+  EXPLICIT: 1,
+  /** A repeated field, held as an array. */
+  LIST: 2,
+  /** A map field, held as a record. */
+  MAP: 3,
+  /** A member of a oneof, held as { case, value } under the oneof's name. */
+  ONEOF: 4,
+} as const;
 
-// Kinds: what one value of a field is.
-const SCALAR = 0;
-const ENUM = 1;
-const MESSAGE = 2;
-// A message that fields hold as a plain value: a Date for a Timestamp, the
-// wrapped scalar for a wrapper.
-const VALUE = 3;
+/** FieldKind is what one value of a field is; for a map, one map value. */
+export const FieldKind = {
+  SCALAR: 0,
+  ENUM: 1,
+  MESSAGE: 2,
+  /**
+   * A message that fields hold as a plain value: a Date for a Timestamp, the
+   * wrapped scalar for a wrapper.
+   */
+  VALUE: 3,
+} as const;
+
+const { IMPLICIT, EXPLICIT, LIST, MAP, ONEOF } = FieldShape;
+const { SCALAR, ENUM, MESSAGE, VALUE } = FieldKind;
 
 // Scalar types, as numbered in the protobuf descriptor.
 const DOUBLE = 1;
@@ -117,22 +136,33 @@ const SINT32 = 17;
 const SINT64 = 18;
 
 /** FieldInfo is a FieldDesc resolved for the walkers. */
-interface FieldInfo {
+export interface FieldInfo {
+  /** The field number. */
   readonly no: number;
+  /** The proto name. */
   readonly name: string;
+  /** The property name in the message, or in its oneof's value. */
   readonly local: string;
+  /** The JSON name. */
   readonly json: string;
+  /** How the message holds the field's values, a FieldShape. */
   readonly shape: number;
+  /** What one value is, a FieldKind. */
   readonly kind: number;
-  // The scalar type of a scalar's value, and INT32 for an enum.
+  /** The scalar type of a scalar's value, and INT32 for an enum. */
   readonly scalar: number;
+  /** Whether a 64-bit integer is held as a string. */
   readonly str: boolean;
   readonly utf8: boolean;
   readonly packed: boolean;
   readonly group: boolean;
+  /** The scalar type of a map's keys, and 0 for other shapes. */
   readonly key: number;
+  /** The oneof's local name, for a oneof member. */
   readonly oneof: string;
+  /** The codec of a message or VALUE kind. */
   readonly msg: MessageCodec | undefined;
+  /** The enum type of an enum kind. */
   readonly enm: EnumType | undefined;
 }
 
@@ -188,7 +218,7 @@ function resolveField(d: FieldDesc): FieldInfo {
   const oneof = str(d, 5, "");
   const camel = protoCamelCase(name);
   const map = (flags & FieldFlag.MAP) !== 0;
-  let kind = SCALAR;
+  let kind: number = SCALAR;
   let scalar = type;
   let msg: MessageCodec | undefined;
   let enm: EnumType | undefined;
@@ -208,7 +238,7 @@ function resolveField(d: FieldDesc): FieldInfo {
       kind = VALUE;
     }
   }
-  let shape = IMPLICIT;
+  let shape: number = IMPLICIT;
   if (map) {
     shape = MAP;
   } else if ((flags & FieldFlag.REPEATED) !== 0) {

@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { FieldKind, FieldShape } from "./codec.js";
+import { ScalarType } from "./scalar.js";
 import type { MessageType } from "./message.js";
 import type { IMessageTypeRegistry } from "./type-registry.js";
 import {
@@ -256,5 +258,41 @@ describe("JSON", () => {
   it("keeps a __proto__ map key as an own entry", () => {
     const msg = Maps.fromJson(JSON.parse('{"mStr":{"__proto__":"v"}}'));
     expect(Object.getOwnPropertyNames(msg.mStr)).toEqual(["__proto__"]);
+  });
+});
+
+describe("codec fields", () => {
+  it("lists the resolved fields with their shapes and kinds", () => {
+    // A map field describes its values, and its key's scalar type.
+    const m = Maps.codec.fields().byNo.get(2)!;
+    expect(m).toMatchObject({
+      local: "mIntChild",
+      shape: FieldShape.MAP,
+      kind: FieldKind.MESSAGE,
+      key: ScalarType.INT32,
+      msg: Child.codec,
+    });
+
+    // A repeated Timestamp holds Dates, and a repeated message holds messages.
+    const r = Repeated.codec.fields();
+    expect(r.list.map((f) => f.no)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(r.byNo.get(9)).toMatchObject({
+      shape: FieldShape.LIST,
+      kind: FieldKind.VALUE,
+    });
+    expect(r.byNo.get(6)).toMatchObject({
+      shape: FieldShape.LIST,
+      kind: FieldKind.MESSAGE,
+    });
+
+    // A oneof member names its oneof, and the fields resolve once.
+    const o = Oneofs.codec.fields();
+    expect(o.byNo.get(3)).toMatchObject({
+      local: "cChild",
+      shape: FieldShape.ONEOF,
+      oneof: "choice",
+    });
+    expect(o.byNo.get(8)).toMatchObject({ shape: FieldShape.IMPLICIT });
+    expect(Oneofs.codec.fields()).toBe(o);
   });
 });
