@@ -40,9 +40,12 @@ export enum WireType {
   Bit32 = 5,
 }
 
-const encoder = new TextEncoder();
-const decoder = new TextDecoder();
-const strictDecoder = new TextDecoder("utf-8", { fatal: true });
+// The text codecs are created on first use, so a runtime that installs them
+// after loading this module, such as a game's UI engine, can still read and
+// write strings.
+let encoder: TextEncoder | undefined;
+let decoder: TextDecoder | undefined;
+let strictDecoder: TextDecoder | undefined;
 
 /**
  * Writer receives a message's wire values from its generated encoder.
@@ -252,7 +255,7 @@ export class BinaryWriter implements Writer {
 
   /** Write a length-delimited UTF-8 string. */
   string(value: string): BinaryWriter {
-    return this.bytes(encoder.encode(value));
+    return this.bytes((encoder ??= new TextEncoder()).encode(value));
   }
 
   // varint64 writes the 64-bit varint whose low and high words are lo and hi.
@@ -720,11 +723,13 @@ export class BinaryReader {
    * U+FFFD.
    */
   string(): string {
-    return decoder.decode(this.bytes());
+    return (decoder ??= new TextDecoder()).decode(this.bytes());
   }
 
   /** Read a length-delimited string, and throw if it is not valid UTF-8. */
   utf8(): string {
-    return strictDecoder.decode(this.bytes());
+    return (strictDecoder ??= new TextDecoder("utf-8", { fatal: true })).decode(
+      this.bytes(),
+    );
   }
 }
