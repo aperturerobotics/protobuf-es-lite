@@ -145,15 +145,20 @@ export class BinaryWriter implements Writer {
 
   /** Write an unsigned 32-bit varint. */
   uint32(value: number): BinaryWriter {
-    this.reserve(5);
+    // Locals keep interpreters such as QuickJS from reading the properties
+    // again for each byte.
+    if (this.pos + 5 > this.buf.length) {
+      this.reserve(5);
+    }
+    const buf = this.buf;
+    let pos = this.pos;
     let rest = value >>> 0;
     while (rest > 0x7f) {
-      this.buf[this.pos] = (rest & 0x7f) | 0x80;
-      this.pos += 1;
+      buf[pos++] = (rest & 0x7f) | 0x80;
       rest >>>= 7;
     }
-    this.buf[this.pos] = rest;
-    this.pos += 1;
+    buf[pos++] = rest;
+    this.pos = pos;
     return this;
   }
 
