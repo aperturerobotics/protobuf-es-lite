@@ -15,8 +15,8 @@ protoc \
     --proto_path ./src \
     $PROTO_FILES
 
-# codec-typed.pb.ts is codec.proto with typed decoders, which the tests compare
-# against the descriptor walker.
+# codec-typed.pb.ts is codec.proto with typed decoders and encoders, which the
+# tests compare against the descriptor walker.
 TYPED_OUT=$(mktemp -d)
 protoc \
     -I ./src \
@@ -25,6 +25,7 @@ protoc \
     --es-lite_opt target=ts \
     --es-lite_opt ts_nocheck=false \
     --es-lite_opt typed_decode=true \
+    --es-lite_opt typed_encode=true \
     src/testdata/codec.proto
 mv "$TYPED_OUT/testdata/codec.pb.ts" src/testdata/codec-typed.pb.ts
 rm -rf "$TYPED_OUT"

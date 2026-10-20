@@ -32,7 +32,7 @@ protobuf-es-lite derives from [Buf's protobuf-es](https://github.com/bufbuild/pr
 
 This fork suits applications that want sparse message values and methods grouped with each message type. [Spacewave](https://github.com/s4wave/spacewave) uses it for its Go and TypeScript application stack, alongside [protobuf-go-lite](https://github.com/aperturerobotics/protobuf-go-lite) and [StaRPC](https://github.com/aperturerobotics/starpc).
 
-Each generated message carries one line per field, such as `[1, "body", 9]`, and one shared runtime reads those lines to encode, decode, compare, clone and convert to JSON. The `typed_decode=true` option also generates a decoder for each message, for runtimes such as ahead-of-time compilers where a generated decoder is much faster than the shared one. The Go counterpart, protobuf-go-lite, generates reflection-free static code. Choose between the libraries based on your schemas, compatibility requirements, and measured bundle size; this project makes no blanket speed or size comparison.
+Each generated message carries one line per field, such as `[1, "body", 9]`, and one shared runtime reads those lines to encode, decode, compare, clone and convert to JSON. The `typed_decode=true` and `typed_encode=true` options also generate a decoder and an encoder for each message, for runtimes such as interpreters and ahead-of-time compilers where generated code is much faster than the shared runtime. The Go counterpart, protobuf-go-lite, generates reflection-free static code. Choose between the libraries based on your schemas, compatibility requirements, and measured bundle size; this project makes no blanket speed or size comparison.
 
 ## Install
 
@@ -135,6 +135,7 @@ Pass options in Buf's `opt` list or through `--es-lite_opt` with protoc.
 | `keep_empty_files=true` | `false` | Keep output files that would otherwise be empty. |
 | `rewrite_imports=<pattern>:<target>` | Unset | Rewrite imports matching a pattern; repeat for multiple mappings. |
 | `typed_decode=true` | `false` | Also generate a decoder for each message. It roughly doubles the generated code; enable it only where decoding through the shared runtime is too slow. |
+| `typed_encode=true` | `false` | Also generate an encoder for each message, writing the same bytes as the shared runtime. Like `typed_decode`, it grows the generated code; enable it only where encoding through the shared runtime is too slow. |
 
 The package itself is ESM. CommonJS consumers load it through Node's `require(esm)` support on the supported Node versions. See the [import checks](./scripts/package-import-matrix.ts) and [option parser](./src/protoplugin/ecmascript/parameter.ts) for the supported package entry points and generator options.
 

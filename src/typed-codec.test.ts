@@ -3,9 +3,10 @@ import type { MessageType } from "./message.js";
 import * as walk from "./testdata/codec.pb.js";
 import * as typed from "./testdata/codec-typed.pb.js";
 
-// codec-typed.pb.ts is codec.proto generated with typed_decode, so each of its
-// messages decodes with generated code where codec.pb.ts walks the field
-// descriptions. Both must read the same bytes into the same message.
+// codec-typed.pb.ts is codec.proto generated with typed_decode and
+// typed_encode, so each of its messages encodes and decodes with generated
+// code where codec.pb.ts walks the field descriptions. Both must write the
+// same bytes and read them into the same message.
 const child = { count: 3, label: "c" };
 const samples: [string, unknown[]][] = [
   ["Child", [{}, child, { count: 4294967295 }]],
@@ -32,6 +33,15 @@ const samples: [string, unknown[]][] = [
         color: walk.Color.BLUE,
       },
       { fDouble: Infinity, fFloat: -Infinity },
+      {
+        fDouble: 0,
+        fInt64: 0n,
+        fString: "",
+        fBytes: new Uint8Array(0),
+        fBool: false,
+        fInt64Str: "0",
+        color: walk.Color.UNSPECIFIED,
+      },
     ],
   ],
   [
@@ -127,13 +137,14 @@ const samples: [string, unknown[]][] = [
 const lookup = (mod: object, name: string) =>
   (mod as Record<string, MessageType<unknown>>)[name];
 
-describe("typed decode", () => {
+describe("typed codec", () => {
   for (const [name, messages] of samples) {
-    it(`decodes ${name} as the walker does`, () => {
+    it(`encodes and decodes ${name} as the walker does`, () => {
       const w = lookup(walk, name);
       const t = lookup(typed, name);
       for (const m of messages) {
         const bytes = w.toBinary(m);
+        expect(t.toBinary(m)).toEqual(bytes);
         const fromWalk = w.fromBinary(bytes);
         expect(t.fromBinary(bytes)).toEqual(fromWalk);
         expect(w.equals(fromWalk, m)).toBe(true);

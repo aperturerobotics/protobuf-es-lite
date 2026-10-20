@@ -17,31 +17,41 @@ import { createEcmaScriptPlugin } from "../protoplugin/index.js";
 import { generateTs } from "./typescript.js";
 // import { version } from "../package.json";
 
-// typedDecode holds the typed_decode option, which generates a typed decoder
-// for every message.
+// typedDecode and typedEncode hold the typed_decode and typed_encode options,
+// which generate a typed decoder and encoder for every message.
 let typedDecode = false;
+let typedEncode = false;
+
+// parseBool reads the value of a boolean option.
+function parseBool(value: string): boolean {
+  switch (value) {
+    case "":
+    case "true":
+    case "1":
+      return true;
+    case "false":
+    case "0":
+      return false;
+    default:
+      throw new Error("must be true or false");
+  }
+}
 
 export const protocGenEsLite = createEcmaScriptPlugin({
   name: "protoc-gen-es-lite",
   version: `unknown`,
   supportsEditions: true,
   parseOption(key: string, value: string) {
-    if (key !== "typed_decode") {
-      throw new Error("unknown option");
-    }
-    switch (value) {
-      case "":
-      case "true":
-      case "1":
-        typedDecode = true;
+    switch (key) {
+      case "typed_decode":
+        typedDecode = parseBool(value);
         break;
-      case "false":
-      case "0":
-        typedDecode = false;
+      case "typed_encode":
+        typedEncode = parseBool(value);
         break;
       default:
-        throw new Error("must be true or false");
+        throw new Error("unknown option");
     }
   },
-  generateTs: (schema) => generateTs(schema, { typedDecode }),
+  generateTs: (schema) => generateTs(schema, { typedDecode, typedEncode }),
 });

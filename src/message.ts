@@ -124,10 +124,11 @@ export interface MessageType<T = AnyMessage> {
 
 /**
  * MessageOverrides replaces parts of a generated message type: a typed
- * decoder generated for the message, and the JSON form and plain field value
- * of a well-known type.
+ * encoder and decoder generated for the message, and the JSON form and plain
+ * field value of a well-known type.
  */
 export interface MessageOverrides<T> {
+  encode?(m: T, w: Writer): void;
   decode?(r: BinaryReader, end: number, m: T): T;
   writeJson?(m: T, o: JsonWriteOptions): JsonValue;
   readJson?(j: JsonValue, o: JsonReadOptions, m: T): T;
@@ -167,7 +168,10 @@ export function createMessageType<T>(
       overrides?.wrap ?
         (v: unknown): Obj => overrides.wrap!(v) as Obj
       : undefined,
-    encode: (m: Obj, w: Writer): void => encodeFields(fs(), m, w),
+    encode:
+      overrides?.encode ?
+        (m: Obj, w: Writer): void => overrides.encode!(m as T, w)
+      : (m: Obj, w: Writer): void => encodeFields(fs(), m, w),
     decode:
       overrides?.decode ?
         (r: BinaryReader, end: number, m: Obj): Obj =>

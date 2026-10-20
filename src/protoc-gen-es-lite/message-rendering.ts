@@ -61,6 +61,11 @@ export interface GenerateOptions {
    * time decode faster with it; elsewhere it only adds code.
    */
   typedDecode: boolean;
+  /**
+   * Generate a typed encoder for each message in place of the shared one that
+   * walks its field descriptions, for the same engines.
+   */
+  typedEncode: boolean;
 }
 
 export function generateMessage(
@@ -92,6 +97,9 @@ export function generateMessage(
   const overrides: Printable[] = [];
   if (opts.typedDecode) {
     overrides.push("\n  decode: ", decodeFn(rt, message), ",");
+  }
+  if (opts.typedEncode) {
+    overrides.push("\n  encode: ", encodeFn(rt, message), ",");
   }
   if (codec?.writeJson) {
     overrides.push("\n  writeJson: ", codec.writeJson, ",");
@@ -571,6 +579,159 @@ function decodeField(rt: Rt, field: DescField): Printable[] {
         `); ${p} ??= `,
         rt.newMap,
         `(); ${p}[k] = v; break; }`,
+      ];
+    }
+  }
+}
+
+// tagOf is the varint a field's tag writes, computed here so the encoder
+// writes it with one call.
+function tagOf(no: number, wire: number): number {
+  return ((no << 3) | wire) >>> 0;
+}
+
+// writeScalar returns the call that writes the scalar or enum value v after
+// its tag.
+function writeScalar(val: Val, v: string): string {
+  if (val.kind === "enum") {
+    return `.int32(${v})`;
+  }
+  if (val.kind !== "scalar") {
+    throw new Error("not a scalar");
+  }
+  return `.${scalarMethod(val.scalar)}(${val.str ? `BigInt(${v})` : v})`;
+}
+
+// writeValue returns the statement that writes v, one value of val, as field
+// no. Messages encode with their own type's encoder.
+function writeValue(val: Val, no: number, v: string): Printable[] {
+  switch (val.kind) {
+    case "scalar":
+    case "enum":
+      return [
+        `w.uint32(${tagOf(no, wireType(val))})`,
+        writeScalar(val, v),
+        ";",
+      ];
+    case "message":
+      if (val.group) {
+        return [
+          `w.uint32(${tagOf(no, 3)}); `,
+          val.message,
+          `.encode(${v}, w); w.uint32(${tagOf(no, 4)});`,
+        ];
+      }
+      return [val.message, `.writeField(w, ${no}, ${v});`];
+    case "date":
+      return [
+        val.message,
+        `.writeField(w, ${no}, `,
+        val.message,
+        `.fromDate(${v}));`,
+      ];
+    case "wrap":
+      return [val.message, `.writeField(w, ${no}, { value: ${v} });`];
+  }
+}
+
+// isSet returns the test that v, the value of an implicit-presence field, is
+// set and not its zero value, which the encoder leaves out.
+function isSet(val: Val, v: string): string {
+  if (val.kind === "scalar") {
+    switch (val.scalar) {
+      case ScalarType.DOUBLE:
+      case ScalarType.FLOAT:
+        return `${v} != null && ${v} !== 0`;
+      case ScalarType.BYTES:
+        return `${v} != null && ${v}.length !== 0`;
+      default:
+        if (val.str) {
+          return `${v} && ${v} !== "0"`;
+        }
+    }
+  }
+  return v;
+}
+
+// mapKeyValue returns the expression that converts the property name k of a
+// map to the value of its key.
+function mapKeyValue(scalar: ScalarType, k: string): string {
+  switch (scalar) {
+    case ScalarType.BOOL:
+      return `${k} === "true"`;
+    case ScalarType.STRING:
+      return k;
+    case ScalarType.INT64:
+    case ScalarType.UINT64:
+    case ScalarType.SINT64:
+    case ScalarType.FIXED64:
+    case ScalarType.SFIXED64:
+      return `BigInt(${k})`;
+    default:
+      return `Number(${k})`;
+  }
+}
+
+// encodeFn generates a message's encoder. It writes the fields in number
+// order with the same bytes as the shared walker.
+function encodeFn(rt: Rt, message: DescMessage): Printable[] {
+  const t = typeRef(message);
+  const body: Printable[] = [];
+  for (const field of byNumber(message)) {
+    body.push("\n    ", encodeField(field));
+  }
+  return ["(m: ", t, ", w: ", rt.Writer, "): void => {", body, "\n  }"];
+}
+
+function encodeField(field: DescField): Printable[] {
+  const p = `m.${prop(field)}`;
+  switch (fieldShape(field)) {
+    case "implicit": {
+      const val = fieldVal(field);
+      return [
+        `{ const v = ${p}; if (${isSet(val, "v")}) `,
+        writeValue(val, field.number, "v"),
+        " }",
+      ];
+    }
+    case "explicit":
+      return [
+        `{ const v = ${p}; if (v != null) `,
+        writeValue(fieldVal(field), field.number, "v"),
+        " }",
+      ];
+    case "oneof": {
+      const o = `m.${oneofKey(field.oneof!)}`;
+      return [
+        `{ const o = ${o}; if (o?.case === "${localName(field)}" && o.value != null) `,
+        writeValue(fieldVal(field), field.number, "o.value"),
+        " }",
+      ];
+    }
+    case "list": {
+      const val = fieldVal(field);
+      if (field.packed && isPackable(val)) {
+        return [
+          `{ const a = ${p}; if (a != null && a.length > 0) { const s = w.uint32(${tagOf(field.number, 2)}).fork(); for (const e of a) w`,
+          writeScalar(val, "e"),
+          "; w.join(s); } }",
+        ];
+      }
+      return [
+        `{ const a = ${p}; if (a != null) for (const e of a) `,
+        writeValue(val, field.number, "e"),
+        " }",
+      ];
+    }
+    case "map": {
+      const f = field as DescField & { fieldKind: "map" };
+      const key: Val = { kind: "scalar", scalar: f.mapKey, str: false };
+      return [
+        `{ const o = ${p}; if (o != null) for (const [k, v] of Object.entries(o)) { const s = w.uint32(${tagOf(field.number, 2)}).fork(); w.uint32(${tagOf(1, wireType(key))})`,
+        writeScalar(key, mapKeyValue(f.mapKey, "k")),
+        "; ",
+        writeValue(mapVal(f), 2, "v"),
+        " w.join(s); } }",
       ];
     }
   }

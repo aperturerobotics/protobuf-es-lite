@@ -45,6 +45,7 @@ const symbols = {
   newMap: sym(false, "message"),
   createEnumType: sym(false, "enum"),
   BinaryReader: sym(true, "binary-encoding"),
+  Writer: sym(true, "binary-encoding"),
   IMessageTypeRegistry: sym(true, "type-registry"),
   JsonReadOptions: sym(true, "json"),
   JsonWriteOptions: sym(true, "json"),

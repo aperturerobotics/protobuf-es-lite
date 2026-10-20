@@ -72,6 +72,27 @@ describe("protoc-gen-es-lite editions", () => {
     );
   });
 
+  it("generates a typed encoder with the typed_encode option", () => {
+    const response = protocGenEsLite.run(
+      CodeGeneratorRequest.create({
+        parameter: "target=ts,ts_nocheck=false,typed_encode=true",
+        fileToGenerate: ["editions2024.proto"],
+        protoFile: [edition2024File()],
+      }),
+    );
+    const content = response.file?.[0]?.content ?? "";
+    expect(content).toContain("encode: (m: M, w: Writer): void => {");
+    // Packed repeated scalars share one length-delimited value.
+    expect(content).toContain(
+      "const s = w.uint32(50).fork(); for (const e of a) w.int32(e); w.join(s);",
+    );
+    expect(content).toContain("for (const e of a) w.uint32(56).int32(e);");
+    // Delimited messages are written between start and end group tags.
+    expect(content).toContain(
+      "w.uint32(67); Child.encode(v, w); w.uint32(68);",
+    );
+  });
+
   it("keeps source optionality separate from Edition explicit presence", () => {
     const set = createDescriptorSet([edition2024File()]);
     const message = set.messages.get("ed.M");
