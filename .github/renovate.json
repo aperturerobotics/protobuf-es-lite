@@ -18,6 +18,11 @@
       "matchManagers": ["gomod"],
       "matchDepTypes": ["golang"],
       "enabled": false
+    },
+    {
+      "description": "TypeScript 7 drops the compiler API the protoplugin transpiler calls.",
+      "matchPackageNames": ["typescript"],
+      "allowedVersions": "<7"
     }
   ]
 }
