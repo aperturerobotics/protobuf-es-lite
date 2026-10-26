@@ -489,7 +489,13 @@ export class BinaryReader {
    * Field number 0 and wire types 6 and 7 do not exist, so they throw.
    */
   tag(): number {
-    const t = this.uint32();
+    // Most tags fit one byte; read those without the varint loop.
+    let t = this.buf[this.pos];
+    if (t < 0x80) {
+      this.pos += 1;
+    } else {
+      t = this.uint32();
+    }
     if (t >>> 3 === 0 || (t & 7) > 5) {
       throw new Error(`illegal tag: field no ${t >>> 3} wire type ${t & 7}`);
     }
@@ -588,6 +594,15 @@ export class BinaryReader {
 
   /** Read an unsigned 32-bit varint, keeping the low 32 bits. */
   uint32(): number {
+    // A value below 128 is one byte. Past the end, buf yields undefined,
+    // which fails the test and reaches the bounds check below.
+    const first = this.buf[this.pos];
+    if (first < 0x80) {
+      this.pos += 1;
+      return first;
+    }
+
+    // Otherwise gather seven bits a byte.
     let value = 0;
     for (let shift = 0; shift < 64; shift += 7) {
       if (this.pos >= this.len) {
@@ -618,6 +633,14 @@ export class BinaryReader {
 
   /** Read a bool varint. */
   bool(): boolean {
+    // A canonical bool is one byte.
+    const first = this.buf[this.pos];
+    if (first < 0x80) {
+      this.pos += 1;
+      return first !== 0;
+    }
+
+    // Otherwise any set bit in a longer varint is true.
     let bits = 0;
     for (;;) {
       if (this.pos >= this.len) {
