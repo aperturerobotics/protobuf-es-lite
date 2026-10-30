@@ -1,7 +1,7 @@
 {
   "name": "@aptre/protobuf-es-lite",
   "description": "Lightweight Protobuf codegen for TypeScript and JavaScript.",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "publishConfig": {
     "tag": "next"
   },
