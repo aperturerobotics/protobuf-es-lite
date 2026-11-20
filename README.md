@@ -168,7 +168,7 @@ After changing the generator, `bun run gen` regenerates the checked-in example a
 
 ## Related projects and support
 
-- [protobuf-go-lite](https://github.com/aperturerobotics/protobuf-go-lite): reflection-free Go messages.
+- [protobuf-go-lite](https://github.com/aperturerobotics/protobuf-go-lite): reflection-free Go messages. [doc/go-compatibility.md](doc/go-compatibility.md) lists where its binary and JSON output differ from this library's.
 - [StaRPC](https://github.com/aperturerobotics/starpc): streaming Protobuf RPC.
 - [protobuf-project](https://github.com/aperturerobotics/protobuf-project): a template for Go and TypeScript code generation.
 - [Spacewave](https://github.com/s4wave/spacewave): a local-first application framework using these libraries.
